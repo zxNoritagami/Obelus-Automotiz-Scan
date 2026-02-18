@@ -69,10 +69,3 @@ Thumbs.db
 
 # Android Profiling
 *.hprof
-
-# Keystore files (Security)
-*.jks
-*.keystore
-*.b64
-key.properties
-

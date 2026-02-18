@@ -1,80 +1,106 @@
-# 🏎️ Obelus Automotriz Scan
+# Obelus Automotriz Scan 🚗🔧
 
-Scanner OBD2 profesional para Android. Conecta con tu vehículo vía Bluetooth, lee sensores en tiempo real, diagnostica códigos de error y guarda historial de viajes.
+![Banner Placeholder](docs/banner.png)
 
+[![Build Status](https://github.com/zxNoritagami/Obelus-Automotiz-Scan/actions/workflows/android.yml/badge.svg)](https://github.com/zxNoritagami/Obelus-Automotiz-Scan/actions/workflows/android.yml)
 [![Kotlin](https://img.shields.io/badge/Kotlin-1.9.0-blue.svg?style=flat&logo=kotlin)](https://kotlinlang.org)
 [![Android](https://img.shields.io/badge/Platform-Android-green.svg?style=flat&logo=android)](https://www.android.com)
 [![Min SDK](https://img.shields.io/badge/Min%20SDK-26-orange.svg?style=flat)](https://developer.android.com)
 [![License](https://img.shields.io/badge/License-MIT-yellow.svg?style=flat)](LICENSE)
 
-## ✨ Características
+**Scanner OBD2 profesional para Android con soporte avanzado UDS, diagnóstico específico por marca (VAG/BMW/Toyota) y modo carrera.**
 
-- 📊 **Dashboard en Tiempo Real**: Gauges visuales para RPM, velocidad, temperatura, carga del motor y posición del acelerador
-- 🔍 **Diagnóstico DTC**: Lee y borra códigos de error (check engine)
-- 💾 **Historial de Viajes**: Guarda sesiones completas con estadísticas
-- 📈 **Gráficos Detallados**: Analiza el comportamiento de tu vehículo sesión por sesión
-- 📤 **Exportación CSV**: Comparte datos con tu mecánico
-- 🔌 **Compatible ELM327**: Funciona con adaptadores Bluetooth estándar
+Obelus transforma tu dispositivo Android en una potente herramienta de diagnóstico automotriz y telemetría en tiempo real.
 
-## 🛠️ Tecnologías
+---
 
-- **Lenguaje**: Kotlin + Coroutines
-- **UI**: Jetpack Compose (Material3)
-- **Inyección de Dependencias**: Hilt
-- **Persistencia**: Room Database
-- **Conectividad**: Bluetooth Classic (RFCOMM/SPP)
-- **Arquitectura**: MVVM Clean Architecture
+## ✨ Características Principales
 
-## 📋 Requisitos
+*   📊 **Dashboard Profesional**: Visualización de 10 PIDs en tiempo real (RPM, Velocidad, Temp, etc.) con gauges dinámicos.
+*   🏁 **Modo Race (Drag Strip)**: Mediciones de rendimiento 0-100 km/h, 1/4 de milla y frenado, con cálculo de fuerzas G.
+*   ⛽ **Eficiencia de Combustible**: Cálculo instantáneo y promedio de consumo (L/100km, MPG).
+*   🔍 **Diagnóstico Avanzado (UDS)**: Soporte completo para Unified Diagnostic Services sobre ISO-TP (Servicios 0x10, 0x11, 0x22, 0x2E).
+*   🏭 **Protocolos OEM**: Detección automática de marca por VIN para VAG, BMW y Toyota.
+*   🛠️ **Gestión de DTCs**: Lectura y borrado de códigos de error con descripciones detalladas.
+*   📱 **Widget de Inicio**: Datos vitales del vehículo directamente en tu pantalla de inicio con tecnología Jetpack Glance.
+*   🎨 **Temas Dinámicos**: Soporte para Modo Claro/Oscuro y Material You.
 
-- Android 8.0+ (API 26)
-- Adaptador ELM327 Bluetooth (v1.5 o v2.1)
-- Permisos de Bluetooth (Connect/Scan) y Ubicación (para legacy scannning)
+## 📸 Capturas de Pantalla
+
+| Dashboard | Race Mode | Configuración | Widget |
+|:---:|:---:|:---:|:---:|
+| ![Dashboard](docs/screenshots/dashboard_placeholder.png) | ![Race](docs/screenshots/race_placeholder.png) | ![Settings](docs/screenshots/settings_placeholder.png) | ![Widget](docs/screenshots/widget_placeholder.png) |
+
+*(Imágenes referenciales de la versión v1.0)*
 
 ## 🚀 Instalación
 
-1. Clonar repositorio:
-   ```bash
-   git clone https://github.com/tu-usuario/obelus.git
-   ```
-2. Abrir en Android Studio Hedgehog o superior.
-3. Esperar sincronización de Gradle (Sync Gradle).
-4. Ejecutar en dispositivo físico (el emulador no soporta Bluetooth Classic nativamente):
-   - Activa "Opciones de Desarrollador" y "USB Debugging" en tu teléfono.
-   - Conecta vía USB y dale Play ▶️.
+### Requisitos
+*   Dispositivo Android con **Android 8.0 (Oreo)** o superior.
+*   Adaptador **ELM327 Bluetooth** (Versión 1.5 recomendada, v2.1 compatible).
 
-## 📸 Screenshots
+### Descarga
+Escanea el código QR o visita la sección de [Releases](https://github.com/zxNoritagami/Obelus-Automotiz-Scan/releases) para descargar el último APK.
 
-| Dashboard | DTCs | Historial | Gráficos |
-|:---:|:---:|:---:|:---:|
-| ![Dashboard](docs/screenshots/dashboard.png) | ![DTCs](docs/screenshots/dtcs.png) | ![History](docs/screenshots/history.png) | ![Charts](docs/screenshots/charts.png) |
-*(Screenshots pendientes de añadir)*
+![QR Placeholder](docs/qr_code.png)
 
-## 🏗️ Arquitectura
+### Última Versión
+[![Latest Release](https://img.shields.io/github/v/release/zxNoritagami/Obelus-Automotiz-Scan?style=for-the-badge&color=green)](https://github.com/zxNoritagami/Obelus-Automotiz-Scan/releases/latest)
 
-El proyecto sigue una arquitectura **MVVM (Model-View-ViewModel)** con principios de Clean Architecture:
+## 📖 Uso Rápido
 
-- **presentation**: UI (Compose) y ViewModels.
-- **domain**: Casos de uso y modelos de negocio puramente Kotlin (en desarrollo).
-- **data**: Repositorios, fuentes de datos (Local/Remote/Bluetooth) y Mappers.
-- **protocol**: Lógica de bajo nivel para comunicación ELM327 y decodificación OBD2.
+1.  **Emparejar**: Conecta tu adaptador ELM327 al puerto OBD2 del vehículo y emparejalo en la configuración Bluetooth de Android.
+2.  **Conectar**: Abre Obelus, selecciona tu dispositivo y presiona el icono de Bluetooth en la barra superior.
+3.  **Escanear**:
+    *   Ve al **Dashboard** para ver datos en vivo.
+    *   Usa **Race Mode** para medir tiempos de aceleración (solo en pista cerrada).
+    *   Usa **DTCs** para leer y borrar códigos de error.
 
-## 🤝 Contribuciones
+## 🏗️ Arquitectura Técnica
 
-PRs son bienvenidos. Por favor, abrir un issue primero para discutir cambios mayores o nuevas funcionalidades.
+El proyecto sigue una arquitectura moderna y robusta **MVVM (Model-View-ViewModel)** con principios de **Clean Architecture**:
 
-1. Fork el proyecto
-2. Crea tu rama de feature (`git checkout -b feature/AmazingFeature`)
-3. Commit tus cambios (`git commit -m 'Add some AmazingFeature'`)
-4. Push a la rama (`git push origin feature/AmazingFeature`)
-5. Abre un Pull Request
+```mermaid
+graph TD
+    UI[Jetpack Compose UI] --> VM[ViewModel]
+    VM --> UseCases[Domain UseCases]
+    UseCases --> Repo[Repository Interface]
+    Repo --> Local[Room Database]
+    Repo --> Remote[Bluetooth/ELM327]
+    Remote --> Protocol[UDS / ISO-TP / OEM]
+```
+
+*   **UI**: Jetpack Compose + Material3.
+*   **DI**: Hilt (Dagger).
+*   **Async**: Kotlin Coroutines + Flow.
+*   **Persistence**: Room + DataStore.
+*   **Protocol**: Implementación propia de ELM327, ISO-TP y UDS.
+
+## 🤝 Contribuir
+
+¡Las contribuciones son bienvenidas!
+
+1.  Haz un **Fork** del repositorio.
+2.  Crea una rama para tu feature (`git checkout -b feature/NuevaFuncionalidad`).
+3.  Haz **Commit** de tus cambios (`git commit -m 'Añadir nueva funcionalidad'`).
+4.  Haz **Push** a la rama (`git push origin feature/NuevaFuncionalidad`).
+5.  Abre un **Pull Request**.
+
+## ✅ Roadmap (Estado Actual)
+
+*   [x] Configuración de Proyecto y Hilt (Módulo 11)
+*   [x] UI/UX Dashboard y Navegación (Módulo 12)
+*   [x] Lógica de Bluetooth y OBD2 (Módulo 13)
+*   [x] Modo Carrera y Telemetría (Módulo 14)
+*   [x] Protocolos Avanzados UDS/OEM (Módulo 15)
+*   [x] CI/CD y Release Build
 
 ## 📄 Licencia
 
-Este proyecto está bajo la Licencia MIT - ver el archivo [LICENSE](LICENSE) para más detalles.
+Desarrollado por **@zxNoritagami**.
 
-## 🙏 Agradecimientos
+Este proyecto está bajo la Licencia **MIT**. Consulta el archivo [LICENSE](LICENSE) para más detalles.
 
-- Protocolo OBD2 estándar (ISO 9141-2, ISO 14230-4, ISO 15765-4)
-- Documentación de comandos ELM327
-- Comunidad Open Source de Android
+## ⚠️ Disclaimer
+
+**Obelus Automotriz Scan** es una herramienta de diagnóstico. El uso de esta aplicación, especialmente en **Modo Carrera**, debe realizarse bajo su propia responsabilidad y respetando las leyes de tránsito locales. El autor no se hace responsable por daños al vehículo, violaciones de tráfico o accidentes derivados del uso de esta aplicación. **Nunca manipule la aplicación mientras conduce.**
