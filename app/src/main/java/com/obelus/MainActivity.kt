@@ -13,7 +13,13 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.obelus.presentation.ui.screens.ScanScreen
 import com.obelus.presentation.ui.screens.SignalListScreen
+import com.obelus.presentation.ui.screens.HistoryScreen
+import com.obelus.presentation.ui.screens.PermisoScreen
+import com.obelus.presentation.ui.screens.SessionDetailScreen
+import com.obelus.presentation.ui.screens.DTCScreen
 import dagger.hilt.android.AndroidEntryPoint
+import androidx.navigation.NavType
+import androidx.navigation.navArgument
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
@@ -36,14 +42,42 @@ class MainActivity : ComponentActivity() {
 fun ObelusApp() {
     val navController = rememberNavController()
 
-    NavHost(navController = navController, startDestination = "scan") {
+    NavHost(navController = navController, startDestination = "permisos") {
+        composable("permisos") {
+            PermisoScreen(
+                onPermisosConcedidos = {
+                    navController.navigate("scan") {
+                        popUpTo("permisos") { inclusive = true }
+                    }
+                }
+            )
+        }
         composable("scan") {
             ScanScreen(
-                onNavigateToDtcs = { /* TODO: Navigate to DTC screen */ }
+                onNavigateToDtcs = { navController.navigate("dtcs") },
+                onNavigateToHistory = { navController.navigate("history") }
             )
         }
         composable("signals") {
             SignalListScreen()
+        }
+        composable("history") {
+            HistoryScreen(
+                onSessionClick = { sessionId -> navController.navigate("session_detail/$sessionId") },
+                onBack = { navController.popBackStack() }
+            )
+        }
+        composable(
+            route = "session_detail/{sessionId}",
+            arguments = listOf(navArgument("sessionId") { type = NavType.LongType })
+        ) { backStackEntry ->
+            SessionDetailScreen(
+                sessionId = backStackEntry.arguments?.getLong("sessionId") ?: 0L,
+                onBack = { navController.popBackStack() }
+            )
+        }
+        composable("dtcs") {
+            DTCScreen(onBack = { navController.popBackStack() })
         }
     }
 }

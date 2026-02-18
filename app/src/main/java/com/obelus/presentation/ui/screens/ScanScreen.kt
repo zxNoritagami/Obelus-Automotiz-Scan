@@ -1,131 +1,254 @@
 package com.obelus.presentation.ui.screens
 
-import androidx.compose.foundation.background
+import android.annotation.SuppressLint
+import android.bluetooth.BluetoothManager
+import android.content.Context
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.PlayArrow
+import androidx.compose.material.icons.filled.Stop
+import androidx.compose.material.icons.filled.Warning
+import androidx.compose.material.icons.filled.History
 import androidx.compose.material3.*
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.obelus.data.local.model.Status
-import com.obelus.presentation.ui.components.ReadingItem
+import com.obelus.presentation.ui.components.CircularGauge
+import com.obelus.presentation.ui.components.ConnectionStatusChip
+import com.obelus.presentation.ui.components.LinearGauge
 import com.obelus.presentation.viewmodel.ScanState
 import com.obelus.presentation.viewmodel.ScanViewModel
 
+@SuppressLint("MissingPermission")
 @Composable
 fun ScanScreen(
     onNavigateToDtcs: () -> Unit,
+    onNavigateToHistory: () -> Unit,
     viewModel: ScanViewModel = hiltViewModel()
 ) {
     val scanState by viewModel.scanState.collectAsState()
-    val readings by viewModel.readings.collectAsState()
-    val currentSession by viewModel.currentSession.collectAsState()
     val errorMessage by viewModel.errorMessage.collectAsState()
+    val readings by viewModel.currentReadings.collectAsState()
+    
+    // For device selection
+    val context = LocalContext.current
+    val bluetoothManager = context.getSystemService(Context.BLUETOOTH_SERVICE) as BluetoothManager
+    val adapter = bluetoothManager.adapter
+    val pairedDevices = remember { 
+        adapter?.bondedDevices?.toList() ?: emptyList() 
+    }
+    
+    var showDeviceDialog by remember { mutableStateOf(false) }
 
-    Scaffold(
-        topBar = {
-            CenterAlignedTopAppBar(
-                title = { Text("Obelus Scanner") },
-                colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
-                    containerColor = MaterialTheme.colorScheme.primaryContainer,
-                    titleContentColor = MaterialTheme.colorScheme.onPrimaryContainer
-                )
-            )
-        }
-    ) { paddingValues ->
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(paddingValues)
-                .background(MaterialTheme.colorScheme.background)
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(16.dp),
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        // Header
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
         ) {
-            // Status Indicator
-            StatusHeader(scanState, errorMessage)
+            ConnectionStatusChip(
+                isConnected = scanState == ScanState.CONNECTED || scanState == ScanState.SCANNING || scanState == ScanState.PAUSED,
+                isScanning = scanState == ScanState.SCANNING
+            )
+            
+            IconButton(onClick = onNavigateToHistory) {
+                Icon(Icons.Default.History, contentDescription = "History", tint = MaterialTheme.colorScheme.primary)
+            }
+            
 
-            // Controls
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(16.dp),
-                horizontalArrangement = Arrangement.SpaceEvenly
-            ) {
+
+            IconButton(onClick = onNavigateToDtcs) {
+                Icon(Icons.Default.Warning, contentDescription = "DTCs", tint = MaterialTheme.colorScheme.error)
+            }
+            
+            if (scanState == ScanState.SCANNING) {
                 Button(
-                    onClick = {
-                        if (scanState == ScanState.SCANNING) {
-                            viewModel.stopScan()
-                        } else {
-                            viewModel.startScan("Session_${System.currentTimeMillis()}")
-                        }
-                    },
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = if (scanState == ScanState.SCANNING) Color.Red else Color.Green
-                    )
+                    onClick = { viewModel.stopScan() },
+                    colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.error)
                 ) {
-                    Text(text = if (scanState == ScanState.SCANNING) "STOP SCAN" else "START SCAN")
+                    Icon(Icons.Default.Stop, contentDescription = null)
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Text("DETENER")
                 }
-
-                Button(
-                    onClick = onNavigateToDtcs,
-                    colors = ButtonDefaults.buttonColors(
-                         containerColor = MaterialTheme.colorScheme.secondary
-                    )
+            } else if (scanState == ScanState.CONNECTED || scanState == ScanState.PAUSED) {
+                 Button(
+                    onClick = { viewModel.startScan() },
+                    colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF4CAF50))
                 ) {
-                    Text("VIEW DTCs")
+                    Icon(Icons.Default.PlayArrow, contentDescription = null)
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Text(if (scanState == ScanState.PAUSED) "REANUDAR" else "INICIAR")
                 }
             }
-
-            // Readings List
-            if (readings.isEmpty() && scanState == ScanState.SCANNING) {
-                Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                    CircularProgressIndicator()
+        }
+        
+        Spacer(modifier = Modifier.height(16.dp))
+        
+        // Error Message
+        errorMessage?.let { msg ->
+            Card(
+                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.errorContainer),
+                modifier = Modifier.fillMaxWidth().padding(bottom = 8.dp)
+            ) {
+                Row(modifier = Modifier.padding(12.dp), verticalAlignment = Alignment.CenterVertically) {
+                    Icon(Icons.Default.Warning, contentDescription = "Error", tint = MaterialTheme.colorScheme.onErrorContainer)
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Text(text = msg, color = MaterialTheme.colorScheme.onErrorContainer)
                 }
-            } else {
-                LazyColumn(
-                    modifier = Modifier.fillMaxSize(),
-                    contentPadding = PaddingValues(bottom = 16.dp)
-                ) {
-                    items(readings) { reading ->
-                        // Mock status logic for visualization
-                        val status = if (reading.decodedValue > 100) Status.HIGH else Status.NORMAL
-                        ReadingItem(
-                            signalName = "Signal ${reading.signalId}", // In real app, resolve name
-                            value = String.format("%.2f", reading.decodedValue),
-                            unit = "N/A", // In real app, resolve unit
-                            status = status
-                        )
+            }
+        }
+
+        // Main Content based on State
+        Box(modifier = Modifier.weight(1f)) {
+            when (scanState) {
+                ScanState.IDLE, ScanState.DISCONNECTED, ScanState.ERROR -> {
+                    Column(
+                        modifier = Modifier.fillMaxSize(),
+                        verticalArrangement = Arrangement.Center,
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        Button(onClick = { showDeviceDialog = true }) {
+                            Text("Conectar a Dispositivo OBD2")
+                        }
                     }
                 }
+                ScanState.CONNECTING -> {
+                    Column(
+                        modifier = Modifier.fillMaxSize(),
+                        verticalArrangement = Arrangement.Center,
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        CircularProgressIndicator()
+                        Spacer(modifier = Modifier.height(16.dp))
+                        Text("Conectando al dispositivo...")
+                    }
+                }
+                ScanState.CONNECTED, ScanState.SCANNING, ScanState.PAUSED -> {
+                    DashboardContent(readings = readings)
+                }
             }
         }
+    }
+    
+    // Device Selection Dialog
+    if (showDeviceDialog) {
+        AlertDialog(
+            onDismissRequest = { showDeviceDialog = false },
+            title = { Text("Seleccionar Dispositivo OBD2") },
+            text = {
+                LazyColumn(modifier = Modifier.heightIn(max = 300.dp)) {
+                    if (pairedDevices.isEmpty()) {
+                        item { Text("No hay dispositivos vinculados. Vincula en ajustes de Bluetooth.") }
+                    } else {
+                        items(pairedDevices) { device ->
+                            TextButton(
+                                onClick = {
+                                    viewModel.connect(device.address)
+                                    showDeviceDialog = false
+                                },
+                                modifier = Modifier.fillMaxWidth()
+                            ) {
+                                Text("${device.name} (${device.address})")
+                            }
+                        }
+                    }
+                }
+            },
+            confirmButton = {
+                TextButton(onClick = { showDeviceDialog = false }) {
+                    Text("Cancelar")
+                }
+            }
+        )
     }
 }
 
 @Composable
-fun StatusHeader(state: ScanState, error: String?) {
-    val (color, text) = when (state) {
-        ScanState.IDLE -> Color.Gray to "IDLE"
-        ScanState.SCANNING -> Color.Green to "SCANNING..."
-        ScanState.PAUSED -> Color.Yellow to "PAUSED"
-        ScanState.ERROR -> Color.Red to (error ?: "ERROR")
-    }
-
-    Box(
-        modifier = Modifier
-            .fillMaxWidth()
-            .background(color.copy(alpha = 0.2f))
-            .padding(8.dp),
-        contentAlignment = Alignment.Center
-    ) {
-        Text(
-            text = text,
-            style = MaterialTheme.typography.labelLarge,
-            color = if (state == ScanState.ERROR) Color.Red else MaterialTheme.colorScheme.onSurface
-        )
+fun DashboardContent(readings: Map<String, com.obelus.data.obd2.ObdReading>) {
+    Column(modifier = Modifier.fillMaxSize()) {
+        // Grid de gauges principales (2x2)
+        LazyVerticalGrid(
+            columns = GridCells.Fixed(2),
+            horizontalArrangement = Arrangement.spacedBy(16.dp),
+            verticalArrangement = Arrangement.spacedBy(16.dp),
+            modifier = Modifier.weight(1f)
+        ) {
+            item {
+                CircularGauge(
+                    value = readings["0C"]?.value ?: 0f,  // RPM
+                    maxValue = 8000f,
+                    unit = "rpm",
+                    label = "RPM",
+                    color = Color(0xFF2196F3)  // Azul
+                )
+            }
+            item {
+                CircularGauge(
+                    value = readings["0D"]?.value ?: 0f,  // Speed
+                    maxValue = 240f,
+                    unit = "km/h",
+                    label = "VELOCIDAD",
+                    color = Color(0xFF4CAF50)  // Verde
+                )
+            }
+            item {
+                val temp = readings["05"]?.value ?: 0f
+                CircularGauge(
+                    value = temp,  // Coolant Temp
+                    maxValue = 150f,
+                    unit = "°C",
+                    label = "TEMP MOTOR",
+                    color = when {
+                        temp > 100 -> Color(0xFFF44336) // Red
+                        temp > 90 -> Color(0xFFFF9800)  // Orange
+                        else -> Color(0xFF00BCD4)  // Cyan
+                    }
+                )
+            }
+             // Placeholder for forth gauge or voltage
+            item {
+                 Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                     Text("Esperando Datos...", style = MaterialTheme.typography.bodySmall, color = Color.Gray)
+                 }
+            }
+        }
+        
+        Spacer(modifier = Modifier.height(16.dp))
+        
+        // Barras inferiores para porcentajes
+        Card(
+            modifier = Modifier.fillMaxWidth(),
+            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant)
+        ) {
+            Column(modifier = Modifier.padding(16.dp)) {
+                LinearGauge(
+                    value = readings["04"]?.value ?: 0f,  // Engine Load
+                    maxValue = 100f,
+                    unit = "%",
+                    label = "Carga del Motor"
+                )
+                Spacer(modifier = Modifier.height(12.dp))
+                LinearGauge(
+                    value = readings["11"]?.value ?: 0f,  // Throttle
+                    maxValue = 100f,
+                    unit = "%",
+                    label = "Posición del Acelerador"
+                )
+            }
+        }
     }
 }

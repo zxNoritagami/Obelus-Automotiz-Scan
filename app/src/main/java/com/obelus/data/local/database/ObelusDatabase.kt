@@ -14,7 +14,7 @@ import com.obelus.data.local.entity.*
         DtcCode::class,
         DatabaseFile::class
     ],
-    version = 1,
+    version = 2,
     exportSchema = false
 )
 @TypeConverters(Converters::class)

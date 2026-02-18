@@ -9,14 +9,13 @@ import androidx.room.PrimaryKey
     tableName = "signal_readings",
     foreignKeys = [
         ForeignKey(
-            entity = CanSignal::class,
+            entity = ScanSession::class,
             parentColumns = ["id"],
-            childColumns = ["signalId"],
+            childColumns = ["sessionId"],
             onDelete = ForeignKey.CASCADE
         )
     ],
     indices = [
-        Index(value = ["signalId"]),
         Index(value = ["sessionId"]),
         Index(value = ["timestamp"])
     ]
@@ -24,10 +23,10 @@ import androidx.room.PrimaryKey
 data class SignalReading(
     @PrimaryKey(autoGenerate = true)
     val id: Long = 0,
-    val signalId: Long,
-    val rawBytes: String,
-    val decodedValue: Float,
-    val timestamp: Long,
-    val sessionId: String,
-    val vehicleState: String?
+    val sessionId: Long,
+    val pid: String,
+    val name: String,
+    val value: Float,
+    val unit: String,
+    val timestamp: Long
 )
