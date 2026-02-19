@@ -6,7 +6,6 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Flag
@@ -16,7 +15,6 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
@@ -37,14 +35,13 @@ fun RaceScreen(
     val speed by viewModel.currentSpeed.collectAsState()
     val session by viewModel.session.collectAsState()
 
-    // Animación de fondo suave según estado
     val backgroundColor by animateColorAsState(
         targetValue = when (state) {
             RaceState.IDLE -> MaterialTheme.colorScheme.background
-            RaceState.ARMED -> Color(0xFF2E2E2E) // Grid oscuro
-            RaceState.RUNNING -> Color(0xFF1B5E20) // Verde muy oscuro
-            RaceState.FINISHED -> Color(0xFF0D47A1) // Azul muy oscuro
-            RaceState.ERROR -> Color(0xFFB71C1C) // Rojo oscuro
+            RaceState.ARMED -> Color(0xFF2E2E2E)
+            RaceState.RUNNING -> Color(0xFF1B5E20)
+            RaceState.FINISHED -> Color(0xFF0D47A1)
+            RaceState.ERROR -> Color(0xFFB71C1C)
             else -> MaterialTheme.colorScheme.background
         },
         animationSpec = tween(durationMillis = 500), label = "bgColor"
@@ -69,9 +66,9 @@ fun RaceScreen(
                 )
                 RaceState.FINISHED -> RaceFinishedContent(
                     session = session,
-                    onReset = { viewModel.cancelRace() } // Cancel vuelve a IDLE
+                    onReset = { viewModel.cancelRace() }
                 )
-                else -> { /* Error handled visually by color */ }
+                else -> { }
             }
         }
     }
@@ -134,15 +131,13 @@ fun RaceRunningContent(
     session: RaceSession?,
     onCancel: () -> Unit
 ) {
-    // Cronómetro visual simulado
     var elapsedTime by remember { mutableLongStateOf(0L) }
     
-    // Si está corriendo, actualizamos la ui cada frame (o casi)
     LaunchedEffect(state) {
         val startTime = System.currentTimeMillis()
         while (state == RaceState.RUNNING) {
             elapsedTime = System.currentTimeMillis() - startTime
-            kotlinx.coroutines.delay(30) // ~30fps update
+            kotlinx.coroutines.delay(30)
         }
     }
 
@@ -151,7 +146,6 @@ fun RaceRunningContent(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.SpaceBetween
     ) {
-        // Top: Status
         Text(
             text = if (state == RaceState.ARMED) "LISTO PARA SALIR" else "CARRERA EN CURSO",
             style = MaterialTheme.typography.titleLarge,
@@ -159,7 +153,6 @@ fun RaceRunningContent(
             fontWeight = FontWeight.Black
         )
 
-        // Center: Speed & Timer
         Column(horizontalAlignment = Alignment.CenterHorizontally) {
             Text(
                 text = "$speed",
@@ -175,7 +168,6 @@ fun RaceRunningContent(
             
             Spacer(modifier = Modifier.height(32.dp))
             
-            // Timer Display
             val seconds = elapsedTime / 1000f
             Text(
                 text = String.format(Locale.US, "%.2f s", seconds),
@@ -185,7 +177,6 @@ fun RaceRunningContent(
             )
         }
 
-        // Bottom: Cancel Button
         Button(
             onClick = onCancel,
             colors = ButtonDefaults.buttonColors(containerColor = Color.Red.copy(alpha = 0.7f)),
@@ -217,7 +208,6 @@ fun RaceFinishedContent(
         
         Spacer(modifier = Modifier.height(16.dp))
         
-        // Tiempo Final Grande
         Text(
             text = String.format(Locale.US, "%.2f s", session.finalTime),
             fontSize = 80.sp,
@@ -225,18 +215,16 @@ fun RaceFinishedContent(
             color = MaterialTheme.colorScheme.primary
         )
 
-        // Stats Rápidos
         Row(
             modifier = Modifier.fillMaxWidth().padding(16.dp),
             horizontalArrangement = Arrangement.SpaceEvenly
         ) {
-            StatItem("Max G", String.format("%.2f G", session.maxGforce))
+            StatItem("Max G", String.format(Locale.US, "%.2f G", session.maxGforce))
             StatItem("Vel. Final", "${session.targetSpeedEnd} km/h")
         }
 
         Divider(color = Color.White.copy(alpha = 0.2f))
 
-        // Tabla de Splits (Scrollable)
         LazyColumn(
             modifier = Modifier
                 .weight(1f)

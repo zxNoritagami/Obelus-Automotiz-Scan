@@ -71,6 +71,7 @@ dependencies {
     implementation(libs.androidx.ui.graphics)
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.material3)
+    implementation(libs.androidx.material.icons.extended)
     
     // Room
     implementation(libs.androidx.room.runtime)
@@ -83,12 +84,14 @@ dependencies {
     implementation(libs.androidx.hilt.navigation.compose)
 
     // DataStore
-    implementation("androidx.datastore:datastore-preferences:1.0.0")
+    implementation(libs.androidx.datastore.preferences)
 
     // Glance (Widgets)
-    implementation("androidx.glance:glance-appwidget:1.0.0")
-    implementation("androidx.glance:glance-material3:1.0.0")
+    implementation(libs.androidx.glance.appwidget)
+    implementation(libs.androidx.glance.material3)
 
+    // Accompanist Permissions
+    implementation(libs.accompanist.permissions)
 
     // Navigation
     implementation(libs.androidx.navigation.compose)

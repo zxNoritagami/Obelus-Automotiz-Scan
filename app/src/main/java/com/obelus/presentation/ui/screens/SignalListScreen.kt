@@ -10,7 +10,6 @@ import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -55,7 +54,7 @@ fun SignalListScreen(
                     },
                     modifier = Modifier.clickable { /* Handle selection */ }
                 )
-                HorizontalDivider()
+                Divider()
             }
         }
     }

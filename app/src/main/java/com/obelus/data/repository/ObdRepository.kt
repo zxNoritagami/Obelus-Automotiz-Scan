@@ -14,7 +14,6 @@ interface ObdRepository {
     suspend fun disconnect()
     fun isConnected(): Boolean
     suspend fun requestPid(pid: String): ObdReading?
-    suspend fun requestPid(pid: String): ObdReading?
     fun getSupportedPids(): List<PidDefinition>
     suspend fun sendCommand(command: String): String
 }

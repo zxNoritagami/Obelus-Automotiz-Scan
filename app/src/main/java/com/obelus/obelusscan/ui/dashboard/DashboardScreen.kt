@@ -6,7 +6,6 @@ import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Bluetooth
-import androidx.compose.material.icons.filled.BluetoothDisabled
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -17,7 +16,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.obelus.domain.model.ObdPid
 
@@ -148,14 +146,14 @@ fun DashboardCard(
             // Visual Progress Bar
             // Calculate progress 0.0 - 1.0 based on min/max
             val range = pid.maxValue - pid.minValue
-            val progress = if (range > 0) {
+            val progressValue = if (range > 0) {
                 ((value - pid.minValue) / range).coerceIn(0f, 1f)
             } else {
                 0f
             }
 
             LinearProgressIndicator(
-                progress = { progress },
+                progress = progressValue,
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(8.dp),

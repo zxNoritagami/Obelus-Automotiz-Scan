@@ -1,10 +1,9 @@
 package com.obelus.presentation.ui.screens
 
-import androidx.compose.foundation.background
-import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.foundation.horizontalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Share
@@ -12,14 +11,12 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.obelus.data.local.entity.ScanSession
-import com.obelus.data.local.entity.SignalReading
-import com.obelus.data.obd2.Obd2Decoder
 import com.obelus.presentation.ui.components.LineChart
 import com.obelus.presentation.viewmodel.SessionDetailViewModel
 import com.obelus.presentation.viewmodel.ExportStatus
@@ -196,7 +193,7 @@ fun PidSelectorChips(
         modifier = Modifier
             .fillMaxWidth()
             .padding(horizontal = 16.dp)
-            .horizontalScroll(androidx.compose.foundation.rememberScrollState()),
+            .horizontalScroll(rememberScrollState()),
         horizontalArrangement = Arrangement.spacedBy(8.dp)
     ) {
         availablePids.forEach { pid ->
@@ -224,15 +221,15 @@ fun PidStatisticsCard(viewModel: SessionDetailViewModel) {
                 .padding(16.dp),
             horizontalArrangement = Arrangement.SpaceEvenly
         ) {
-            StatItem("Mín", String.format("%.1f", stats.min))
-            StatItem("Promedio", String.format("%.1f", stats.average))
-            StatItem("Máx", String.format("%.1f", stats.max))
+            DetailStatItem("Mín", String.format("%.1f", stats.min))
+            DetailStatItem("Promedio", String.format("%.1f", stats.average))
+            DetailStatItem("Máx", String.format("%.1f", stats.max))
         }
     }
 }
 
 @Composable
-fun StatItem(label: String, value: String) {
+fun DetailStatItem(label: String, value: String) {
     Column(horizontalAlignment = Alignment.CenterHorizontally) {
         Text(text = label, style = MaterialTheme.typography.labelSmall)
         Text(text = value, style = MaterialTheme.typography.titleMedium)

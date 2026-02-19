@@ -24,7 +24,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.obelus.presentation.ui.components.CircularGauge
 import com.obelus.presentation.ui.components.ConnectionStatusChip
 import com.obelus.presentation.ui.components.LinearGauge
-import com.obelus.presentation.viewmodel.ScanState
+import com.obelus.presentation.viewmodel.ScanStatus
 import com.obelus.presentation.viewmodel.ScanViewModel
 
 @SuppressLint("MissingPermission")
@@ -61,8 +61,8 @@ fun ScanScreen(
             verticalAlignment = Alignment.CenterVertically
         ) {
             ConnectionStatusChip(
-                isConnected = scanState == ScanState.CONNECTED || scanState == ScanState.SCANNING || scanState == ScanState.PAUSED,
-                isScanning = scanState == ScanState.SCANNING
+                isConnected = scanState == ScanStatus.CONNECTED || scanState == ScanStatus.SCANNING || scanState == ScanStatus.PAUSED,
+                isScanning = scanState == ScanStatus.SCANNING
             )
             
             IconButton(onClick = onNavigateToHistory) {
@@ -75,7 +75,7 @@ fun ScanScreen(
                 Icon(Icons.Default.Warning, contentDescription = "DTCs", tint = MaterialTheme.colorScheme.error)
             }
             
-            if (scanState == ScanState.SCANNING) {
+            if (scanState == ScanStatus.SCANNING) {
                 Button(
                     onClick = { viewModel.stopScan() },
                     colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.error)
@@ -84,14 +84,14 @@ fun ScanScreen(
                     Spacer(modifier = Modifier.width(8.dp))
                     Text("DETENER")
                 }
-            } else if (scanState == ScanState.CONNECTED || scanState == ScanState.PAUSED) {
+            } else if (scanState == ScanStatus.CONNECTED || scanState == ScanStatus.PAUSED) {
                  Button(
                     onClick = { viewModel.startScan() },
                     colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF4CAF50))
                 ) {
                     Icon(Icons.Default.PlayArrow, contentDescription = null)
                     Spacer(modifier = Modifier.width(8.dp))
-                    Text(if (scanState == ScanState.PAUSED) "REANUDAR" else "INICIAR")
+                    Text(if (scanState == ScanStatus.PAUSED) "REANUDAR" else "INICIAR")
                 }
             }
         }
@@ -115,7 +115,7 @@ fun ScanScreen(
         // Main Content based on State
         Box(modifier = Modifier.weight(1f)) {
             when (scanState) {
-                ScanState.IDLE, ScanState.DISCONNECTED, ScanState.ERROR -> {
+                ScanStatus.IDLE, ScanStatus.DISCONNECTED, ScanStatus.ERROR -> {
                     Column(
                         modifier = Modifier.fillMaxSize(),
                         verticalArrangement = Arrangement.Center,
@@ -126,7 +126,7 @@ fun ScanScreen(
                         }
                     }
                 }
-                ScanState.CONNECTING -> {
+                ScanStatus.CONNECTING -> {
                     Column(
                         modifier = Modifier.fillMaxSize(),
                         verticalArrangement = Arrangement.Center,
@@ -137,7 +137,7 @@ fun ScanScreen(
                         Text("Conectando al dispositivo...")
                     }
                 }
-                ScanState.CONNECTED, ScanState.SCANNING, ScanState.PAUSED -> {
+                ScanStatus.CONNECTED, ScanStatus.SCANNING, ScanStatus.PAUSED -> {
                     DashboardContent(readings = readings)
                 }
             }

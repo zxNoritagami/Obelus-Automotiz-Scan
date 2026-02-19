@@ -1,6 +1,7 @@
 package com.obelus.obelusscan.widget
 
 import android.content.Context
+import android.content.Intent
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -44,18 +45,18 @@ class DashboardWidget : GlanceAppWidget() {
                 val temp = prefs[TEMP_KEY] ?: "--"
                 val fuel = prefs[FUEL_KEY] ?: "--"
 
-                WidgetContent(rpm, speed, temp, fuel)
+                WidgetContent(context, rpm, speed, temp, fuel)
             }
         }
     }
 
     @Composable
-    private fun WidgetContent(rpm: String, speed: String, temp: String, fuel: String) {
+    private fun WidgetContent(context: Context, rpm: String, speed: String, temp: String, fuel: String) {
         Column(
             modifier = GlanceModifier
                 .fillMaxSize()
                 .background(GlanceTheme.colors.background)
-                .clickable(actionStartActivity<MainActivity>())
+                .clickable(actionStartActivity(Intent(context, MainActivity::class.java)))
                 .padding(12.dp),
             verticalAlignment = Alignment.CenterVertically,
             horizontalAlignment = Alignment.CenterHorizontally

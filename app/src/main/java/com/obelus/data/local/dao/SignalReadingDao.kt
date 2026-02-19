@@ -4,28 +4,22 @@ import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.Query
 import com.obelus.data.local.entity.SignalReading
+import com.obelus.data.local.model.SignalStats
 
 @Dao
 interface SignalReadingDao {
     @Insert
-    suspend fun insertReading(reading: SignalReading)
+    suspend fun insert(reading: SignalReading): Long
     
     @Insert
-    suspend fun insertReadings(readings: List<SignalReading>)
+    suspend fun insertAll(readings: List<SignalReading>)
     
     @Query("SELECT * FROM signal_readings WHERE sessionId = :sessionId ORDER BY timestamp")
-    suspend fun getReadingsForSession(sessionId: Long): List<SignalReading>
+    suspend fun getBySession(sessionId: Long): List<SignalReading>
     
     @Query("SELECT * FROM signal_readings WHERE sessionId = :sessionId AND pid = :pid ORDER BY timestamp")
-    suspend fun getReadingsForPid(sessionId: Long, pid: String): List<SignalReading>
+    suspend fun getByPid(sessionId: Long, pid: String): List<SignalReading>
     
-    @Query("DELETE FROM signal_readings WHERE sessionId = :sessionId")
-    suspend fun deleteReadingsForSession(sessionId: Long)
-    
-    // Statistics
-    @Query("SELECT AVG(value) FROM signal_readings WHERE sessionId = :sessionId AND pid = :pid")
-    suspend fun getAverageForPid(sessionId: Long, pid: String): Float?
-    
-    @Query("SELECT MAX(value) FROM signal_readings WHERE sessionId = :sessionId AND pid = :pid")
-    suspend fun getMaxForPid(sessionId: Long, pid: String): Float?
+    @Query("SELECT AVG(value) as avg, MAX(value) as max, MIN(value) as min FROM signal_readings WHERE pid = :pid AND timestamp > :since")
+    suspend fun getStats(pid: String, since: Long): SignalStats
 }

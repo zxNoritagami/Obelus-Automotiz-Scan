@@ -1,29 +1,25 @@
 package com.obelus.data.local.dao
 
-import androidx.room.Dao
-import androidx.room.Insert
-import androidx.room.Query
-import androidx.room.Update
+import androidx.room.*
 import com.obelus.data.local.entity.ScanSession
-import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface ScanSessionDao {
-    @Insert
-    suspend fun insertSession(session: ScanSession): Long
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insert(session: ScanSession)
     
     @Update
-    suspend fun updateSession(session: ScanSession)
+    suspend fun update(session: ScanSession)
     
     @Query("SELECT * FROM scan_sessions ORDER BY startTime DESC")
-    fun getAllSessions(): Flow<List<ScanSession>>
+    suspend fun getAll(): List<ScanSession>
     
     @Query("SELECT * FROM scan_sessions WHERE id = :sessionId")
-    suspend fun getSessionById(sessionId: Long): ScanSession?
+    suspend fun getById(sessionId: Long): ScanSession?
     
+    @Query("SELECT * FROM scan_sessions WHERE endTime IS NULL OR endTime = 0 ORDER BY startTime DESC LIMIT 1")
+    suspend fun getActive(): ScanSession?
+
     @Query("DELETE FROM scan_sessions WHERE id = :sessionId")
-    suspend fun deleteSession(sessionId: Long)
-    
-    @Query("SELECT AVG(averageSpeed) FROM scan_sessions WHERE startTime > :since")
-    suspend fun getAverageSpeedSince(since: Long): Float?
+    suspend fun delete(sessionId: Long)
 }

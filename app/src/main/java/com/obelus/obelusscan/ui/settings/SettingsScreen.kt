@@ -14,10 +14,8 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.obelus.obelusscan.data.local.UnitsConfig
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -37,11 +35,7 @@ fun SettingsScreen(
                     IconButton(onClick = onBack) {
                         Icon(Icons.Default.ArrowBack, contentDescription = "Volver")
                     }
-                },
-                colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = MaterialTheme.colorScheme.surface,
-                    titleContentColor = MaterialTheme.colorScheme.onSurface
-                )
+                }
             )
         }
     ) { padding ->
@@ -53,12 +47,10 @@ fun SettingsScreen(
                 .padding(16.dp),
             verticalArrangement = Arrangement.spacedBy(24.dp)
         ) {
-            // Sección Apariencia
             SettingsSection("Apariencia") {
                 ThemeSelector(currentTheme = theme, onSelect = viewModel::setTheme)
             }
 
-            // Sección Unidades
             SettingsSection("Unidades") {
                 UnitSelector(
                     title = "Distancia",
@@ -70,7 +62,7 @@ fun SettingsScreen(
                 Spacer(modifier = Modifier.height(16.dp))
                 UnitSelector(
                     title = "Consumo",
-                    icon = Icons.Default.Speed, // Placeholder icon
+                    icon = Icons.Default.Speed,
                     current = units.consumptionUnit,
                     options = listOf(
                         "l_100km" to "Litros/100km",
@@ -81,7 +73,6 @@ fun SettingsScreen(
                 )
             }
 
-            // Sección Avanzado
             SettingsSection("Avanzado") {
                 RefreshRateSelector(
                     currentMs = refreshRate,
@@ -91,7 +82,6 @@ fun SettingsScreen(
 
             Spacer(modifier = Modifier.height(24.dp))
 
-            // Botón Reset
             Button(
                 onClick = { viewModel.restoreDefaults() },
                 colors = ButtonDefaults.buttonColors(
@@ -171,8 +161,6 @@ fun UnitSelector(
     onSelect: (String) -> Unit
 ) {
     var expanded by remember { mutableStateOf(false) }
-    
-    // Encontrar etiqueta actual para mostrar
     val currentLabel = options.find { it.first == current }?.second ?: current
 
     Row(
@@ -231,7 +219,7 @@ fun RefreshRateSelector(currentMs: Int, onValueChange: (Int) -> Unit) {
             value = currentMs.toFloat(),
             onValueChange = { onValueChange(it.toInt()) },
             valueRange = 200f..2000f,
-            steps = 17, // (2000 - 200) / 100 - 1 = 17 pasos intermedios para saltos de 100
+            steps = 17,
             modifier = Modifier.padding(top = 8.dp)
         )
         Text(

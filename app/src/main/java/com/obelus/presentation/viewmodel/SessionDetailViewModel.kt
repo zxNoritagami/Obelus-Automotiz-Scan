@@ -7,7 +7,6 @@ import com.obelus.data.local.dao.ScanSessionDao
 import com.obelus.data.local.dao.SignalReadingDao
 import com.obelus.data.local.entity.ScanSession
 import com.obelus.data.local.entity.SignalReading
-import com.obelus.data.obd2.PidDefinition
 import com.obelus.data.obd2.Obd2Decoder
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -51,7 +50,6 @@ class SessionDetailViewModel @Inject constructor(
     private val _exportStatus = MutableStateFlow<ExportStatus>(ExportStatus.Idle)
     val exportStatus: StateFlow<ExportStatus> = _exportStatus.asStateFlow()
     
-    // We ideally should query which PIDs are present in the session, but for now we use the known set
     val availablePids = listOf("0C", "0D", "05", "04", "11")
 
     init {
@@ -61,7 +59,7 @@ class SessionDetailViewModel @Inject constructor(
 
     private fun loadSession() {
         viewModelScope.launch {
-            _session.value = sessionDao.getSessionById(sessionId)
+            _session.value = sessionDao.getById(sessionId)
         }
     }
 
@@ -72,7 +70,7 @@ class SessionDetailViewModel @Inject constructor(
 
     private fun loadReadingsForPid(pid: String) {
         viewModelScope.launch {
-            _readings.value = readingDao.getReadingsForPid(sessionId, pid)
+            _readings.value = readingDao.getByPid(sessionId, pid)
         }
     }
 
@@ -94,11 +92,11 @@ class SessionDetailViewModel @Inject constructor(
         viewModelScope.launch {
             _exportStatus.value = ExportStatus.Loading
             try {
-                val readings = kotlinx.coroutines.withContext(kotlinx.coroutines.Dispatchers.IO) {
-                    readingDao.getReadingsForSession(sessionId)
+                val readingsList = kotlinx.coroutines.withContext(kotlinx.coroutines.Dispatchers.IO) {
+                    readingDao.getBySession(sessionId)
                 }
                 
-                if (readings.isEmpty()) {
+                if (readingsList.isEmpty()) {
                     _exportStatus.value = ExportStatus.Error("No hay datos para exportar")
                     return@launch
                 }
@@ -108,7 +106,7 @@ class SessionDetailViewModel @Inject constructor(
                 
                 val sdf = java.text.SimpleDateFormat("dd/MM/yyyy HH:mm:ss", java.util.Locale.getDefault())
                 
-                readings.forEach { reading ->
+                readingsList.forEach { reading ->
                     val date = sdf.format(java.util.Date(reading.timestamp))
                     sb.append("$date,${reading.pid},${reading.name},${reading.value},${reading.unit}\n")
                 }

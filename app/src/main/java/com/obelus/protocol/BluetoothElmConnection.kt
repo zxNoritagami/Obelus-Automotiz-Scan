@@ -56,7 +56,6 @@ class BluetoothElmConnection @Inject constructor(
             socket = device.createRfcommSocketToServiceRecord(SPP_UUID)
             
             // Connect with timeout
-            // Connect with timeout
             withTimeout(CONNECTION_TIMEOUT_MS) {
                 socket?.connect()
             }
@@ -71,18 +70,22 @@ class BluetoothElmConnection @Inject constructor(
                 return@withContext true
             } else {
                 Log.e(TAG, "Socket not connected after connect()")
-                disconnect()
+                disconnectInternal()
                 return@withContext false
             }
 
         } catch (e: Exception) {
             Log.e(TAG, "Connection failed: ${e.message}", e)
-            disconnect()
+            disconnectInternal()
             return@withContext false
         }
     }
 
-    override suspend fun disconnect() = withContext(Dispatchers.IO) {
+    override suspend fun disconnect() {
+        disconnectInternal()
+    }
+
+    private suspend fun disconnectInternal() = withContext(Dispatchers.IO) {
         try {
             socket?.close()
         } catch (e: IOException) {
@@ -102,7 +105,6 @@ class BluetoothElmConnection @Inject constructor(
         }
 
         try {
-            // Ensure command ends with \r
             // Ensure command ends with \r
             val cmdToSend = if (command.endsWith("\r")) command else "$command\r" 
 
@@ -128,14 +130,12 @@ class BluetoothElmConnection @Inject constructor(
             var bytesRead: Int
             
             // Simple reading loop checking for prompt '>' character which usually indicates end of ELM response
-            // For robustness, this often needs to be more complex (handling partial reads), 
-            // but this is a standard starting point for ELM327.
             try {
                 while (true) {
-                    if (inputStream == null) throw IOException("Input stream null")
+                    val stream = inputStream ?: throw IOException("Input stream null")
                     
-                    if (inputStream!!.available() > 0) {
-                        bytesRead = inputStream!!.read(buffer)
+                    if (stream.available() > 0) {
+                        bytesRead = stream.read(buffer)
                         if (bytesRead > 0) {
                             val chunk = String(buffer, 0, bytesRead)
                             sb.append(chunk)

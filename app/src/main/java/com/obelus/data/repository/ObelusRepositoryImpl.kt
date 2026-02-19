@@ -66,7 +66,7 @@ class ObelusRepositoryImpl @Inject constructor(
 
     override suspend fun getReadingsBySession(sessionId: String): List<SignalReading> {
         return try {
-            signalReadingDao.getBySession(sessionId)
+            signalReadingDao.getBySession(sessionId.toLong())
         } catch (e: Exception) {
             Log.e(TAG, "Error fetching readings for session: $sessionId", e)
             emptyList()
@@ -75,7 +75,8 @@ class ObelusRepositoryImpl @Inject constructor(
 
     override suspend fun getSignalStats(signalId: Long, since: Long): SignalStats {
         return try {
-            signalReadingDao.getStats(signalId, since)
+            // Updated to match Dao (pid is String, using signalId as String for now)
+            signalReadingDao.getStats(signalId.toString(), since)
         } catch (e: Exception) {
             Log.e(TAG, "Error fetching stats for signal: $signalId", e)
             SignalStats(0f, 0f, 0f) // Return default on error
