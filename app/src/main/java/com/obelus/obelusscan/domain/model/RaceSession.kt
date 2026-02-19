@@ -1,9 +1,11 @@
 package com.obelus.obelusscan.domain.model
 
+import com.obelus.data.local.entity.RaceTelemetryPoint
+import com.obelus.domain.race.RaceAnalysisResult
 import java.util.UUID
 
 /**
- * Representa un intervalo de tiempo para un rango de velocidad específico.
+ * Represents a time interval for a speed bracket (e.g., 0-10, 10-20 km/h).
  */
 data class SplitTime(
     val speedFrom: Int,
@@ -12,29 +14,26 @@ data class SplitTime(
 )
 
 /**
- * Tipos de carrera o prueba de rendimiento soportados.
+ * Supported race / performance test types.
  */
 enum class RaceType {
-    ACCELERATION_0_100, // 0-100 km/h
-    ACCELERATION_0_200, // 0-200 km/h (Requiere pista cerrada)
-    BRAKING_100_0,      // 100-0 km/h (Frenada)
-    CUSTOM              // Rango definido por usuario
+    ACCELERATION_0_100,
+    ACCELERATION_0_200,
+    BRAKING_100_0,
+    CUSTOM
 }
 
 /**
- * Estados posibles de la máquina de estados de la carrera.
+ * State machine states of the race.
  */
 enum class RaceState {
-    IDLE,       // Esperando configuración o inicio
-    ARMED,      // Listo para arrancar (esperando movimiento > 0km/h)
-    COUNTDOWN,  // (Opcional) Cuenta atrás visual
-    RUNNING,    // Carrera en curso, midiendo tiempo
-    FINISHED,   // Objetivo alcanzado, mostrando resultados
-    ERROR       // Cancelado o error de lectura
+    IDLE, ARMED, COUNTDOWN, RUNNING, FINISHED, ERROR
 }
 
 /**
- * Modelo de datos inmutable para una sesión de carrera.
+ * In-memory immutable model for a race session.
+ * [telemetryPoints] accumulates during RUNNING and drives [RaceAnalyzer]
+ * for post-race analysis before persisting to Room as a RaceRecord.
  */
 data class RaceSession(
     val id: String = UUID.randomUUID().toString(),
@@ -42,22 +41,32 @@ data class RaceSession(
     val type: RaceType,
     val targetSpeedStart: Int,
     val targetSpeedEnd: Int,
-    
-    // Resultados dinámicos
+
+    // Live results
     val times: List<SplitTime> = emptyList(),
-    val finalTime: Float = 0f, // Segundos
+    val finalTime: Float = 0f,
     val maxGforce: Float = 0f,
-    val completed: Boolean = false
+    val completed: Boolean = false,
+
+    // Telemetry captured every ~100ms during RUNNING
+    val telemetryPoints: List<RaceTelemetryPoint> = emptyList(),
+
+    // OBD data at boundaries
+    val coolantTempStart: Int = -1,
+    val coolantTempEnd: Int = -1,
+
+    // Post-race analysis (populated after finishRace())
+    val analysisResult: RaceAnalysisResult? = null,
+
+    // Room FK after persistence (0 = not yet persisted)
+    val persistedId: Long = 0L
 ) {
     init {
-        // Validación básica de integridad
         if (type != RaceType.BRAKING_100_0 && targetSpeedEnd <= targetSpeedStart) {
-            // Para aceleración, end > start
-            throw IllegalArgumentException("Target speed end ($targetSpeedEnd) must be greater than start ($targetSpeedStart) for acceleration.")
+            throw IllegalArgumentException("targetSpeedEnd ($targetSpeedEnd) must be > start ($targetSpeedStart) for acceleration.")
         }
         if (type == RaceType.BRAKING_100_0 && targetSpeedEnd >= targetSpeedStart) {
-            // Para frenada, end < start
-            throw IllegalArgumentException("Target speed end ($targetSpeedEnd) must be less than start ($targetSpeedStart) for braking.")
+            throw IllegalArgumentException("targetSpeedEnd ($targetSpeedEnd) must be < start ($targetSpeedStart) for braking.")
         }
     }
 }

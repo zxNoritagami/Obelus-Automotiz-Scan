@@ -40,4 +40,16 @@ object DatabaseModule {
 
     @Provides
     fun provideDatabaseFileDao(db: ObelusDatabase): DatabaseFileDao = db.databaseFileDao()
+
+    @Provides
+    fun provideCanFrameDao(db: ObelusDatabase): CanFrameDao = db.canFrameDao()
+
+    @Provides
+    fun provideManufacturerDtcDao(db: ObelusDatabase): ManufacturerDtcDao = db.manufacturerDtcDao()
+
+    @Provides
+    fun provideRaceRecordDao(db: ObelusDatabase): RaceRecordDao = db.raceRecordDao()
+
+    @Provides
+    fun provideRaceTelemetryPointDao(db: ObelusDatabase): RaceTelemetryPointDao = db.raceTelemetryPointDao()
 }

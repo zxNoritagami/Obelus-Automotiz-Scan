@@ -19,6 +19,16 @@
     <!-- Location needed for legacy scanning -->
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
 
+    <!-- MQTT - Conexión de red y wake lock para reconexión en background -->
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+
+    <!-- Exportación: solo necesario en Android 9 y anteriores.
+         Android 10+: SAF (Storage Access Framework) no necesita permiso de escritura. -->
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"
+        android:maxSdkVersion="28" />
+
     <application
         android:name=".ObelusApplication"
         android:allowBackup="true"

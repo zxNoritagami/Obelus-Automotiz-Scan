@@ -1,0 +1,394 @@
+[
+    {
+        "code": "P0010",
+        "descriptionEs": "Circuito actuador posición árbol levas admisión (Banco 1)",
+        "descriptionEn": "A Camshaft Position Actuator Circuit Bank 1",
+        "severity": "ERROR",
+        "system": "ENGINE",
+        "possibleCauses": "Solenoide OCV sucio o defectuoso|Aceite de motor sucio o bajo nivel|Cadena de distribución elongada"
+    },
+    {
+        "code": "P0011",
+        "descriptionEs": "Posición árbol de levas admisión sobrecompensada avance Banco 1",
+        "descriptionEn": "A Camshaft Position Timing Over-Advanced Bank 1",
+        "severity": "ERROR",
+        "system": "ENGINE",
+        "possibleCauses": "Solenoide OCV defectuoso|Aceite de motor sucio|Leva de árbol desgastada"
+    },
+    {
+        "code": "P0100",
+        "descriptionEs": "Mal funcionamiento circuito sensor MAF",
+        "descriptionEn": "Mass Air Flow Circuit Malfunction",
+        "severity": "WARNING",
+        "system": "ENGINE",
+        "possibleCauses": "Sensor MAF sucio|Cable de señal dañado|ECM defectuosa"
+    },
+    {
+        "code": "P0110",
+        "descriptionEs": "Mal funcionamiento circuito sensor temperatura aire admisión",
+        "descriptionEn": "Intake Air Temperature Circuit Malfunction",
+        "severity": "WARNING",
+        "system": "ENGINE",
+        "possibleCauses": "Sensor IAT defectuoso|Cableado dañado|Conector oxidado"
+    },
+    {
+        "code": "P0115",
+        "descriptionEs": "Mal funcionamiento circuito sensor temperatura refrigerante",
+        "descriptionEn": "Engine Coolant Temperature Circuit Malfunction",
+        "severity": "ERROR",
+        "system": "ENGINE",
+        "possibleCauses": "Sensor ECT defectuoso|Cableado dañado|Termostato pegado abierto|Refrigerante bajo"
+    },
+    {
+        "code": "P0120",
+        "descriptionEs": "Mal funcionamiento circuito sensor posición acelerador (TPS)",
+        "descriptionEn": "Throttle/Pedal Position Sensor A Circuit Malfunction",
+        "severity": "ERROR",
+        "system": "ENGINE",
+        "possibleCauses": "Sensor TPS defectuoso|Cuerpo de aceleración desgastado|Cableado dañado|ECM defectuosa"
+    },
+    {
+        "code": "P0171",
+        "descriptionEs": "Sistema de combustible demasiado pobre Banco 1",
+        "descriptionEn": "System Too Lean Bank 1",
+        "severity": "WARNING",
+        "system": "FUEL",
+        "possibleCauses": "Sensor MAF sucio|Fuga de vacío|Inyectores sucios|Bomba de combustible débil|Filtro de combustible obstruido"
+    },
+    {
+        "code": "P0300",
+        "descriptionEs": "Fallo de encendido múltiple/aleatorio detectado",
+        "descriptionEn": "Random/Multiple Cylinder Misfire Detected",
+        "severity": "ERROR",
+        "system": "ENGINE",
+        "possibleCauses": "Bujías Toyota desgastadas|Bobinas de encendido defectuosas|Inyectores obstruidos|Compresión baja|Fuga de vacío"
+    },
+    {
+        "code": "P0301",
+        "descriptionEs": "Fallo de encendido cilindro 1",
+        "descriptionEn": "Cylinder 1 Misfire Detected",
+        "severity": "ERROR",
+        "system": "ENGINE",
+        "possibleCauses": "Bujía cilindro 1 defectuosa|Bobina encendido cilindro 1|Inyector cilindro 1 sucio"
+    },
+    {
+        "code": "P0354",
+        "descriptionEs": "Circuito primario/secundario bobina encendido D",
+        "descriptionEn": "Ignition Coil D Primary/Secondary Circuit",
+        "severity": "ERROR",
+        "system": "ENGINE",
+        "possibleCauses": "Bobina de encendido cilindro 4 defectuosa|Cableado dañado|ECM defectuosa"
+    },
+    {
+        "code": "P0401",
+        "descriptionEs": "Flujo insuficiente en sistema EGR",
+        "descriptionEn": "Exhaust Gas Recirculation Flow Insufficient Detected",
+        "severity": "WARNING",
+        "system": "EMISSIONS",
+        "possibleCauses": "Válvula EGR atascada cerrada|Tubo EGR con carbón|Sensor de flujo EGR defectuoso|DPFE sensor defectuoso"
+    },
+    {
+        "code": "P0420",
+        "descriptionEs": "Eficiencia catalizador debajo umbral Banco 1",
+        "descriptionEn": "Catalyst System Efficiency Below Threshold Bank 1",
+        "severity": "WARNING",
+        "system": "EMISSIONS",
+        "possibleCauses": "Catalizador dañado o envenenado|Sensor O2 posterior defectuoso|Mezcla rica prolongada"
+    },
+    {
+        "code": "P0441",
+        "descriptionEs": "Flujo de purga incorrecto sistema EVAP",
+        "descriptionEn": "Evaporative Emission Control System Incorrect Purge Flow",
+        "severity": "WARNING",
+        "system": "EMISSIONS",
+        "possibleCauses": "Válvula VSV de purga defectuosa|Manguera de purga desconectada|Cánister de carbón saturado"
+    },
+    {
+        "code": "P0446",
+        "descriptionEs": "Circuito de válvula de ventilación EVAP - fallo",
+        "descriptionEn": "Evaporative Emission Control System Vent Control Circuit",
+        "severity": "WARNING",
+        "system": "EMISSIONS",
+        "possibleCauses": "Válvula VSV de ventilación defectuosa|Conector dañado|Cableado en corto"
+    },
+    {
+        "code": "P0500",
+        "descriptionEs": "Mal funcionamiento sensor velocidad del vehículo",
+        "descriptionEn": "Vehicle Speed Sensor Malfunction",
+        "severity": "WARNING",
+        "system": "ABS",
+        "possibleCauses": "Sensor VSS defectuoso|Cable o conector dañado|Módulo ABS defectuoso"
+    },
+    {
+        "code": "P0505",
+        "descriptionEs": "Mal funcionamiento sistema control ralentí (IACV)",
+        "descriptionEn": "Idle Control System Malfunction",
+        "severity": "WARNING",
+        "system": "ENGINE",
+        "possibleCauses": "Válvula IACV sucia|Cuerpo de aceleración sucio|Fuga de vacío|Sensor TPS descalibrado"
+    },
+    {
+        "code": "P0550",
+        "descriptionEs": "Mal funcionamiento circuito sensor presión dirección asistida",
+        "descriptionEn": "Power Steering Pressure Sensor Circuit Malfunction",
+        "severity": "INFO",
+        "system": "ELECTRICAL",
+        "possibleCauses": "Sensor PSP defectuoso|Cableado dañado|Bajo nivel de líquido dirección|ECM defectuosa"
+    },
+    {
+        "code": "P0606",
+        "descriptionEs": "Mal funcionamiento procesador interno PCM/ECM",
+        "descriptionEn": "PCM Processor Fault",
+        "severity": "ERROR",
+        "system": "ELECTRICAL",
+        "possibleCauses": "ECM defectuosa|Software corrupto|Voltaje inestable"
+    },
+    {
+        "code": "P0607",
+        "descriptionEs": "Rendimiento circuito actuador sistema control del motor",
+        "descriptionEn": "Control Module Performance",
+        "severity": "ERROR",
+        "system": "ELECTRICAL",
+        "possibleCauses": "ECM defectuosa|Software incompatible"
+    },
+    {
+        "code": "P0716",
+        "descriptionEs": "Rango/rendimiento circuito sensor velocidad entrada transmisión",
+        "descriptionEn": "Input/Turbine Speed Sensor A Circuit Range/Performance",
+        "severity": "ERROR",
+        "system": "TRANSMISSION",
+        "possibleCauses": "Sensor de velocidad de entrada defectuoso|Cableado dañado|Nivel de ATF bajo"
+    },
+    {
+        "code": "P0741",
+        "descriptionEs": "Circuito solenoide de bloqueo del convertidor de par - pegado apagado",
+        "descriptionEn": "Torque Converter Clutch Circuit Performance",
+        "severity": "ERROR",
+        "system": "TRANSMISSION",
+        "possibleCauses": "Solenoide TCC defectuoso|Convertidor de par defectuoso|Plato de válvulas dañado|Nivel ATF bajo"
+    },
+    {
+        "code": "P0750",
+        "descriptionEs": "Solenoide de cambio A - fallo eléctrico",
+        "descriptionEn": "Shift Solenoid A Malfunction",
+        "severity": "ERROR",
+        "system": "TRANSMISSION",
+        "possibleCauses": "Solenoide SL1 defectuoso|Cableado dañado|Plato de válvulas obstruido|Nivel ATF bajo"
+    },
+    {
+        "code": "P0768",
+        "descriptionEs": "Solenoide de control de presión D - circuito abierto/corto",
+        "descriptionEn": "Shift Solenoid D Electrical",
+        "severity": "ERROR",
+        "system": "TRANSMISSION",
+        "possibleCauses": "Solenoide SD defectuoso|Cableado en corto|Módulo TCM defectuoso"
+    },
+    {
+        "code": "P0773",
+        "descriptionEs": "Solenoide de cambio E - fallo eléctrico",
+        "descriptionEn": "Shift Solenoid E Electrical",
+        "severity": "ERROR",
+        "system": "TRANSMISSION",
+        "possibleCauses": "Solenoide SE defectuoso|Cableado en corto|Módulo TCM defectuoso"
+    },
+    {
+        "code": "P1300",
+        "descriptionEs": "Señal de encendido - voltaje incorrecto circuito primario",
+        "descriptionEn": "Igniter Circuit Malfunction No. 1",
+        "severity": "ERROR",
+        "system": "ENGINE",
+        "possibleCauses": "Ignitor defectuoso|Bobina de encendido defectuosa|Cableado dañado"
+    },
+    {
+        "code": "P1349",
+        "descriptionEs": "Sistema VVT-i - motor atascado",
+        "descriptionEn": "Variable Valve Timing System (Bank 1)",
+        "severity": "ERROR",
+        "system": "ENGINE",
+        "possibleCauses": "Solenoide OCV atascado|Cadena distribución elongada|Aceite contaminado|Actuador VVT dañado"
+    },
+    {
+        "code": "P1354",
+        "descriptionEs": "Sistema VVT-i condición de falla (Banco 2)",
+        "descriptionEn": "Variable Valve Timing System (Bank 2)",
+        "severity": "ERROR",
+        "system": "ENGINE",
+        "possibleCauses": "Solenoide OCV Banco 2 defectuoso|Aceite bajo o sucio"
+    },
+    {
+        "code": "P1450",
+        "descriptionEs": "Presión barométrica baja detectada por sensor BARO",
+        "descriptionEn": "Barometric Pressure Sensor Circuit Malfunction",
+        "severity": "INFO",
+        "system": "ENGINE",
+        "possibleCauses": "Sensor de presión barométrica defectuoso|Señal combinada en sensor MAP"
+    },
+    {
+        "code": "C1201",
+        "descriptionEs": "Motor control system malfunction - ABS inhabilitado",
+        "descriptionEn": "Engine Control System Malfunction",
+        "severity": "ERROR",
+        "system": "ABS",
+        "possibleCauses": "DTC de motor presente|ECM tiene código activo|Comunicación entre ECM y módulo ABS fallida"
+    },
+    {
+        "code": "C1235",
+        "descriptionEs": "Velocidad rueda trasera derecha fuera de rango",
+        "descriptionEn": "Rear Right Wheel Speed Out of Range",
+        "severity": "ERROR",
+        "system": "ABS",
+        "possibleCauses": "Sensor ABS trasero derecho defectuoso|Reluctor dañado|Cableado dañado"
+    },
+    {
+        "code": "C1336",
+        "descriptionEs": "Señal velocidad rueda - delantera izquierda anormal",
+        "descriptionEn": "Zero Point Calibration of Yaw Rate Undone",
+        "severity": "WARNING",
+        "system": "ABS",
+        "possibleCauses": "Sensor ABS defectuoso|Calibración requerida|Reluctor dañado"
+    },
+    {
+        "code": "B1412",
+        "descriptionEs": "Fallo circuito airbag conductor",
+        "descriptionEn": "Driver Side Air Bag Circuit Open",
+        "severity": "ERROR",
+        "system": "AIRBAG",
+        "possibleCauses": "Cable reloj airbag dañado|Conector airbag desconectado|Módulo SRS defectuoso"
+    },
+    {
+        "code": "B1413",
+        "descriptionEs": "Fallo circuito airbag pasajero",
+        "descriptionEn": "Passenger Side Air Bag Circuit Open",
+        "severity": "ERROR",
+        "system": "AIRBAG",
+        "possibleCauses": "Módulo airbag defectuoso|Cableado dañado|Sensor de impacto defectuoso"
+    },
+    {
+        "code": "U0100",
+        "descriptionEs": "Comunicación perdida con ECM",
+        "descriptionEn": "Lost Communication with ECM/PCM",
+        "severity": "ERROR",
+        "system": "NETWORK",
+        "possibleCauses": "ECM sin alimentación|Bus CAN dañado|Fusible ECM quemado"
+    },
+    {
+        "code": "U0121",
+        "descriptionEs": "Comunicación perdida con módulo ABS",
+        "descriptionEn": "Lost Communication with ABS Control Module",
+        "severity": "ERROR",
+        "system": "NETWORK",
+        "possibleCauses": "Módulo ABS defectuoso|Bus CAN defectuoso|Fusible ABS quemado"
+    },
+    {
+        "code": "U0155",
+        "descriptionEs": "Comunicación perdida con pantalla de información del conductor",
+        "descriptionEn": "Lost Communication with Instrument Panel Cluster",
+        "severity": "WARNING",
+        "system": "NETWORK",
+        "possibleCauses": "Módulo de instrumentos defectuoso|Bus CAN defectuoso|Cableado dañado"
+    },
+    {
+        "code": "P0A0D",
+        "descriptionEs": "Temperatura batería de alto voltaje demasiado baja",
+        "descriptionEn": "High Voltage Battery Pack Temperature Too Low",
+        "severity": "ERROR",
+        "system": "ELECTRICAL",
+        "possibleCauses": "Sensor temperatura batería HV defectuoso|Sistema de calefacción HV defectuoso|Solo híbridos Prius"
+    },
+    {
+        "code": "P3000",
+        "descriptionEs": "Batería HV malfunction",
+        "descriptionEn": "HV Battery Malfunction",
+        "severity": "ERROR",
+        "system": "ELECTRICAL",
+        "possibleCauses": "Módulo de batería HV defectuoso|Celda de batería dañada|Relé de batería HV defectuoso|Solo híbridos"
+    },
+    {
+        "code": "P0130",
+        "descriptionEs": "Fallo circuito sensor O2 Banco 1 Sensor 1",
+        "descriptionEn": "O2 Sensor Circuit Malfunction Bank 1 Sensor 1",
+        "severity": "WARNING",
+        "system": "FUEL",
+        "possibleCauses": "Sensor O2 envejecido|Escape con fuga antes del sensor|Cable a tierra defectuoso"
+    },
+    {
+        "code": "P0136",
+        "descriptionEs": "Fallo circuito sensor O2 Banco 1 Sensor 2",
+        "descriptionEn": "O2 Sensor Circuit Malfunction Bank 1 Sensor 2",
+        "severity": "WARNING",
+        "system": "FUEL",
+        "possibleCauses": "Sensor O2 posterior defectuoso|Catalizador dañado|Cableado dañado"
+    },
+    {
+        "code": "P0325",
+        "descriptionEs": "Fallo circuito sensor de detonación Banco 1",
+        "descriptionEn": "Knock Sensor 1 Circuit Malfunction",
+        "severity": "WARNING",
+        "system": "ENGINE",
+        "possibleCauses": "Sensor de detonación defectuoso|Torque de montaje incorrecto|Cableado dañado"
+    },
+    {
+        "code": "P0335",
+        "descriptionEs": "Fallo circuito sensor posición cigüeñal A",
+        "descriptionEn": "Crankshaft Position Sensor A Circuit Malfunction",
+        "severity": "ERROR",
+        "system": "ENGINE",
+        "possibleCauses": "Sensor CKP defectuoso|Reluctor dañado|Cableado dañado|Placa reluctora sucia"
+    },
+    {
+        "code": "P0340",
+        "descriptionEs": "Fallo circuito sensor posición árbol levas Banco 1",
+        "descriptionEn": "Camshaft Position Sensor Circuit (Intake) Bank 1",
+        "severity": "ERROR",
+        "system": "ENGINE",
+        "possibleCauses": "Sensor CMP defectuoso|Reluctor sucio|Cableado dañado|ECM defectuosa"
+    },
+    {
+        "code": "P0562",
+        "descriptionEs": "Voltaje del sistema bajo",
+        "descriptionEn": "System Voltage Low",
+        "severity": "WARNING",
+        "system": "ELECTRICAL",
+        "possibleCauses": "Batería débil o defectuosa|Alternador con regulación deficiente|Terminales corroídos"
+    },
+    {
+        "code": "P0565",
+        "descriptionEs": "Interruptor de control velocidad crucero ON - circuito",
+        "descriptionEn": "Cruise Control On Signal Circuit",
+        "severity": "INFO",
+        "system": "BODY",
+        "possibleCauses": "Interruptor de velocidad crucero defectuoso|Cableado dañado|ECM defectuosa"
+    },
+    {
+        "code": "P0705",
+        "descriptionEs": "Circuito sensor posición palanca selectora transmisión",
+        "descriptionEn": "Transmission Range Sensor Circuit Malfunction",
+        "severity": "ERROR",
+        "system": "TRANSMISSION",
+        "possibleCauses": "Sensor de palanca selectora defectuoso|Cableado dañado|Ajuste incorrecto del sensor"
+    },
+    {
+        "code": "P0710",
+        "descriptionEs": "Fallo circuito sensor temperatura fluido transmisión",
+        "descriptionEn": "Transmission Fluid Temperature Sensor A Circuit Malfunction",
+        "severity": "WARNING",
+        "system": "TRANSMISSION",
+        "possibleCauses": "Sensor temperatura ATF defectuoso|Cableado dañado|TCM defectuoso"
+    },
+    {
+        "code": "P0721",
+        "descriptionEs": "Rango/rendimiento sensor velocidad salida transmisión",
+        "descriptionEn": "Output Speed Sensor Range/Performance",
+        "severity": "ERROR",
+        "system": "TRANSMISSION",
+        "possibleCauses": "Sensor de velocidad de salida defectuoso|Reluctor dañado|TCM defectuoso"
+    },
+    {
+        "code": "P1100",
+        "descriptionEs": "Fallo circuito sensor MAF - intermitente",
+        "descriptionEn": "Mass Air Flow Meter Circuit Intermittent",
+        "severity": "WARNING",
+        "system": "ENGINE",
+        "possibleCauses": "Conector del sensor MAF suelto|Cableado con mal contacto|Sensor MAF defectuoso"
+    }
+]

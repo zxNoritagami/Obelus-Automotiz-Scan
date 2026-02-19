@@ -34,3 +34,22 @@
 
 # General
 -printmapping mapping.txt
+
+# Eclipse Paho MQTT - Evitar que R8 elimine clases usadas por reflexión
+-keep class org.eclipse.paho.** { *; }
+-keep interface org.eclipse.paho.** { *; }
+-dontwarn org.eclipse.paho.**
+
+# iText7 PDF - keep all classes used via reflection/font loading
+-keep class com.itextpdf.** { *; }
+-keep interface com.itextpdf.** { *; }
+-dontwarn com.itextpdf.**
+-dontwarn org.bouncycastle.**
+
+# Apache POI Excel
+-keep class org.apache.poi.** { *; }
+-dontwarn org.apache.poi.**
+-keep class org.apache.xmlbeans.** { *; }
+-dontwarn org.apache.xmlbeans.**
+-dontwarn org.openxmlformats.**
+-dontwarn schemasMicrosoftComOfficeOffice.**

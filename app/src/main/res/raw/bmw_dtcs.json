@@ -1,0 +1,402 @@
+[
+    {
+        "code": "P0015",
+        "descriptionEs": "Control posición árbol levas escape - Banco 1 demasiado atrasado",
+        "descriptionEn": "Exhaust Camshaft Position Timing Retarded Bank 1",
+        "severity": "ERROR",
+        "system": "ENGINE",
+        "possibleCauses": "Solenoide VANOS defectuoso|Aceite de motor sucio o bajo|Sensor árbol de levas escape defectuoso"
+    },
+    {
+        "code": "P1523",
+        "descriptionEs": "Accionador VANOS de admisión - circuito eléctrico",
+        "descriptionEn": "VANOS Intake Solenoid Circuit",
+        "severity": "ERROR",
+        "system": "ENGINE",
+        "possibleCauses": "Solenoide VANOS defectuoso|Cableado dañado|Aceite de motor contaminado|Filtro de aceite VANOS obstruido"
+    },
+    {
+        "code": "P1525",
+        "descriptionEs": "Accionador VANOS escape - circuito eléctrico",
+        "descriptionEn": "VANOS Exhaust Solenoid Circuit",
+        "severity": "ERROR",
+        "system": "ENGINE",
+        "possibleCauses": "Solenoide VANOS escape defectuoso|Cableado dañado|Presión de aceite insuficiente"
+    },
+    {
+        "code": "P0171",
+        "descriptionEs": "Sistema de mezcla demasiado pobre Banco 1",
+        "descriptionEn": "System Too Lean Bank 1",
+        "severity": "WARNING",
+        "system": "FUEL",
+        "possibleCauses": "Sensor MAF sucio|Fuga de vacío en colector|Inyectores desgastados o sucios|Bomba de combustible débil"
+    },
+    {
+        "code": "P0174",
+        "descriptionEs": "Sistema de mezcla demasiado pobre Banco 2",
+        "descriptionEn": "System Too Lean Bank 2",
+        "severity": "WARNING",
+        "system": "FUEL",
+        "possibleCauses": "Fuga de vacío lado derecho|Sensor MAF sucio|Inyectores Banco 2 sucios"
+    },
+    {
+        "code": "P0300",
+        "descriptionEs": "Fallo de encendido aleatorio/múltiple",
+        "descriptionEn": "Random/Multiple Cylinder Misfire Detected",
+        "severity": "ERROR",
+        "system": "ENGINE",
+        "possibleCauses": "Bujías desgastadas|Bobinas COP defectuosas|Inyectores HPI defectuosos|Compresión baja"
+    },
+    {
+        "code": "P0301",
+        "descriptionEs": "Fallo de encendido cilindro 1",
+        "descriptionEn": "Cylinder 1 Misfire Detected",
+        "severity": "ERROR",
+        "system": "ENGINE",
+        "possibleCauses": "Bujía defectuosa|Bobina de encendido defectuosa|Inyector del cilindro 1 defectuoso"
+    },
+    {
+        "code": "P0420",
+        "descriptionEs": "Eficiencia catalizador bajo umbral Banco 1",
+        "descriptionEn": "Catalyst System Efficiency Below Threshold Bank 1",
+        "severity": "WARNING",
+        "system": "EMISSIONS",
+        "possibleCauses": "Catalizador dañado|Sensor Lambda posterior defectuoso|Quema de aceite"
+    },
+    {
+        "code": "P0430",
+        "descriptionEs": "Eficiencia catalizador bajo umbral Banco 2",
+        "descriptionEn": "Catalyst System Efficiency Below Threshold Bank 2",
+        "severity": "WARNING",
+        "system": "EMISSIONS",
+        "possibleCauses": "Catalizador Banco 2 dañado|Sensor Lambda posterior Banco 2 defectuoso"
+    },
+    {
+        "code": "P0442",
+        "descriptionEs": "Fuga pequeña detectada en sistema EVAP",
+        "descriptionEn": "Evaporative Emission Control System Small Leak Detected",
+        "severity": "WARNING",
+        "system": "EMISSIONS",
+        "possibleCauses": "Tapón de gasolina mal cerrado|Purga de carbón activo con fuga|Mangueras EVAP agrietadas"
+    },
+    {
+        "code": "P0455",
+        "descriptionEs": "Fuga grande detectada en sistema EVAP",
+        "descriptionEn": "Evaporative Emission Control System Large Leak Detected",
+        "severity": "WARNING",
+        "system": "EMISSIONS",
+        "possibleCauses": "Tapón de gasolina defectuoso|Manguera EVAP desconectada|Válvula de purga atascada abierta"
+    },
+    {
+        "code": "P1093",
+        "descriptionEs": "Combustión Rail Sistema Presión 2 - Presión muy baja",
+        "descriptionEn": "Fuel Rail Pressure Too Low 2",
+        "severity": "ERROR",
+        "system": "FUEL",
+        "possibleCauses": "Bomba de alta presión HP defectuosa|Válvula de control de presión defectuosa|Filtro de combustible obstruido"
+    },
+    {
+        "code": "P1094",
+        "descriptionEs": "Presión de inyección demasiado baja durante regeneración",
+        "descriptionEn": "Fuel Rail Pressure Too Low During Idle",
+        "severity": "ERROR",
+        "system": "FUEL",
+        "possibleCauses": "Bomba de alta presión desgastada|Válvula reguladora de presión abierta|Inyectores con fuga interna"
+    },
+    {
+        "code": "P1340",
+        "descriptionEs": "Velocidad del motor y posición del cilindro 1 TDC - señales incorrectas",
+        "descriptionEn": "Crankshaft/Camshaft Sensors Incorrect Correlation",
+        "severity": "ERROR",
+        "system": "ENGINE",
+        "possibleCauses": "Correa distribución saltada|Sensor Hall de cigüeñal defectuoso|Reluctor sucio o dañado"
+    },
+    {
+        "code": "P1349",
+        "descriptionEs": "Correlación árbol de levas/cigüeñal (VANOS) fuera de rango",
+        "descriptionEn": "Camshaft Position Actuator Stuck",
+        "severity": "ERROR",
+        "system": "ENGINE",
+        "possibleCauses": "Actuador VANOS atascado|Cadena de distribución estirada|Aceite contaminado"
+    },
+    {
+        "code": "P1421",
+        "descriptionEs": "Sistema de inyección de aire secundario - válvula bloqueada",
+        "descriptionEn": "Secondary Air Injection Valve Stuck",
+        "severity": "WARNING",
+        "system": "EMISSIONS",
+        "possibleCauses": "Válvula inyección aire secundaria atascada|Manguera obstruida|Bomba de aire débil"
+    },
+    {
+        "code": "P1476",
+        "descriptionEs": "Presión de vacío insuficiente para servofreno",
+        "descriptionEn": "Insufficient Vacuum for Brake Booster",
+        "severity": "ERROR",
+        "system": "ENGINE",
+        "possibleCauses": "Bomba de vacío defectuosa|Manguera de vacío agrietada|Válvula de retención defectuosa"
+    },
+    {
+        "code": "P0597",
+        "descriptionEs": "Circuito de control termostato abierto",
+        "descriptionEn": "Thermostat Heater Control Circuit Open",
+        "severity": "WARNING",
+        "system": "ENGINE",
+        "possibleCauses": "Termostato electrónico defectuoso|Cableado abierto|DME defectuosa"
+    },
+    {
+        "code": "U0073",
+        "descriptionEs": "Bus CAN J1850 - fallo de comunicación",
+        "descriptionEn": "Control Module Communication Bus Off",
+        "severity": "ERROR",
+        "system": "NETWORK",
+        "possibleCauses": "Módulo defectuoso en la red CAN|Cortocircuito en cable CAN|Resistencia de terminación fallida"
+    },
+    {
+        "code": "U0100",
+        "descriptionEs": "Comunicación perdida con DME/ECU",
+        "descriptionEn": "Lost Communication with ECM/PCM (DME)",
+        "severity": "ERROR",
+        "system": "NETWORK",
+        "possibleCauses": "DME sin alimentación|Bus CAN defectuoso|Fusible de ignición quemado"
+    },
+    {
+        "code": "C0045",
+        "descriptionEs": "Sensor velocidad rueda trasera izquierda - fallo circuito",
+        "descriptionEn": "Left Rear Wheel Speed Sensor Circuit",
+        "severity": "ERROR",
+        "system": "ABS",
+        "possibleCauses": "Sensor ABS defectuoso|Reluctor dañado|DSC/ABS Module defectuoso"
+    },
+    {
+        "code": "C0050",
+        "descriptionEs": "Sensor velocidad rueda trasera derecha - fallo circuito",
+        "descriptionEn": "Right Rear Wheel Speed Sensor Circuit",
+        "severity": "ERROR",
+        "system": "ABS",
+        "possibleCauses": "Sensor ABS defectuoso|Reluctor dañado|Cableado dañado"
+    },
+    {
+        "code": "P0230",
+        "descriptionEs": "Circuito primario de bomba de combustible - fallo",
+        "descriptionEn": "Fuel Pump Primary Circuit Malfunction",
+        "severity": "ERROR",
+        "system": "FUEL",
+        "possibleCauses": "Relé bomba de combustible defectuoso|Bomba de combustible defectuosa|Cableado dañado"
+    },
+    {
+        "code": "P0315",
+        "descriptionEs": "Sin variaciones de velocidad de cigüeñal detectadas",
+        "descriptionEn": "Crankshaft Position System Variation Not Learned",
+        "severity": "WARNING",
+        "system": "ENGINE",
+        "possibleCauses": "Sensor de posición de cigüeñal defectuoso|Reluctor dañado|Necesita calibración tras cambio de sensor"
+    },
+    {
+        "code": "P0496",
+        "descriptionEs": "Flujo excesivo en sistema EVAP durante condición de freno",
+        "descriptionEn": "EVAP System High Purge Flow",
+        "severity": "WARNING",
+        "system": "EMISSIONS",
+        "possibleCauses": "Válvula de purga EVAP atascada abierta|Válvula de solenoide con cortocircuito"
+    },
+    {
+        "code": "P0507",
+        "descriptionEs": "RPM de ralentí elevado - sistema de control",
+        "descriptionEn": "Idle Control System RPM High",
+        "severity": "WARNING",
+        "system": "ENGINE",
+        "possibleCauses": "Cuerpo de aceleración sucio|Válvula de mariposa atascada|Fuga de vacío"
+    },
+    {
+        "code": "P09B5",
+        "descriptionEs": "Fallo de arranque en frío - inyección directa",
+        "descriptionEn": "Cold Start Direct Injection Failure",
+        "severity": "ERROR",
+        "system": "FUEL",
+        "possibleCauses": "Inyectores de alta presión defectuosos|Sensor de presión de raíl defectuoso|Bomba de alta presión"
+    },
+    {
+        "code": "P0562",
+        "descriptionEs": "Voltaje del sistema bajo",
+        "descriptionEn": "System Voltage Low",
+        "severity": "WARNING",
+        "system": "ELECTRICAL",
+        "possibleCauses": "Batería de 12V o AGM débil|Alternador con regulación deficiente|Cables de batería corroídos"
+    },
+    {
+        "code": "B0001",
+        "descriptionEs": "Circuito airbag conductor - primer disparador",
+        "descriptionEn": "Driver Frontal Stage 1 Squib Circuit",
+        "severity": "ERROR",
+        "system": "AIRBAG",
+        "possibleCauses": "Cable reloj dañado|Airbag volante desconectado|Módulo SRS defectuoso"
+    },
+    {
+        "code": "P1361",
+        "descriptionEs": "Señal del sensor CAMSHAFT - fallo intermitente",
+        "descriptionEn": "Camshaft Position Sensor Intermittent Interruption",
+        "severity": "WARNING",
+        "system": "ENGINE",
+        "possibleCauses": "Reluctor árbol de levas con suciedad|Sensor de árbol de levas defectuoso|Cableado intermitente"
+    },
+    {
+        "code": "P0130",
+        "descriptionEs": "Mal funcionamiento circuito sensor O2 Banco 1 Sensor 1",
+        "descriptionEn": "O2 Sensor Circuit Malfunction Bank 1 Sensor 1",
+        "severity": "WARNING",
+        "system": "FUEL",
+        "possibleCauses": "Sensor Lambda envejecido|Escape con fuga antes del sensor|Cableado a tierra deficiente"
+    },
+    {
+        "code": "P2004",
+        "descriptionEs": "Actuador de clapeta mariposa admisión atascado abierto",
+        "descriptionEn": "Intake Manifold Runner Control Stuck Open",
+        "severity": "WARNING",
+        "system": "ENGINE",
+        "possibleCauses": "Actuador DISA defectuoso|Varillaje del actuador roto|Muelle de retorno roto"
+    },
+    {
+        "code": "P2006",
+        "descriptionEs": "Actuador mariposa de admisión atascado cerrado",
+        "descriptionEn": "Intake Manifold Runner Control Stuck Closed",
+        "severity": "WARNING",
+        "system": "ENGINE",
+        "possibleCauses": "Actuador DISA atascado|Depósitos carbonosos|Cableado defectuoso"
+    },
+    {
+        "code": "P0116",
+        "descriptionEs": "Rango/rendimiento circuito del sensor ECT",
+        "descriptionEn": "Engine Coolant Temperature Circuit Range/Performance",
+        "severity": "WARNING",
+        "system": "ENGINE",
+        "possibleCauses": "Termostato pegado abierto|Sensor ECT defectuoso|Nivel de agua bajo"
+    },
+    {
+        "code": "P0128",
+        "descriptionEs": "Temperatura refrigerante por debajo del umbral del termostato",
+        "descriptionEn": "Coolant Temperature Below Thermostat Regulating Temperature",
+        "severity": "INFO",
+        "system": "ENGINE",
+        "possibleCauses": "Termostato pegado abierto|Sensor ECT defectuoso|Termostato de baja temperatura instalado"
+    },
+    {
+        "code": "P0601",
+        "descriptionEs": "Error de suma de verificación en módulo de control interno",
+        "descriptionEn": "Internal Control Module Memory Check Sum Error",
+        "severity": "ERROR",
+        "system": "ELECTRICAL",
+        "possibleCauses": "DME defectuosa|Software corrupto|Desconexión de batería accidental durante grabación"
+    },
+    {
+        "code": "P0290",
+        "descriptionEs": "Señal del sensor de detonación (Knock) - Banco 2 alta",
+        "descriptionEn": "Knock Sensor 2 Circuit High Input",
+        "severity": "WARNING",
+        "system": "ENGINE",
+        "possibleCauses": "Sensor de detonación defectuoso|Montaje flojo|Cableado dañado"
+    },
+    {
+        "code": "P0325",
+        "descriptionEs": "Fallo en circuito sensor de detonación Banco 1",
+        "descriptionEn": "Knock Sensor 1 Circuit Malfunction",
+        "severity": "WARNING",
+        "system": "ENGINE",
+        "possibleCauses": "Sensor knock defectuoso|Torque de montaje incorrecto|Circuito a tierra defectuoso"
+    },
+    {
+        "code": "P0606",
+        "descriptionEs": "Mal funcionamiento del procesador interno del módulo ECU",
+        "descriptionEn": "PCM Processor Fault",
+        "severity": "ERROR",
+        "system": "ELECTRICAL",
+        "possibleCauses": "DME defectuosa|Software incompatible|Codificación incorrecta"
+    },
+    {
+        "code": "P1626",
+        "descriptionEs": "Módulo de inmovilizador - sin código de arranque válido",
+        "descriptionEn": "Theft Deterrent Module No Signal",
+        "severity": "ERROR",
+        "system": "ELECTRICAL",
+        "possibleCauses": "Anillo de antena inmovilizador defectuoso|Llave transponder defectuosa|Módulo EWS defectuoso"
+    },
+    {
+        "code": "P0202",
+        "descriptionEs": "Circuito del inyector cilindro 2 - fallo",
+        "descriptionEn": "Injector Circuit Malfunction Cylinder 2",
+        "severity": "ERROR",
+        "system": "ENGINE",
+        "possibleCauses": "Inyector defectuoso|Cableado en corto|DME defectuosa"
+    },
+    {
+        "code": "P0203",
+        "descriptionEs": "Circuito del inyector cilindro 3 - fallo",
+        "descriptionEn": "Injector Circuit Malfunction Cylinder 3",
+        "severity": "ERROR",
+        "system": "ENGINE",
+        "possibleCauses": "Inyector defectuoso|Cableado en corto|DME defectuosa"
+    },
+    {
+        "code": "P0204",
+        "descriptionEs": "Circuito del inyector cilindro 4 - fallo",
+        "descriptionEn": "Injector Circuit Malfunction Cylinder 4",
+        "severity": "ERROR",
+        "system": "ENGINE",
+        "possibleCauses": "Inyector defectuoso|Cableado en corto|DME defectuosa"
+    },
+    {
+        "code": "P0205",
+        "descriptionEs": "Circuito del inyector cilindro 5 - fallo",
+        "descriptionEn": "Injector Circuit Malfunction Cylinder 5",
+        "severity": "ERROR",
+        "system": "ENGINE",
+        "possibleCauses": "Inyector defectuoso|Cableado en corto|DME defectuosa"
+    },
+    {
+        "code": "P0206",
+        "descriptionEs": "Circuito del inyector cilindro 6 - fallo",
+        "descriptionEn": "Injector Circuit Malfunction Cylinder 6",
+        "severity": "ERROR",
+        "system": "ENGINE",
+        "possibleCauses": "Inyector defectuoso|Cableado en corto|DME defectuosa"
+    },
+    {
+        "code": "P0400",
+        "descriptionEs": "Flujo defectuoso en sistema EGR",
+        "descriptionEn": "Exhaust Gas Recirculation Flow Malfunction",
+        "severity": "WARNING",
+        "system": "EMISSIONS",
+        "possibleCauses": "Válvula EGR sucia|Tubo EGR obstruido|Sensor diferencial EGR defectuoso"
+    },
+    {
+        "code": "C0035",
+        "descriptionEs": "Sensor velocidad rueda delantera izquierda - fallo",
+        "descriptionEn": "Left Front Wheel Speed Sensor Circuit",
+        "severity": "ERROR",
+        "system": "ABS",
+        "possibleCauses": "Sensor ABS defectuoso|Reluctor roto|DSC Module defectuoso"
+    },
+    {
+        "code": "C0040",
+        "descriptionEs": "Sensor velocidad rueda delantera derecha - fallo",
+        "descriptionEn": "Right Front Wheel Speed Sensor Circuit",
+        "severity": "ERROR",
+        "system": "ABS",
+        "possibleCauses": "Sensor ABS defectuoso|Reluctor roto|Cableado dañado"
+    },
+    {
+        "code": "P2187",
+        "descriptionEs": "Sistema demasiado pobre en ralentí Banco 1",
+        "descriptionEn": "System Too Lean at Idle Bank 1",
+        "severity": "WARNING",
+        "system": "FUEL",
+        "possibleCauses": "Fuga de vacío|Inyectores sucios|MAF descalibrado|Sensor O2 envejecido"
+    },
+    {
+        "code": "P2279",
+        "descriptionEs": "Fuga de aire en sistema de admisión",
+        "descriptionEn": "Intake Air System Leak",
+        "severity": "WARNING",
+        "system": "ENGINE",
+        "possibleCauses": "Manguera de admisión agrietada|Junta del cuerpo de aceleración dañada|Fuga en colector de admisión"
+    }
+]

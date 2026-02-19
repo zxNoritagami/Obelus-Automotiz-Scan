@@ -3,8 +3,11 @@ package com.obelus.obelusscan.ui.dashboard
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.obelus.data.repository.ObdRepository
+import com.obelus.data.repository.TelemetryRepository
 import com.obelus.domain.model.ObdPid
+import com.obelus.mqtt.ObdTelemetry
 import com.obelus.obelusscan.data.protocol.ObdProtocol
+import com.obelus.protocol.ConnectionState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -19,12 +22,39 @@ import javax.inject.Inject
 @HiltViewModel
 class DashboardViewModel @Inject constructor(
     private val repository: ObdRepository,
+    private val telemetryRepository: TelemetryRepository,
     @dagger.hilt.android.qualifiers.ApplicationContext private val context: android.content.Context
 ) : ViewModel() {
 
 
     private val protocol = ObdProtocol()
     private var scanJob: Job? = null
+
+    // --- Telemetría MQTT: auto-start/stop con conexión OBD2 ---
+    // Observamos el estado de conexión del ELM327; cuando se conecta
+    // iniciamos telemetría, cuando se desconecta la detenemos.
+    private var connectionWatchJob: Job? = null
+
+    init {
+        startConnectionWatch()
+    }
+
+    private fun startConnectionWatch() {
+        connectionWatchJob = viewModelScope.launch {
+            repository.connectionState.collect { state ->
+                when (state) {
+                    ConnectionState.CONNECTED -> {
+                        telemetryRepository.startTelemetry(dtcCount = 0)
+                    }
+                    ConnectionState.DISCONNECTED,
+                    ConnectionState.ERROR -> {
+                        telemetryRepository.stopTelemetry()
+                    }
+                    else -> { /* CONNECTING — no hacer nada */ }
+                }
+            }
+        }
+    }
 
     // --- StateFlows para PIDs (Existentes) ---
     private val _rpm = MutableStateFlow(0f)
@@ -107,6 +137,20 @@ class DashboardViewModel @Inject constructor(
 
                 // 3. Calcular Consumo (Cada ciclo, usando últimos valores conocidos)
                 calculateConsumption()
+
+                // 4. Empujar snapshot de telemetría al TelemetryRepository
+                telemetryRepository.updateTelemetry(
+                    ObdTelemetry(
+                        rpm          = _rpm.value,
+                        speed        = _speed.value,
+                        coolantTemp  = _coolantTemp.value,
+                        engineLoad   = _engineLoad.value,
+                        throttlePos  = _throttlePos.value,
+                        mafRate      = _mafRate.value,
+                        fuelLevel    = _fuelLevel.value,
+                        dtcCount     = 0
+                    )
+                )
 
                 loopCounter++
                 loopCounter++

@@ -28,6 +28,9 @@ import com.obelus.obelusscan.ui.race.RaceScreen
 import com.obelus.obelusscan.ui.settings.SettingsScreen
 import com.obelus.presentation.ui.screens.DTCScreen
 import com.obelus.presentation.ui.screens.HistoryScreen
+import com.obelus.presentation.ui.screens.LogViewerScreen
+import com.obelus.presentation.ui.screens.RaceHistoryScreen
+import com.obelus.presentation.ui.screens.SecurityAccessScreen
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
@@ -69,14 +72,17 @@ fun MainScreen() {
                 title = { 
                     Text(
                         when (currentRoute) {
-                            "dashboard" -> "Dashboard"
-                            "race" -> "Race Mode"
-                            "dtc" -> "Códigos DTC"
-                            "history" -> "Historial"
-                            "settings" -> "Configuración"
-                            else -> "Obelus Scan"
+                            "dashboard"      -> "Dashboard"
+                            "race"           -> "Race Mode"
+                            "race_history"   -> "Historial de Carreras"
+                            "dtc"            -> "Códigos DTC"
+                            "history"        -> "Historial"
+                            "log_viewer"     -> "Log Viewer"
+                            "security_access" -> "Security Access 0x27"
+                            "settings"       -> "Configuración"
+                            else             -> "Obelus Scan"
                         }
-                    ) 
+                    )
                 },
                 actions = {
                     Icon(
@@ -95,11 +101,12 @@ fun MainScreen() {
         bottomBar = {
             NavigationBar {
                 val items = listOf(
-                    Triple("dashboard", "Dash", Icons.Default.Dashboard),
-                    Triple("race", "Race", Icons.Default.Flag),
-                    Triple("dtc", "DTCs", Icons.Default.Warning),
-                    Triple("history", "Historial", Icons.Default.History),
-                    Triple("settings", "Settings", Icons.Default.Settings)
+                    Triple("dashboard",  "Dash",    Icons.Default.Dashboard),
+                    Triple("race",       "Race",    Icons.Default.Flag),
+                    Triple("dtc",        "DTCs",    Icons.Default.Warning),
+                    Triple("history",    "Historial",Icons.Default.History),
+                    Triple("log_viewer", "Logs",    Icons.Default.TableChart),
+                    Triple("settings",   "Settings", Icons.Default.Settings)
                 )
 
                 items.forEach { (route, label, icon) ->
@@ -127,9 +134,20 @@ fun MainScreen() {
             modifier = Modifier.padding(innerPadding)
         ) {
             composable("dashboard") { DashboardScreen() }
-            composable("race") { RaceScreen() }
+            composable("race") {
+                RaceScreen(onNavigateToHistory = { navController.navigate("race_history") })
+            }
             composable("dtc") { DTCScreen(onBack = { }) }
             composable("history") { HistoryScreen(onSessionClick = { }, onBack = { }) }
+            composable("log_viewer") {
+                LogViewerScreen(onBack = { navController.popBackStack() })
+            }
+            composable("security_access") {
+                SecurityAccessScreen(onBack = { navController.popBackStack() })
+            }
+            composable("race_history") {
+                RaceHistoryScreen(onBack = { navController.popBackStack() })
+            }
             composable("settings") {
                 SettingsScreen(onBack = { navController.popBackStack() })
             }

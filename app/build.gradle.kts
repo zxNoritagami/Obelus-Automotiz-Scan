@@ -58,6 +58,14 @@ android {
     packaging {
         resources {
             excludes += "/META-INF/{AL2.0,LGPL2.1}"
+            excludes += "META-INF/NOTICE.md"
+            excludes += "META-INF/LICENSE.md"
+            excludes += "META-INF/NOTICE"
+            excludes += "META-INF/LICENSE"
+            excludes += "META-INF/DEPENDENCIES"
+            excludes += "META-INF/*.kotlin_module"
+            excludes += "mozilla/public-suffix-list.txt"
+            pickFirsts += "META-INF/INDEX.LIST"
         }
     }
 }
@@ -92,6 +100,21 @@ dependencies {
 
     // Accompanist Permissions
     implementation(libs.accompanist.permissions)
+
+    // MQTT - Eclipse Paho
+    implementation(libs.paho.mqtt.client)
+    implementation(libs.paho.mqtt.android.service)
+
+    // PDF Export - iText7 Community
+    implementation(libs.itext7.core) {
+        exclude(group = "org.bouncycastle")
+    }
+
+    // Excel Export - Apache POI
+    implementation(libs.apache.poi.ooxml) {
+        exclude(group = "org.apache.xmlbeans", module = "xmlbeans")
+    }
+    implementation("org.apache.xmlbeans:xmlbeans:5.2.0") // required by POI OOXML
 
     // Navigation
     implementation(libs.androidx.navigation.compose)
