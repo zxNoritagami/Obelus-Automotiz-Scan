@@ -1,5 +1,6 @@
 package com.obelus.data.repository
 
+import com.obelus.data.local.dao.DbcDefinitionWithSignals
 import com.obelus.data.local.entity.*
 import com.obelus.data.local.model.SignalStats
 
@@ -29,4 +30,10 @@ interface ObelusRepository {
     // Files
     suspend fun importDatabaseFile(file: DatabaseFile)
     suspend fun getActiveDatabaseFiles(): List<DatabaseFile>
+
+    // DBC Definitions
+    suspend fun getAllDbcDefinitions(): List<DbcDefinition>
+    suspend fun getDbcDefinitionWithSignals(id: Long): DbcDefinitionWithSignals?
+    suspend fun saveDbcDefinition(definition: DbcDefinition): Long
+    suspend fun deleteDbcDefinition(id: Long)
 }

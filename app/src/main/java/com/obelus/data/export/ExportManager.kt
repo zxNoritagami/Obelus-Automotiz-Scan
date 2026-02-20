@@ -12,7 +12,13 @@ import com.itextpdf.kernel.pdf.PdfDocument
 import com.itextpdf.kernel.pdf.PdfWriter
 import com.itextpdf.layout.Document
 import com.itextpdf.layout.borders.SolidBorder
-import com.itextpdf.layout.element.*
+import com.itextpdf.layout.element.AreaBreak
+import com.itextpdf.layout.element.IBlockElement
+import com.itextpdf.layout.element.IElement
+import com.itextpdf.layout.element.Image
+import com.itextpdf.layout.element.Paragraph
+import com.itextpdf.layout.element.Cell as PdfCell
+import com.itextpdf.layout.element.Table as PdfTable
 import com.itextpdf.layout.properties.HorizontalAlignment
 import com.itextpdf.layout.properties.TextAlignment
 import com.itextpdf.layout.properties.UnitValue
@@ -25,6 +31,7 @@ import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.withContext
 import org.apache.poi.ss.usermodel.*
 import org.apache.poi.xssf.usermodel.XSSFWorkbook
+import org.apache.poi.xssf.usermodel.XSSFCellStyle
 import java.io.ByteArrayOutputStream
 import java.text.SimpleDateFormat
 import java.util.*
@@ -201,8 +208,8 @@ class ExportManager @Inject constructor() {
         doc.add(subtitle)
 
         // Divider line (thin table)
-        val div = Table(UnitValue.createPercentArray(floatArrayOf(1f))).useAllAvailableWidth()
-        val divCell = Cell().setHeight(2f).setBackgroundColor(colorPrimary).setBorder(SolidBorder(colorPrimary, 0f))
+        val div = PdfTable(UnitValue.createPercentArray(floatArrayOf(1f))).useAllAvailableWidth()
+        val divCell = PdfCell().setHeight(2f).setBackgroundColor(colorPrimary).setBorder(SolidBorder(colorPrimary, 0f))
         div.addCell(divCell)
         doc.add(div)
         doc.add(Paragraph("\n").setFontSize(4f))  // spacer
@@ -223,15 +230,15 @@ class ExportManager @Inject constructor() {
             session.averageSpeed?.let { "Vel. media" to "${it.toInt()} km/h" }
         )
 
-        val infoTable = Table(UnitValue.createPercentArray(floatArrayOf(35f, 65f))).useAllAvailableWidth()
+        val infoTable = PdfTable(UnitValue.createPercentArray(floatArrayOf(35f, 65f))).useAllAvailableWidth()
         rows.forEachIndexed { idx, (label, value) ->
             val bg = if (idx % 2 == 0) DeviceRgb(28, 33, 40) else DeviceRgb(22, 27, 34)
             infoTable.addCell(
-                Cell().add(Paragraph(label).setBold().setFontSize(10f))
+                PdfCell().add(Paragraph(label).setBold().setFontSize(10f))
                     .setBackgroundColor(bg).setPadding(6f)
             )
             infoTable.addCell(
-                Cell().add(Paragraph(value).setFontSize(10f))
+                PdfCell().add(Paragraph(value).setFontSize(10f))
                     .setBackgroundColor(bg).setPadding(6f)
             )
         }
@@ -251,12 +258,12 @@ class ExportManager @Inject constructor() {
         }
 
         val headers = listOf("PID", "Sensor", "Unidad", "Mín", "Promedio", "Máx", "Lecturas")
-        val table   = Table(UnitValue.createPercentArray(floatArrayOf(8f, 28f, 10f, 12f, 15f, 12f, 15f)))
+        val table   = PdfTable(UnitValue.createPercentArray(floatArrayOf(8f, 28f, 10f, 12f, 15f, 12f, 15f)))
             .useAllAvailableWidth()
 
         headers.forEach { h ->
             table.addHeaderCell(
-                Cell().add(Paragraph(h).setBold().setFontSize(9f).setFontColor(ColorConstants.WHITE))
+                PdfCell().add(Paragraph(h).setBold().setFontSize(9f).setFontColor(ColorConstants.WHITE))
                     .setBackgroundColor(colorDark).setPadding(5f)
                     .setTextAlignment(TextAlignment.CENTER)
             )
@@ -264,8 +271,8 @@ class ExportManager @Inject constructor() {
 
         stats.forEachIndexed { idx, s ->
             val bg = if (idx % 2 == 0) DeviceRgb(28, 33, 40) else DeviceRgb(22, 27, 34)
-            fun dataCell(v: String, center: Boolean = true): Cell =
-                Cell().add(Paragraph(v).setFontSize(9f))
+            fun dataCell(v: String, center: Boolean = true): PdfCell =
+                PdfCell().add(Paragraph(v).setFontSize(9f))
                     .setBackgroundColor(bg).setPadding(4f)
                     .setTextAlignment(if (center) TextAlignment.CENTER else TextAlignment.LEFT)
 
@@ -290,7 +297,7 @@ class ExportManager @Inject constructor() {
         val image   = Image(imgData)
             .setAutoScale(true)
             .setHorizontalAlignment(HorizontalAlignment.CENTER)
-        doc.add(image)
+        doc.add(image as IBlockElement)
         doc.add(Paragraph("\n").setFontSize(6f))
     }
 
@@ -299,20 +306,20 @@ class ExportManager @Inject constructor() {
             Paragraph("Códigos de Error DTC (${dtcs.size})")
                 .setFontSize(13f).setBold().setFontColor(colorError)
         )
-        val table = Table(UnitValue.createPercentArray(floatArrayOf(15f, 55f, 15f, 15f)))
+        val table = PdfTable(UnitValue.createPercentArray(floatArrayOf(15f, 55f, 15f, 15f)))
             .useAllAvailableWidth()
 
         listOf("Código", "Descripción", "Categoría", "Estado").forEach { h ->
             table.addHeaderCell(
-                Cell().add(Paragraph(h).setBold().setFontSize(9f).setFontColor(ColorConstants.WHITE))
+                PdfCell().add(Paragraph(h).setBold().setFontSize(9f).setFontColor(ColorConstants.WHITE))
                     .setBackgroundColor(colorDark).setPadding(5f)
             )
         }
 
         dtcs.forEachIndexed { idx, dtc ->
             val bg = if (idx % 2 == 0) DeviceRgb(35, 18, 18) else DeviceRgb(28, 14, 14)
-            fun dtcCell(v: String): Cell =
-                Cell().add(Paragraph(v).setFontSize(9f))
+            fun dtcCell(v: String): PdfCell =
+                PdfCell().add(Paragraph(v).setFontSize(9f))
                     .setBackgroundColor(bg).setPadding(4f)
 
             table.addCell(dtcCell(dtc.code).setFontColor(colorError))
@@ -344,7 +351,7 @@ class ExportManager @Inject constructor() {
     // ─────────────────────────────────────────────────────────────────────
 
     private inner class ExcelStyles(wb: XSSFWorkbook) {
-        val header: CellStyle = wb.createCellStyle().also { cs ->
+        val header: XSSFCellStyle = (wb.createCellStyle() as XSSFCellStyle).also { cs: XSSFCellStyle ->
             cs.fillForegroundColor = IndexedColors.DARK_BLUE.index
             cs.fillPattern = FillPatternType.SOLID_FOREGROUND
             val font = wb.createFont().also { f ->
@@ -353,15 +360,15 @@ class ExportManager @Inject constructor() {
             cs.setFont(font)
             cs.borderBottom = BorderStyle.THIN
         }
-        val altRow: CellStyle  = wb.createCellStyle().also { cs ->
+        val altRow: XSSFCellStyle  = (wb.createCellStyle() as XSSFCellStyle).also { cs: XSSFCellStyle ->
             cs.fillForegroundColor = IndexedColors.GREY_25_PERCENT.index
             cs.fillPattern = FillPatternType.SOLID_FOREGROUND
         }
-        val numFmt: CellStyle  = wb.createCellStyle().also { cs ->
+        val numFmt: XSSFCellStyle  = (wb.createCellStyle() as XSSFCellStyle).also { cs: XSSFCellStyle ->
             val fmt = wb.createDataFormat()
             cs.dataFormat = fmt.getFormat("#,##0.00")
         }
-        val dateFmt: CellStyle = wb.createCellStyle().also { cs ->
+        val dateFmt: XSSFCellStyle = (wb.createCellStyle() as XSSFCellStyle).also { cs: XSSFCellStyle ->
             val fmt = wb.createDataFormat()
             cs.dataFormat = fmt.getFormat("dd/mm/yyyy hh:mm:ss")
         }
@@ -465,8 +472,8 @@ class ExportManager @Inject constructor() {
             fun boolCell(col: Int, v: Boolean) = row.createCell(col).also { it.setCellValue(if (v) "Sí" else "No"); it.cellStyle = cs }
 
             cell(0, dtc.code)
-            cell(1, dtc.description)
-            cell(2, dtc.category)
+            cell(1, dtc.description ?: "N/A")
+            cell(2, dtc.category.toString())
             boolCell(3, dtc.isActive)
             boolCell(4, dtc.isPending)
             boolCell(5, dtc.isPermanent)

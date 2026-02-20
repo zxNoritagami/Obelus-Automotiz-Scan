@@ -27,10 +27,12 @@ import com.obelus.obelusscan.ui.dashboard.DashboardScreen
 import com.obelus.obelusscan.ui.race.RaceScreen
 import com.obelus.obelusscan.ui.settings.SettingsScreen
 import com.obelus.presentation.ui.screens.DTCScreen
+import com.obelus.presentation.ui.screens.DbcEditorScreen
 import com.obelus.presentation.ui.screens.HistoryScreen
 import com.obelus.presentation.ui.screens.LogViewerScreen
 import com.obelus.presentation.ui.screens.RaceHistoryScreen
 import com.obelus.presentation.ui.screens.SecurityAccessScreen
+import com.obelus.presentation.ui.screens.WebServerScreen
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
@@ -78,7 +80,9 @@ fun MainScreen() {
                             "dtc"            -> "Códigos DTC"
                             "history"        -> "Historial"
                             "log_viewer"     -> "Log Viewer"
+                            "web_server"     -> "Dashboard Web"
                             "security_access" -> "Security Access 0x27"
+                            "dbc_editor"     -> "Editor DBC"
                             "settings"       -> "Configuración"
                             else             -> "Obelus Scan"
                         }
@@ -101,12 +105,13 @@ fun MainScreen() {
         bottomBar = {
             NavigationBar {
                 val items = listOf(
-                    Triple("dashboard",  "Dash",    Icons.Default.Dashboard),
-                    Triple("race",       "Race",    Icons.Default.Flag),
-                    Triple("dtc",        "DTCs",    Icons.Default.Warning),
-                    Triple("history",    "Historial",Icons.Default.History),
-                    Triple("log_viewer", "Logs",    Icons.Default.TableChart),
-                    Triple("settings",   "Settings", Icons.Default.Settings)
+                    Triple("dashboard",  "Dash",     Icons.Default.Dashboard),
+                    Triple("race",       "Race",     Icons.Default.Flag),
+                    Triple("dtc",        "DTCs",     Icons.Default.Warning),
+                    Triple("history",    "Historial", Icons.Default.History),
+                    Triple("web_server", "Web",       Icons.Default.Language),
+                    Triple("dbc_editor", "DBC",      Icons.Default.Edit),
+                    Triple("settings",   "Settings",  Icons.Default.Settings)
                 )
 
                 items.forEach { (route, label, icon) ->
@@ -139,6 +144,7 @@ fun MainScreen() {
             }
             composable("dtc") { DTCScreen(onBack = { }) }
             composable("history") { HistoryScreen(onSessionClick = { }, onBack = { }) }
+            composable("web_server") { WebServerScreen() }
             composable("log_viewer") {
                 LogViewerScreen(onBack = { navController.popBackStack() })
             }
@@ -147,6 +153,9 @@ fun MainScreen() {
             }
             composable("race_history") {
                 RaceHistoryScreen(onBack = { navController.popBackStack() })
+            }
+            composable("dbc_editor") {
+                DbcEditorScreen(onBack = { navController.popBackStack() })
             }
             composable("settings") {
                 SettingsScreen(onBack = { navController.popBackStack() })

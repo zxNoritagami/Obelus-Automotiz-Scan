@@ -4,7 +4,12 @@ import android.content.Context
 import android.net.Uri
 import android.util.Log
 import com.obelus.data.local.dao.CanFrameDao
+import com.obelus.data.local.dao.DecodedSignalDao
+import com.obelus.data.local.entity.CanSignal
 import com.obelus.data.local.entity.CanFrameEntity
+import com.obelus.data.local.entity.DbcDefinition
+import com.obelus.data.local.entity.DecodedSignal
+import com.obelus.data.local.model.Endian
 import com.obelus.data.protocol.DbcMessage
 import com.obelus.data.protocol.DbcParser
 import kotlinx.coroutines.Dispatchers
@@ -32,6 +37,15 @@ sealed class ImportState {
     data class Error(val message: String)  : ImportState()
 }
 
+/** Estado del proceso de decodificación DBC */
+sealed class DecodingState {
+    object Idle                              : DecodingState()
+    data class Processing(val progress: Float,
+                          val decoded: Int)  : DecodingState()
+    data class Done(val totalDecoded: Int)   : DecodingState()
+    data class Error(val message: String)    : DecodingState()
+}
+
 /**
  * Repository para importar, almacenar y recuperar logs CAN.
  *
@@ -44,14 +58,18 @@ sealed class ImportState {
  */
 @Singleton
 class LogRepository @Inject constructor(
-    private val canFrameDao: CanFrameDao
+    private val canFrameDao: CanFrameDao,
+    private val decodedSignalDao: DecodedSignalDao
 ) {
     companion object { private const val TAG = "LogRepository" }
 
     private val _importState = MutableStateFlow<ImportState>(ImportState.Idle)
     val importState: StateFlow<ImportState> = _importState.asStateFlow()
 
-    /** DBC actualmente cargado — null si no hay ninguno */
+    private val _decodingState = MutableStateFlow<DecodingState>(DecodingState.Idle)
+    val decodingState: StateFlow<DecodingState> = _decodingState.asStateFlow()
+
+    /** DBC actualmente cargado desde archivo — null si no hay ninguno */
     private var _dbcDatabase: Map<Int, DbcMessage> = emptyMap()
     val dbcDatabase: Map<Int, DbcMessage> get() = _dbcDatabase
 
@@ -186,6 +204,193 @@ class LogRepository @Inject constructor(
     suspend fun getAllSessionIds(): List<String> = canFrameDao.getAllSessionIds()
 
     fun resetImportState() { _importState.value = ImportState.Idle }
+    fun resetDecodingState() { _decodingState.value = DecodingState.Idle }
+
+    // =========================================================================
+    // DBC ROOM DEFINITION DECODING
+    // =========================================================================
+
+    /**
+     * Decodes all frames in [sessionId] using [dbcDefinition] + [signals] from Room.
+     * Results are persisted to [decoded_signals] in batches.
+     *
+     * @param sessionId    Session to decode
+     * @param dbcDefinition The DBC definition metadata
+     * @param signals      Signals belonging to that definition
+     */
+    suspend fun applyDbcDefinition(
+        sessionId: String,
+        dbcDefinition: DbcDefinition,
+        signals: List<CanSignal>
+    ) = withContext(Dispatchers.IO) {
+        if (signals.isEmpty()) {
+            _decodingState.value = DecodingState.Error("La definición no tiene señales")
+            return@withContext
+        }
+
+        _decodingState.value = DecodingState.Processing(0f, 0)
+
+        try {
+            // Delete previous decoded results for this session + DBC
+            decodedSignalDao.deleteForSession(sessionId, dbcDefinition.id)
+
+            // Build a lookup map: canId (int) → list of signals
+            val signalsByCanId: Map<Int, List<CanSignal>> = signals.groupBy { sig ->
+                sig.canId.removePrefix("0x").removePrefix("0X").toIntOrNull(16)
+                    ?: sig.canId.toIntOrNull()
+                    ?: -1
+            }.filterKeys { it != -1 }
+
+            // Count total frames to show progress
+            val totalFrames = canFrameDao.countFrames(sessionId)
+            if (totalFrames == 0) {
+                _decodingState.value = DecodingState.Error("Sesión vacía")
+                return@withContext
+            }
+
+            var processed = 0
+            var totalDecoded = 0
+            val batchSize = 500
+
+            // Process frames in pages
+            while (processed < totalFrames) {
+                val frames = canFrameDao.getFramesPaged(
+                    sessionId = sessionId,
+                    minId     = 0,
+                    maxId     = 0x1FFFFFFF,
+                    limit     = batchSize,
+                    offset    = processed
+                )
+                if (frames.isEmpty()) break
+
+                val decodedBatch = mutableListOf<DecodedSignal>()
+
+                for (frame in frames) {
+                    val matchingSignals = signalsByCanId[frame.canId] ?: continue
+                    val payload = frame.dataHex.replace(" ", "")
+                        .chunked(2)
+                        .mapNotNull { it.toIntOrNull(16)?.toByte() }
+                        .toByteArray()
+
+                    for (sig in matchingSignals) {
+                        val rawBits = extractBits(payload, sig.startBit, sig.bitLength, sig.endianness, sig.signed)
+                        val calc    = rawBits * sig.scale + sig.offset
+                        decodedBatch.add(
+                            DecodedSignal(
+                                frameId          = frame.id,
+                                sessionId        = sessionId,
+                                signalId         = sig.id,
+                                signalName       = sig.name,
+                                canId            = frame.canId.let { id ->
+                                    if (frame.isExtended) "%08X".format(id)
+                                    else "%03X".format(id)
+                                },
+                                timestamp        = frame.timestamp,
+                                rawBits          = rawBits,
+                                calculatedValue  = calc,
+                                unit             = sig.unit,
+                                dbcDefinitionId  = dbcDefinition.id
+                            )
+                        )
+                    }
+                }
+
+                if (decodedBatch.isNotEmpty()) {
+                    decodedSignalDao.insertAll(decodedBatch)
+                    totalDecoded += decodedBatch.size
+                }
+
+                processed += frames.size
+                val progress = processed.toFloat() / totalFrames
+                _decodingState.value = DecodingState.Processing(progress, totalDecoded)
+            }
+
+            Log.i(TAG, "✅ DBC aplicado: $totalDecoded señales decodificadas (session=$sessionId, dbc=${dbcDefinition.name})")
+            _decodingState.value = DecodingState.Done(totalDecoded)
+
+        } catch (e: Exception) {
+            val msg = "Error decodificando: ${e.message}"
+            Log.e(TAG, msg, e)
+            _decodingState.value = DecodingState.Error(msg)
+        }
+    }
+
+    /** Reactive flow of decoded signals for a session + DBC definition. */
+    fun getDecodedSignalsFlow(sessionId: String, dbcDefinitionId: Long) =
+        decodedSignalDao.getForSession(sessionId, dbcDefinitionId)
+
+    /** Reactive flow of latest value per signal (for summary cards). */
+    fun getLatestDecodedPerSignal(sessionId: String, dbcDefinitionId: Long) =
+        decodedSignalDao.getLatestPerSignal(sessionId, dbcDefinitionId)
+
+    /** All historical values for a single signal (for detail chart). */
+    suspend fun getSignalHistory(signalId: Long, sessionId: String) =
+        decodedSignalDao.getForSignal(signalId, sessionId)
+
+    // =========================================================================
+    // BIT EXTRACTION ENGINE
+    // =========================================================================
+
+    /**
+     * Extracts an integer value from a CAN payload byte array.
+     *
+     * Supports both Intel (little-endian) and Motorola (big-endian) bit ordering,
+     * and optional two’s complement signed interpretation.
+     *
+     * @param data      Frame payload bytes (max 8)
+     * @param startBit  Start bit index (Intel: LSB position; Motorola: MSB position)
+     * @param length    Bit length of the signal
+     * @param endian    Byte order
+     * @param signed    True = interpret as two’s complement
+     * @return Raw integer value (before scale/offset)
+     */
+    internal fun extractBits(
+        data: ByteArray,
+        startBit: Int,
+        length: Int,
+        endian: Endian,
+        signed: Boolean
+    ): Long {
+        if (data.isEmpty() || length <= 0) return 0L
+
+        var rawValue = 0L
+
+        if (endian == Endian.LITTLE) {
+            // Intel byte order: collect bits from startBit upwards
+            for (i in 0 until length) {
+                val bitIndex = startBit + i
+                val byteIdx = bitIndex / 8
+                val bitIdx  = bitIndex % 8
+                if (byteIdx >= data.size) break
+                val bit = (data[byteIdx].toInt() ushr bitIdx) and 1
+                rawValue = rawValue or (bit.toLong() shl i)
+            }
+        } else {
+            // Motorola byte order: startBit is the MSB position
+            // Convert to bit position in flat bit stream
+            val byteStart  = startBit / 8
+            val bitInByte  = startBit % 8
+            val flatMsb    = byteStart * 8 + (7 - bitInByte)
+            for (i in 0 until length) {
+                val flatBit = flatMsb + i
+                val byteIdx = flatBit / 8
+                val bitPos  = 7 - (flatBit % 8)
+                if (byteIdx >= data.size) break
+                val bit = (data[byteIdx].toInt() ushr bitPos) and 1
+                rawValue = rawValue or (bit.toLong() shl (length - 1 - i))
+            }
+        }
+
+        // Two’s complement for signed signals
+        if (signed && length < 64) {
+            val signBit = 1L shl (length - 1)
+            if (rawValue and signBit != 0L) {
+                rawValue -= (1L shl length)
+            }
+        }
+
+        return rawValue
+    }
 
     // =========================================================================
     // PARSERS POR FORMATO

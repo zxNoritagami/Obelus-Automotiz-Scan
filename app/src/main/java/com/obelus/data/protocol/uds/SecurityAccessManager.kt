@@ -151,12 +151,12 @@ class SecurityAccessManager @Inject constructor(
             data        = key
         )
 
-        val state = result.fold<SecurityAccessState>(
-            onSuccess = {
+        val state = result.fold(
+            {
                 Log.i(TAG, "✅ Security Access GRANTED - Level=0x%02X".format(keyLevel))
                 SecurityAccessState.AccessGranted(keyLevel)
             },
-            onFailure = { ex ->
+            { ex ->
                 handleException(ex)
             }
         )

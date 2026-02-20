@@ -4,10 +4,10 @@ package com.obelus.data.protocol.uds
  * Interfaz que define el contrato para cualquier algoritmo de Security Access UDS (SID 0x27).
  *
  * ## Flujo UDS Security Access
- * 1. Tester → ECU: 27 [accessLevel]           (Request Seed)
- * 2. ECU → Tester: 67 [accessLevel] [seed...]  (Seed Response)
- * 3. Tester → ECU: 27 [accessLevel+1] [key...] (Send Key)
- * 4. ECU → Tester: 67 [accessLevel+1]          (Positive Response)
+ * 1. Tester → ECU: 27 `accessLevel`           (Request Seed)
+ * 2. ECU → Tester: 67 `accessLevel` `seed...`  (Seed Response)
+ * 3. Tester → ECU: 27 `accessLevel+1` `key...` (Send Key)
+ * 4. ECU → Tester: 67 `accessLevel+1`          (Positive Response)
  *
  * ## Convención de niveles (ISO 14229)
  * | Level | Descripción                  |

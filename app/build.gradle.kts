@@ -104,6 +104,7 @@ dependencies {
     // MQTT - Eclipse Paho
     implementation(libs.paho.mqtt.client)
     implementation(libs.paho.mqtt.android.service)
+    implementation(libs.nanohttpd)
 
     // PDF Export - iText7 Community
     implementation(libs.itext7.core) {

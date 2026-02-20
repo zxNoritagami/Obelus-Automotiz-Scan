@@ -11,7 +11,8 @@ class ObelusRepositoryImpl @Inject constructor(
     private val signalReadingDao: SignalReadingDao,
     private val scanSessionDao: ScanSessionDao,
     private val dtcCodeDao: DtcCodeDao,
-    private val databaseFileDao: DatabaseFileDao
+    private val databaseFileDao: DatabaseFileDao,
+    private val dbcDefinitionDao: DbcDefinitionDao
 ) : ObelusRepository {
 
     private val TAG = "ObelusRepository"
@@ -162,6 +163,43 @@ class ObelusRepositoryImpl @Inject constructor(
         } catch (e: Exception) {
             Log.e(TAG, "Error fetching active database files", e)
             emptyList()
+        }
+    }
+
+    // --- DBC Definitions ---
+
+    override suspend fun getAllDbcDefinitions(): List<DbcDefinition> {
+        return try {
+            dbcDefinitionDao.getAll()
+        } catch (e: Exception) {
+            Log.e(TAG, "Error fetching DBC definitions", e)
+            emptyList()
+        }
+    }
+
+    override suspend fun getDbcDefinitionWithSignals(id: Long): DbcDefinitionWithSignals? {
+        return try {
+            dbcDefinitionDao.getWithSignals(id)
+        } catch (e: Exception) {
+            Log.e(TAG, "Error fetching DBC definition with signals: $id", e)
+            null
+        }
+    }
+
+    override suspend fun saveDbcDefinition(definition: DbcDefinition): Long {
+        return try {
+            dbcDefinitionDao.insertDefinition(definition)
+        } catch (e: Exception) {
+            Log.e(TAG, "Error saving DBC definition", e)
+            -1L
+        }
+    }
+
+    override suspend fun deleteDbcDefinition(id: Long) {
+        try {
+            dbcDefinitionDao.deleteUserDefinition(id)
+        } catch (e: Exception) {
+            Log.e(TAG, "Error deleting DBC definition: $id", e)
         }
     }
 }

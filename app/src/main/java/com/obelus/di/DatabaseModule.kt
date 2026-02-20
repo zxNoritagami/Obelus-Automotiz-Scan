@@ -3,6 +3,8 @@ package com.obelus.di
 import android.content.Context
 import androidx.room.Room
 import com.obelus.data.local.dao.*
+import com.obelus.data.local.database.MIGRATION_5_6
+import com.obelus.data.local.database.MIGRATION_6_7
 import com.obelus.data.local.database.ObelusDatabase
 import dagger.Module
 import dagger.Provides
@@ -22,8 +24,10 @@ object DatabaseModule {
             context,
             ObelusDatabase::class.java,
             "obelus_database"
-        ).fallbackToDestructiveMigration() // Useful for dev
-         .build()
+        )
+        .addMigrations(MIGRATION_5_6, MIGRATION_6_7)  // v6: DBC editor · v7: decoded_signals
+        .fallbackToDestructiveMigration()   // keep for dev; remove in production
+        .build()
     }
 
     @Provides
@@ -52,4 +56,10 @@ object DatabaseModule {
 
     @Provides
     fun provideRaceTelemetryPointDao(db: ObelusDatabase): RaceTelemetryPointDao = db.raceTelemetryPointDao()
+
+    @Provides
+    fun provideDbcDefinitionDao(db: ObelusDatabase): DbcDefinitionDao = db.dbcDefinitionDao()  // v6
+
+    @Provides
+    fun provideDecodedSignalDao(db: ObelusDatabase): DecodedSignalDao = db.decodedSignalDao()  // v7
 }

@@ -1,0 +1,60 @@
+To honour the JVM settings for this build a single-use Daemon process will be forked. For more on this, please refer to https://docs.gradle.org/8.6/userguide/gradle_daemon.html#sec:disabling_the_daemon in the Gradle documentation.
+Daemon will be stopped at the end of the build 
+> Task :app:preBuild UP-TO-DATE
+> Task :app:preDebugBuild UP-TO-DATE
+> Task :app:mergeDebugNativeDebugMetadata NO-SOURCE
+> Task :app:checkDebugAarMetadata UP-TO-DATE
+> Task :app:generateDebugResValues UP-TO-DATE
+> Task :app:mapDebugSourceSetPaths UP-TO-DATE
+> Task :app:generateDebugResources UP-TO-DATE
+> Task :app:mergeDebugResources UP-TO-DATE
+> Task :app:packageDebugResources UP-TO-DATE
+> Task :app:parseDebugLocalResources UP-TO-DATE
+> Task :app:createDebugCompatibleScreenManifests UP-TO-DATE
+> Task :app:extractDeepLinksDebug UP-TO-DATE
+> Task :app:processDebugMainManifest UP-TO-DATE
+> Task :app:processDebugManifest UP-TO-DATE
+> Task :app:processDebugManifestForPackage UP-TO-DATE
+> Task :app:processDebugResources UP-TO-DATE
+> Task :app:kspDebugKotlin UP-TO-DATE
+> Task :app:compileDebugKotlin UP-TO-DATE
+> Task :app:javaPreCompileDebug
+> Task :app:mergeDebugShaders
+> Task :app:compileDebugJavaWithJavac
+> Task :app:compileDebugShaders NO-SOURCE
+> Task :app:generateDebugAssets UP-TO-DATE
+> Task :app:mergeDebugAssets
+> Task :app:compressDebugAssets
+> Task :app:hiltAggregateDepsDebug
+> Task :app:checkDebugDuplicateClasses
+
+> Task :app:hiltJavaCompileDebug FAILED
+C:\Users\Angelo\Desktop\scaner\scanner pro\repos\Obelus\app\build\generated\hilt\component_sources\debug\com\obelus\ObelusApplication_HiltComponents.java:148: error: [Dagger/MissingBinding] android.content.Context cannot be provided without an @Provides-annotated method.
+  public abstract static class SingletonC implements ObelusApplication_GeneratedInjector,
+                         ^
+  
+  Missing binding usage:
+      android.content.Context is injected at
+          com.obelus.data.local.database.DtcImporter(context, à)
+      com.obelus.data.local.database.DtcImporter is injected at
+          com.obelus.data.repository.ManufacturerDtcRepository(à, dtcImporter)
+      com.obelus.data.repository.ManufacturerDtcRepository is injected at
+          com.obelus.presentation.viewmodel.DTCViewModel(à, manufacturerDtcRepository)
+      com.obelus.presentation.viewmodel.DTCViewModel is injected at
+          com.obelus.presentation.viewmodel.DTCViewModel_HiltModules.BindsModule.binds(vm)
+      @dagger.hilt.android.internal.lifecycle.HiltViewModelMap java.util.Map<java.lang.String,javax.inject.Provider<androidx.lifecycle.ViewModel>> is requested at
+          dagger.hilt.android.internal.lifecycle.HiltViewModelFactory.ViewModelFactoriesEntryPoint.getHiltViewModelMap() [com.obelus.ObelusApplication_HiltComponents.SingletonC ? com.obelus.ObelusApplication_HiltComponents.ActivityRetainedC ? com.obelus.ObelusApplication_HiltComponents.ViewModelC]
+1 error
+
+FAILURE: Build failed with an exception.
+
+* What went wrong:
+Execution failed for task ':app:hiltJavaCompileDebug'.
+> Compilation failed; see the compiler error output for details.
+
+* Try:
+> Run with --info option to get more log output.
+> Run with --scan to get full insights.
+
+BUILD FAILED in 22s
+23 actionable tasks: 8 executed, 15 up-to-date

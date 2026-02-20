@@ -9,6 +9,7 @@ import kotlinx.coroutines.withContext
 import org.json.JSONArray
 import javax.inject.Inject
 import javax.inject.Singleton
+import dagger.hilt.android.qualifiers.ApplicationContext
 
 /**
  * Importador inicial de DTCs de fabricante desde archivos JSON en res/raw/.
@@ -20,7 +21,7 @@ import javax.inject.Singleton
  */
 @Singleton
 class DtcImporter @Inject constructor(
-    private val context: Context,
+    @ApplicationContext private val context: Context,
     private val dao: ManufacturerDtcDao
 ) {
     companion object {

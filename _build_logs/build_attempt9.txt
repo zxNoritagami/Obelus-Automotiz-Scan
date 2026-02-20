@@ -1,0 +1,85 @@
+To honour the JVM settings for this build a single-use Daemon process will be forked. For more on this, please refer to https://docs.gradle.org/8.6/userguide/gradle_daemon.html#sec:disabling_the_daemon in the Gradle documentation.
+Daemon will be stopped at the end of the build 
+> Task :app:preBuild UP-TO-DATE
+> Task :app:preDebugBuild UP-TO-DATE
+> Task :app:generateDebugResValues UP-TO-DATE
+> Task :app:checkDebugAarMetadata
+> Task :app:mapDebugSourceSetPaths
+> Task :app:generateDebugResources UP-TO-DATE
+> Task :app:packageDebugResources UP-TO-DATE
+> Task :app:parseDebugLocalResources UP-TO-DATE
+> Task :app:createDebugCompatibleScreenManifests UP-TO-DATE
+> Task :app:extractDeepLinksDebug UP-TO-DATE
+> Task :app:mergeDebugResources
+> Task :app:processDebugMainManifest
+> Task :app:processDebugManifest
+> Task :app:processDebugManifestForPackage
+> Task :app:processDebugResources
+> Task :app:kspDebugKotlin
+
+> Task :app:compileDebugKotlin FAILED
+e: file:///C:/Users/Angelo/Desktop/scaner/scanner%20pro/repos/Obelus/app/src/main/java/com/obelus/data/export/ExportManager.kt:204:19 Unresolved reference: Table
+e: file:///C:/Users/Angelo/Desktop/scaner/scanner%20pro/repos/Obelus/app/src/main/java/com/obelus/data/export/ExportManager.kt:205:23 Unresolved reference: Cell
+e: file:///C:/Users/Angelo/Desktop/scaner/scanner%20pro/repos/Obelus/app/src/main/java/com/obelus/data/export/ExportManager.kt:207:13 Overload resolution ambiguity: 
+public open fun add(p0: AreaBreak!): Document! defined in com.itextpdf.layout.Document
+public open fun add(p0: IBlockElement!): Document! defined in com.itextpdf.layout.Document
+public open fun add(p0: Image!): Document! defined in com.itextpdf.layout.Document
+e: file:///C:/Users/Angelo/Desktop/scaner/scanner%20pro/repos/Obelus/app/src/main/java/com/obelus/data/export/ExportManager.kt:226:25 Unresolved reference: Table
+e: file:///C:/Users/Angelo/Desktop/scaner/scanner%20pro/repos/Obelus/app/src/main/java/com/obelus/data/export/ExportManager.kt:230:17 Unresolved reference: Cell
+e: file:///C:/Users/Angelo/Desktop/scaner/scanner%20pro/repos/Obelus/app/src/main/java/com/obelus/data/export/ExportManager.kt:234:17 Unresolved reference: Cell
+e: file:///C:/Users/Angelo/Desktop/scaner/scanner%20pro/repos/Obelus/app/src/main/java/com/obelus/data/export/ExportManager.kt:238:13 Overload resolution ambiguity: 
+public open fun add(p0: AreaBreak!): Document! defined in com.itextpdf.layout.Document
+public open fun add(p0: IBlockElement!): Document! defined in com.itextpdf.layout.Document
+public open fun add(p0: Image!): Document! defined in com.itextpdf.layout.Document
+e: file:///C:/Users/Angelo/Desktop/scaner/scanner%20pro/repos/Obelus/app/src/main/java/com/obelus/data/export/ExportManager.kt:254:23 Unresolved reference: Table
+e: file:///C:/Users/Angelo/Desktop/scaner/scanner%20pro/repos/Obelus/app/src/main/java/com/obelus/data/export/ExportManager.kt:259:17 Unresolved reference: Cell
+e: file:///C:/Users/Angelo/Desktop/scaner/scanner%20pro/repos/Obelus/app/src/main/java/com/obelus/data/export/ExportManager.kt:267:62 Unresolved reference: Cell
+e: file:///C:/Users/Angelo/Desktop/scaner/scanner%20pro/repos/Obelus/app/src/main/java/com/obelus/data/export/ExportManager.kt:268:17 Unresolved reference: Cell
+e: file:///C:/Users/Angelo/Desktop/scaner/scanner%20pro/repos/Obelus/app/src/main/java/com/obelus/data/export/ExportManager.kt:280:13 Overload resolution ambiguity: 
+public open fun add(p0: AreaBreak!): Document! defined in com.itextpdf.layout.Document
+public open fun add(p0: IBlockElement!): Document! defined in com.itextpdf.layout.Document
+public open fun add(p0: Image!): Document! defined in com.itextpdf.layout.Document
+e: file:///C:/Users/Angelo/Desktop/scaner/scanner%20pro/repos/Obelus/app/src/main/java/com/obelus/data/export/ExportManager.kt:302:21 Unresolved reference: Table
+e: file:///C:/Users/Angelo/Desktop/scaner/scanner%20pro/repos/Obelus/app/src/main/java/com/obelus/data/export/ExportManager.kt:307:17 Unresolved reference: Cell
+e: file:///C:/Users/Angelo/Desktop/scaner/scanner%20pro/repos/Obelus/app/src/main/java/com/obelus/data/export/ExportManager.kt:314:37 Unresolved reference: Cell
+e: file:///C:/Users/Angelo/Desktop/scaner/scanner%20pro/repos/Obelus/app/src/main/java/com/obelus/data/export/ExportManager.kt:315:17 Unresolved reference: Cell
+e: file:///C:/Users/Angelo/Desktop/scaner/scanner%20pro/repos/Obelus/app/src/main/java/com/obelus/data/export/ExportManager.kt:329:13 Overload resolution ambiguity: 
+public open fun add(p0: AreaBreak!): Document! defined in com.itextpdf.layout.Document
+public open fun add(p0: IBlockElement!): Document! defined in com.itextpdf.layout.Document
+public open fun add(p0: Image!): Document! defined in com.itextpdf.layout.Document
+e: file:///C:/Users/Angelo/Desktop/scaner/scanner%20pro/repos/Obelus/app/src/main/java/com/obelus/data/export/ExportManager.kt:376:75 Type mismatch: inferred type is CellStyle but XSSFCellStyle! was expected
+e: file:///C:/Users/Angelo/Desktop/scaner/scanner%20pro/repos/Obelus/app/src/main/java/com/obelus/data/export/ExportManager.kt:400:78 Type mismatch: inferred type is CellStyle but XSSFCellStyle! was expected
+e: file:///C:/Users/Angelo/Desktop/scaner/scanner%20pro/repos/Obelus/app/src/main/java/com/obelus/data/export/ExportManager.kt:407:33 Unresolved reference: Cell
+e: file:///C:/Users/Angelo/Desktop/scaner/scanner%20pro/repos/Obelus/app/src/main/java/com/obelus/data/export/ExportManager.kt:407:82 Type mismatch: inferred type is CellStyle! but XSSFCellStyle! was expected
+e: file:///C:/Users/Angelo/Desktop/scaner/scanner%20pro/repos/Obelus/app/src/main/java/com/obelus/data/export/ExportManager.kt:412:90 Type mismatch: inferred type is CellStyle but XSSFCellStyle! was expected
+e: file:///C:/Users/Angelo/Desktop/scaner/scanner%20pro/repos/Obelus/app/src/main/java/com/obelus/data/export/ExportManager.kt:425:82 Type mismatch: inferred type is CellStyle but XSSFCellStyle! was expected
+e: file:///C:/Users/Angelo/Desktop/scaner/scanner%20pro/repos/Obelus/app/src/main/java/com/obelus/data/export/ExportManager.kt:432:107 Type mismatch: inferred type is CellStyle! but XSSFCellStyle! was expected
+e: file:///C:/Users/Angelo/Desktop/scaner/scanner%20pro/repos/Obelus/app/src/main/java/com/obelus/data/export/ExportManager.kt:433:110 Type mismatch: inferred type is CellStyle but XSSFCellStyle! was expected
+e: file:///C:/Users/Angelo/Desktop/scaner/scanner%20pro/repos/Obelus/app/src/main/java/com/obelus/data/export/ExportManager.kt:441:91 Type mismatch: inferred type is CellStyle! but XSSFCellStyle! was expected
+e: file:///C:/Users/Angelo/Desktop/scaner/scanner%20pro/repos/Obelus/app/src/main/java/com/obelus/data/export/ExportManager.kt:453:82 Type mismatch: inferred type is CellStyle but XSSFCellStyle! was expected
+e: file:///C:/Users/Angelo/Desktop/scaner/scanner%20pro/repos/Obelus/app/src/main/java/com/obelus/data/export/ExportManager.kt:464:107 Type mismatch: inferred type is CellStyle! but XSSFCellStyle! was expected
+e: file:///C:/Users/Angelo/Desktop/scaner/scanner%20pro/repos/Obelus/app/src/main/java/com/obelus/data/export/ExportManager.kt:465:132 Type mismatch: inferred type is CellStyle! but XSSFCellStyle! was expected
+e: file:///C:/Users/Angelo/Desktop/scaner/scanner%20pro/repos/Obelus/app/src/main/java/com/obelus/data/export/ExportManager.kt:468:21 Type mismatch: inferred type is String? but String was expected
+e: file:///C:/Users/Angelo/Desktop/scaner/scanner%20pro/repos/Obelus/app/src/main/java/com/obelus/data/export/ExportManager.kt:469:21 Type mismatch: inferred type is Char but String was expected
+e: file:///C:/Users/Angelo/Desktop/scaner/scanner%20pro/repos/Obelus/app/src/main/java/com/obelus/data/protocol/uds/SecurityAccessManager.kt:154:32 2 type arguments expected for inline fun <R, T> Result<T>.fold(onSuccess: (value: T) -> R, onFailure: (exception: Throwable) -> R): R
+e: file:///C:/Users/Angelo/Desktop/scaner/scanner%20pro/repos/Obelus/app/src/main/java/com/obelus/mqtt/ObdMqttClient.kt:194:13 'if' must have both main and 'else' branches if used as an expression
+e: file:///C:/Users/Angelo/Desktop/scaner/scanner%20pro/repos/Obelus/app/src/main/java/com/obelus/presentation/ui/screens/LogViewerScreen.kt:317:45 Unresolved reference: Dp
+e: file:///C:/Users/Angelo/Desktop/scaner/scanner%20pro/repos/Obelus/app/src/main/java/com/obelus/presentation/ui/screens/LogViewerScreen.kt:323:29 Overload resolution ambiguity: 
+public fun Modifier.width(intrinsicSize: IntrinsicSize): Modifier defined in androidx.compose.foundation.layout
+public fun Modifier.width(width: Dp): Modifier defined in androidx.compose.foundation.layout
+
+FAILURE: Build failed with an exception.
+
+* What went wrong:
+Execution failed for task ':app:compileDebugKotlin'.
+> A failure occurred while executing org.jetbrains.kotlin.compilerRunner.GradleCompilerRunnerWithWorkers$GradleKotlinCompilerWorkAction
+   > Compilation error. See log for more details
+
+* Try:
+> Run with --stacktrace option to get the stack trace.
+> Run with --info or --debug option to get more log output.
+> Run with --scan to get full insights.
+> Get more help at https://help.gradle.org.
+
+BUILD FAILED in 53s
+15 actionable tasks: 9 executed, 6 up-to-date

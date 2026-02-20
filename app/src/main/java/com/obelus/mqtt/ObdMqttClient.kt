@@ -195,6 +195,8 @@ class ObdMqttClient @Inject constructor(
                 publishStatus("offline")
                 mqttClient?.disconnect(1_000) // timeout 1s
                 Log.i(TAG, "✅ Desconectado limpiamente")
+            } else {
+                Unit // Ensure else branch exists for expression safety
             }
         } catch (e: MqttException) {
             Log.w(TAG, "Advertencia al desconectar: ${e.message}")
