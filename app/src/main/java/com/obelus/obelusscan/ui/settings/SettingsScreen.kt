@@ -8,6 +8,7 @@ import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Cloud
 import androidx.compose.material.icons.filled.CloudOff
 import androidx.compose.material.icons.filled.DarkMode
+import androidx.compose.material.icons.filled.BugReport
 import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material.icons.filled.Speed
 import androidx.compose.material.icons.filled.Straighten
@@ -25,6 +26,7 @@ import android.widget.Toast
 @Composable
 fun SettingsScreen(
     viewModel: SettingsViewModel = hiltViewModel(),
+    onNavigateToCrashLogs: () -> Unit,
     onBack: () -> Unit
 ) {
     val theme by viewModel.theme.collectAsState()
@@ -203,7 +205,23 @@ fun SettingsScreen(
                     onValueChange = viewModel::setVehicleWeight
                 )
             }
-            // ── Fin Race Mode ────────────────────────────────────────────────
+            // ── Sección Diagonóstico ─────────────────────────────────────────
+            SettingsSection("Diagnóstico") {
+                OutlinedButton(
+                    onClick = onNavigateToCrashLogs,
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Icon(Icons.Default.BugReport, contentDescription = null)
+                    Spacer(Modifier.width(8.dp))
+                    Text("Ver logs de errores")
+                }
+                Text(
+                    "Utiliza esta sección si la app se cierra inesperadamente o hay errores de conexión.",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    modifier = Modifier.padding(top = 8.dp)
+                )
+            }
 
             Spacer(modifier = Modifier.height(24.dp))
 

@@ -5,6 +5,7 @@ import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
 import android.net.wifi.WifiManager
 import android.text.format.Formatter
+import java.net.Inet4Address
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -35,7 +36,7 @@ class WebServerManager @Inject constructor(
         try {
             val ip = getLocalIpAddress()
             if (ip == null) {
-                _state.value = WebServerState.Error("No se encontró conexión WiFi")
+                _state.value = WebServerState.Error("Conecta a WiFi primero")
                 return
             }
 
@@ -55,11 +56,21 @@ class WebServerManager @Inject constructor(
 
     private fun getLocalIpAddress(): String? {
         return try {
-            val wm = context.applicationContext.getSystemService(Context.WIFI_SERVICE) as WifiManager
-            @Suppress("DEPRECATION")
-            Formatter.formatIpAddress(wm.connectionInfo.ipAddress)
-                .takeIf { it != "0.0.0.0" }
+            val cm = context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+            val network = cm.activeNetwork ?: return null
+            val capabilities = cm.getNetworkCapabilities(network) ?: return null
+            
+            // Permitir WiFi, Ethernet o USB Tethering
+            val hasValidTransport = capabilities.hasTransport(NetworkCapabilities.TRANSPORT_WIFI) ||
+                    capabilities.hasTransport(NetworkCapabilities.TRANSPORT_ETHERNET) ||
+                    capabilities.hasTransport(NetworkCapabilities.TRANSPORT_USB)
+            
+            if (!hasValidTransport) return null
+            
+            val linkProperties = cm.getLinkProperties(network) ?: return null
+            linkProperties.linkAddresses.find { it.address is Inet4Address }?.address?.hostAddress
         } catch (e: Exception) {
+            e.printStackTrace()
             null
         }
     }

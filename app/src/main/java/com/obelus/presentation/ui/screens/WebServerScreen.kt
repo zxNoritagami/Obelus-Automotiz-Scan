@@ -33,6 +33,7 @@ private val AccentBlue    = Color(0xFF58A6FF)
 private val AccentPurple  = Color(0xFFBC8CFF)
 private val TextPrimary   = Color(0xFFE6EDF3)
 private val TextMuted     = Color(0xFF8B949E)
+private val AccentRed     = Color(0xFFF85149)
 private val DividerColor  = Color(0xFF30363D)
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -66,7 +67,9 @@ fun WebServerScreen(
             // SECCIÓN A: CONTROL
             ServerControlCard(
                 isRunning = state is WebServerState.Running,
-                onToggle = viewModel::toggleServer
+                error = (state as? WebServerState.Error)?.message,
+                onToggle = viewModel::toggleServer,
+                onRefresh = { viewModel.toggleServer(); viewModel.toggleServer() } // Re-trigger detection
             )
 
             Spacer(Modifier.height(24.dp))
@@ -107,40 +110,61 @@ fun WebServerScreen(
 }
 
 @Composable
-private fun ServerControlCard(isRunning: Boolean, onToggle: () -> Unit) {
+private fun ServerControlCard(
+    isRunning: Boolean, 
+    error: String?,
+    onToggle: () -> Unit,
+    onRefresh: () -> Unit
+) {
     Card(
         modifier = Modifier.fillMaxWidth(),
         colors = CardDefaults.cardColors(containerColor = BgPanel),
         shape = RoundedCornerShape(16.dp)
     ) {
-        Row(
-            modifier = Modifier.padding(20.dp),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.SpaceBetween
-        ) {
-            Column(modifier = Modifier.weight(1f)) {
-                Text(
-                    text = if (isRunning) "Servidor Activo" else "Servidor Inactivo",
-                    color = if (isRunning) Color(0xFF00FF88) else TextMuted,
-                    fontWeight = FontWeight.Bold,
-                    fontSize = 18.sp
-                )
-                Text(
-                    text = if (isRunning) "Transmitiendo PIDs en tiempo real" else "Toca para iniciar el servidor web",
-                    color = TextMuted,
-                    fontSize = 12.sp
+        Column(modifier = Modifier.padding(20.dp)) {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                Column(modifier = Modifier.weight(1f)) {
+                    Text(
+                        text = if (isRunning) "Servidor Activo" else "Servidor Inactivo",
+                        color = if (isRunning) Color(0xFF00FF88) else TextMuted,
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 18.sp
+                    )
+                    Text(
+                        text = if (isRunning) "Transmitiendo PIDs en tiempo real" else "Toca para iniciar el servidor web",
+                        color = if (error != null) AccentRed else TextMuted,
+                        fontSize = 12.sp
+                    )
+                }
+                Switch(
+                    checked = isRunning,
+                    onCheckedChange = { onToggle() },
+                    colors = SwitchDefaults.colors(
+                        checkedThumbColor = Color.White,
+                        checkedTrackColor = AccentPurple,
+                        uncheckedThumbColor = TextMuted,
+                        uncheckedTrackColor = BgDark
+                    )
                 )
             }
-            Switch(
-                checked = isRunning,
-                onCheckedChange = { onToggle() },
-                colors = SwitchDefaults.colors(
-                    checkedThumbColor = Color.White,
-                    checkedTrackColor = AccentPurple,
-                    uncheckedThumbColor = TextMuted,
-                    uncheckedTrackColor = BgDark
-                )
-            )
+            
+            if (error != null || !isRunning) {
+                Spacer(Modifier.height(12.dp))
+                OutlinedButton(
+                    onClick = onRefresh,
+                    modifier = Modifier.align(Alignment.End),
+                    contentPadding = PaddingValues(horizontal = 12.dp, vertical = 4.dp),
+                    shape = RoundedCornerShape(8.dp)
+                ) {
+                    Icon(Icons.Default.Refresh, null, Modifier.size(14.dp))
+                    Spacer(Modifier.width(4.dp))
+                    Text("Refrescar Red", fontSize = 11.sp)
+                }
+            }
         }
     }
 }

@@ -3,6 +3,7 @@ package com.obelus.presentation.viewmodel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.obelus.data.local.dao.DbcDefinitionDao
+import com.obelus.data.crash.CrashReporter
 import com.obelus.data.local.entity.CanSignal
 import com.obelus.data.local.entity.DbcDefinition
 import com.obelus.data.local.entity.DbcSignalOverride
@@ -12,11 +13,12 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 // ─────────────────────────────────────────────────────────────────────────────
-// UI State
+// UI State — single consolidated StateFlow
 // ─────────────────────────────────────────────────────────────────────────────
 
 data class DbcEditorUiState(
@@ -36,28 +38,35 @@ data class DbcEditorUiState(
 
 @HiltViewModel
 class DbcEditorViewModel @Inject constructor(
-    private val dbcDao: DbcDefinitionDao
+    private val dbcDao: DbcDefinitionDao,
+    private val crashReporter: CrashReporter
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(DbcEditorUiState())
     val uiState: StateFlow<DbcEditorUiState> = _uiState.asStateFlow()
 
     init {
-        loadDefinitions()
+        // Defer initial load to avoid emitting state during the init block
+        viewModelScope.launch {
+            loadDefinitions()
+        }
     }
 
     // ── List operations ───────────────────────────────────────────────────────
 
     fun loadDefinitions() {
         viewModelScope.launch {
+            // Batch: set loading=true in one emission
             _uiState.value = _uiState.value.copy(isLoading = true, errorMessage = null)
             try {
                 val defs = dbcDao.getAll()
+                // Batch: set definitions + loading=false in one single emission
                 _uiState.value = _uiState.value.copy(
                     definitions = defs,
                     isLoading = false
                 )
             } catch (e: Exception) {
+                crashReporter.logCrash(e, "DbcEditor_loadDefinitions")
                 _uiState.value = _uiState.value.copy(
                     isLoading = false,
                     errorMessage = "Error cargando definiciones: ${e.message}"
@@ -68,9 +77,15 @@ class DbcEditorViewModel @Inject constructor(
 
     fun selectDefinition(definition: DbcDefinition) {
         viewModelScope.launch {
-            _uiState.value = _uiState.value.copy(isLoading = true, selectedDefinition = definition)
+            // Batch: set selectedDefinition + isLoading in one emission
+            _uiState.value = _uiState.value.copy(
+                isLoading = true,
+                selectedDefinition = definition,
+                selectedSignals = emptyList()   // Clear stale data immediately
+            )
             try {
                 val signals = dbcDao.getSignalsForDefinition(definition.id)
+                // Batch: set signals + loading=false in one single emission
                 _uiState.value = _uiState.value.copy(
                     selectedSignals = signals,
                     isLoading = false
@@ -103,10 +118,19 @@ class DbcEditorViewModel @Inject constructor(
                     isBuiltIn = false
                 )
                 val id = dbcDao.insertDefinition(newDef)
-                loadDefinitions()
-                // Auto-select the newly created definition
+                val defs = dbcDao.getAll()
                 val created = dbcDao.getById(id)
-                if (created != null) selectDefinition(created)
+                val signals = if (created != null) {
+                    dbcDao.getSignalsForDefinition(created.id)
+                } else emptyList()
+
+                // All updates in ONE single emission — no rapid sequential mutations
+                _uiState.value = _uiState.value.copy(
+                    definitions = defs,
+                    selectedDefinition = created,
+                    selectedSignals = signals,
+                    isLoading = false
+                )
             } catch (e: Exception) {
                 _uiState.value = _uiState.value.copy(
                     errorMessage = "Error creando definición: ${e.message}"
@@ -132,8 +156,12 @@ class DbcEditorViewModel @Inject constructor(
                     updatedAt = System.currentTimeMillis()
                 )
                 dbcDao.updateDefinition(updated)
-                _uiState.value = _uiState.value.copy(selectedDefinition = updated)
-                loadDefinitions()
+                val defs = dbcDao.getAll()
+                // ONE emission: update definitions list + selectedDefinition
+                _uiState.value = _uiState.value.copy(
+                    definitions = defs,
+                    selectedDefinition = updated
+                )
             } catch (e: Exception) {
                 _uiState.value = _uiState.value.copy(
                     errorMessage = "Error actualizando definición: ${e.message}"
@@ -152,13 +180,14 @@ class DbcEditorViewModel @Inject constructor(
         viewModelScope.launch {
             try {
                 dbcDao.deleteUserDefinition(definition.id)
-                if (_uiState.value.selectedDefinition?.id == definition.id) {
-                    _uiState.value = _uiState.value.copy(
-                        selectedDefinition = null,
-                        selectedSignals = emptyList()
-                    )
-                }
-                loadDefinitions()
+                val defs = dbcDao.getAll()
+                val wasSelected = _uiState.value.selectedDefinition?.id == definition.id
+                // ONE emission: clear selection if needed, update list
+                _uiState.value = _uiState.value.copy(
+                    definitions = defs,
+                    selectedDefinition = if (wasSelected) null else _uiState.value.selectedDefinition,
+                    selectedSignals = if (wasSelected) emptyList() else _uiState.value.selectedSignals
+                )
             } catch (e: Exception) {
                 _uiState.value = _uiState.value.copy(
                     errorMessage = "Error eliminando definición: ${e.message}"
@@ -205,13 +234,14 @@ class DbcEditorViewModel @Inject constructor(
                     isCustom = true
                 )
                 dbcDao.insertSignals(listOf(signal))
-                // Refresh signal count cache
-                val count = dbcDao.getSignalsForDefinition(defId).size
-                dbcDao.updateSignalCount(defId, count)
-                // Reload signals for selected definition
                 val signals = dbcDao.getSignalsForDefinition(defId)
-                _uiState.value = _uiState.value.copy(selectedSignals = signals)
-                loadDefinitions()
+                dbcDao.updateSignalCount(defId, signals.size)
+                val defs = dbcDao.getAll()
+                // ONE emission with everything updated
+                _uiState.value = _uiState.value.copy(
+                    selectedSignals = signals,
+                    definitions = defs
+                )
             } catch (e: Exception) {
                 _uiState.value = _uiState.value.copy(
                     errorMessage = "Error creando señal: ${e.message}"
@@ -224,16 +254,16 @@ class DbcEditorViewModel @Inject constructor(
         val defId = _uiState.value.selectedDefinition?.id ?: return
         viewModelScope.launch {
             try {
-                // Remove from list (DAO doesn't have a direct delete-by-id for signals,
-                // so we update the signal setting dbcDefinitionId = null via canSignalDao;
-                // here we just reload after the operation — using the unlink approach)
                 val updated = signal.copy(dbcDefinitionId = null)
                 dbcDao.insertSignals(listOf(updated)) // REPLACE strategy will update
                 val signals = dbcDao.getSignalsForDefinition(defId)
-                val count = signals.size
-                dbcDao.updateSignalCount(defId, count)
-                _uiState.value = _uiState.value.copy(selectedSignals = signals)
-                loadDefinitions()
+                dbcDao.updateSignalCount(defId, signals.size)
+                val defs = dbcDao.getAll()
+                // ONE emission
+                _uiState.value = _uiState.value.copy(
+                    selectedSignals = signals,
+                    definitions = defs
+                )
             } catch (e: Exception) {
                 _uiState.value = _uiState.value.copy(
                     errorMessage = "Error eliminando señal: ${e.message}"

@@ -33,6 +33,8 @@ import com.obelus.presentation.ui.screens.LogViewerScreen
 import com.obelus.presentation.ui.screens.RaceHistoryScreen
 import com.obelus.presentation.ui.screens.SecurityAccessScreen
 import com.obelus.presentation.ui.screens.WebServerScreen
+import com.obelus.presentation.ui.screens.CrashLogScreen
+import com.obelus.data.crash.CrashReporter
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
@@ -41,6 +43,9 @@ class MainActivity : ComponentActivity() {
 
     @Inject
     lateinit var settingsDataStore: SettingsDataStore
+
+    @Inject
+    lateinit var crashReporter: CrashReporter
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -54,7 +59,7 @@ class MainActivity : ComponentActivity() {
             }
 
             ObelusTheme(darkTheme = darkTheme) {
-                MainScreen()
+                MainScreen(crashReporter)
             }
         }
     }
@@ -62,7 +67,7 @@ class MainActivity : ComponentActivity() {
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun MainScreen() {
+fun MainScreen(crashReporter: CrashReporter) {
     val navController = rememberNavController()
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val currentDestination = navBackStackEntry?.destination
@@ -154,11 +159,26 @@ fun MainScreen() {
             composable("race_history") {
                 RaceHistoryScreen(onBack = { navController.popBackStack() })
             }
-            composable("dbc_editor") {
+            composable(
+                "dbc_editor",
+                enterTransition = null,
+                exitTransition = null,
+                popEnterTransition = null,
+                popExitTransition = null
+            ) {
                 DbcEditorScreen(onBack = { navController.popBackStack() })
             }
             composable("settings") {
-                SettingsScreen(onBack = { navController.popBackStack() })
+                SettingsScreen(
+                    onNavigateToCrashLogs = { navController.navigate("crash_logs") },
+                    onBack = { navController.popBackStack() }
+                )
+            }
+            composable("crash_logs") {
+                CrashLogScreen(
+                    crashReporter = crashReporter,
+                    onBack = { navController.popBackStack() }
+                )
             }
         }
     }

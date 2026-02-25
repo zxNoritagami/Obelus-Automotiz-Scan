@@ -28,81 +28,93 @@ fun DbcEditorScreen(
     onBack: () -> Unit,
     viewModel: DbcEditorViewModel = hiltViewModel()
 ) {
+    // Read state ONCE per recomposition — never branch inside state collection
     val uiState by viewModel.uiState.collectAsState()
 
-    // Show error snackbar
+    // Capture dialog flags as stable locals to avoid reading uiState multiple times
+    val showCreateDialog = uiState.showCreateDialog
+    val showSignalDialog = uiState.showSignalDialog
+    val editingSignal = uiState.editingSignal
+
     val snackbarHostState = remember { SnackbarHostState() }
+
+    // Error snackbar — use key to prevent re-triggering on unrelated recompositions
     LaunchedEffect(uiState.errorMessage) {
-        uiState.errorMessage?.let {
-            snackbarHostState.showSnackbar(it)
+        uiState.errorMessage?.let { msg ->
+            snackbarHostState.showSnackbar(msg)
             viewModel.clearError()
         }
     }
 
-    Scaffold(
-        snackbarHost = { SnackbarHost(snackbarHostState) },
-        floatingActionButton = {
-            FloatingActionButton(onClick = { viewModel.showCreateDefinitionDialog() }) {
-                Icon(Icons.Default.Add, contentDescription = "Nueva definición DBC")
+    // ── Root Box — dialogs INSIDE the same composition tree, no orphan composables ──
+    Box(modifier = Modifier.fillMaxSize()) {
+        Scaffold(
+            snackbarHost = { SnackbarHost(snackbarHostState) },
+            floatingActionButton = {
+                FloatingActionButton(onClick = { viewModel.showCreateDefinitionDialog() }) {
+                    Icon(Icons.Default.Add, contentDescription = "Nueva definición DBC")
+                }
+            }
+        ) { padding ->
+            Row(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(padding)
+            ) {
+                // ── Left panel: definition list (30%) ─────────────────────────
+                DefinitionListPanel(
+                    definitions = uiState.definitions,
+                    selectedDefinition = uiState.selectedDefinition,
+                    isLoading = uiState.isLoading,
+                    onSelect = { viewModel.selectDefinition(it) },
+                    onDelete = { viewModel.deleteDefinition(it) },
+                    modifier = Modifier
+                        .weight(0.30f)
+                        .fillMaxHeight()
+                )
+
+                VerticalDivider()
+
+                // ── Right panel: definition detail (70%) ──────────────────────
+                DefinitionDetailPanel(
+                    definition = uiState.selectedDefinition,
+                    signals = uiState.selectedSignals,
+                    isLoading = uiState.isLoading,
+                    onUpdateDefinition = { name, desc, proto ->
+                        viewModel.updateDefinition(name, desc, proto)
+                    },
+                    onAddSignal = { viewModel.showSignalEditorDialog() },
+                    onEditSignal = { viewModel.showSignalEditorDialog(it) },
+                    onDeleteSignal = { viewModel.deleteSignal(it) },
+                    modifier = Modifier
+                        .weight(0.70f)
+                        .fillMaxHeight()
+                )
             }
         }
-    ) { padding ->
-        Row(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(padding)
-        ) {
-            // ── Left panel: definition list (30%) ─────────────────────────────
-            DefinitionListPanel(
-                definitions = uiState.definitions,
-                selectedDefinition = uiState.selectedDefinition,
-                isLoading = uiState.isLoading,
-                onSelect = { viewModel.selectDefinition(it) },
-                onDelete = { viewModel.deleteDefinition(it) },
-                modifier = Modifier
-                    .weight(0.30f)
-                    .fillMaxHeight()
-            )
 
-            VerticalDivider()
-
-            // ── Right panel: definition detail (70%) ──────────────────────────
-            DefinitionDetailPanel(
-                definition = uiState.selectedDefinition,
-                signals = uiState.selectedSignals,
-                isLoading = uiState.isLoading,
-                onUpdateDefinition = { name, desc, proto ->
-                    viewModel.updateDefinition(name, desc, proto)
-                },
-                onAddSignal = { viewModel.showSignalEditorDialog() },
-                onEditSignal = { viewModel.showSignalEditorDialog(it) },
-                onDeleteSignal = { viewModel.deleteSignal(it) },
-                modifier = Modifier
-                    .weight(0.70f)
-                    .fillMaxHeight()
+        // ── Dialogs — placed INSIDE the Box so they share the same slot table
+        //    as the rest of the screen. Never placed outside Scaffold/Box.  ──
+        if (showCreateDialog) {
+            CreateDbcDialog(
+                onDismiss = { viewModel.dismissCreateDialog() },
+                onCreate = { name, desc, proto ->
+                    viewModel.dismissCreateDialog()
+                    viewModel.createDefinition(name, desc, proto)
+                }
             )
         }
-    }
 
-    // ── Dialogs ───────────────────────────────────────────────────────────────
-
-    if (uiState.showCreateDialog) {
-        CreateDbcDialog(
-            onDismiss = { viewModel.dismissCreateDialog() },
-            onCreate = { name, desc, proto ->
-                viewModel.createDefinition(name, desc, proto)
-            }
-        )
-    }
-
-    if (uiState.showSignalDialog) {
-        DbcSignalEditorDialog(
-            existingSignal = uiState.editingSignal,
-            onDismiss = { viewModel.dismissSignalDialog() },
-            onSave = { name, canId, startBit, length, factor, offset, unit, endian, signed ->
-                viewModel.createCustomSignal(name, canId, startBit, length, factor, offset, unit, endian, signed)
-            }
-        )
+        if (showSignalDialog) {
+            DbcSignalEditorDialog(
+                existingSignal = editingSignal,
+                onDismiss = { viewModel.dismissSignalDialog() },
+                onSave = { name, canId, startBit, length, factor, offset, unit, endian, signed ->
+                    viewModel.dismissSignalDialog()
+                    viewModel.createCustomSignal(name, canId, startBit, length, factor, offset, unit, endian, signed)
+                }
+            )
+        }
     }
 }
 
@@ -128,46 +140,46 @@ private fun DefinitionListPanel(
         )
         HorizontalDivider()
 
-        if (isLoading && definitions.isEmpty()) {
-            Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                CircularProgressIndicator()
-            }
-            return@Column
-        }
-
-        if (definitions.isEmpty()) {
-            Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                    Icon(
-                        Icons.Default.FolderOpen,
-                        contentDescription = null,
-                        tint = MaterialTheme.colorScheme.onSurfaceVariant,
-                        modifier = Modifier.size(40.dp)
-                    )
-                    Spacer(Modifier.height(8.dp))
-                    Text(
-                        "Sin definiciones",
-                        style = MaterialTheme.typography.bodyMedium,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
-                    )
-                    Text(
-                        "Usa el botón + para crear una",
-                        style = MaterialTheme.typography.labelSmall,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
-                    )
+        when {
+            isLoading && definitions.isEmpty() -> {
+                Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                    CircularProgressIndicator()
                 }
             }
-            return@Column
-        }
-
-        LazyColumn {
-            items(definitions, key = { it.id }) { def ->
-                DbcDefinitionCard(
-                    definition = def,
-                    isSelected = selectedDefinition?.id == def.id,
-                    onClick = { onSelect(def) },
-                    onDelete = { onDelete(def) }
-                )
+            definitions.isEmpty() -> {
+                Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                        Icon(
+                            Icons.Default.FolderOpen,
+                            contentDescription = null,
+                            tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                            modifier = Modifier.size(40.dp)
+                        )
+                        Spacer(Modifier.height(8.dp))
+                        Text(
+                            "Sin definiciones",
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                        Text(
+                            "Usa el botón + para crear una",
+                            style = MaterialTheme.typography.labelSmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                    }
+                }
+            }
+            else -> {
+                LazyColumn {
+                    items(definitions, key = { it.id }) { def ->
+                        DbcDefinitionCard(
+                            definition = def,
+                            isSelected = selectedDefinition?.id == def.id,
+                            onClick = { onSelect(def) },
+                            onDelete = { onDelete(def) }
+                        )
+                    }
+                }
             }
         }
     }
@@ -208,18 +220,15 @@ private fun DbcDefinitionCard(
                         modifier = Modifier.weight(1f)
                     )
                     Spacer(Modifier.width(4.dp))
-                    // Built-in / Custom badge
-                    if (definition.isBuiltIn) {
-                        SuggestionChip(
-                            onClick = {},
-                            label = { Text("Built-in", style = MaterialTheme.typography.labelSmall) }
-                        )
-                    } else {
-                        SuggestionChip(
-                            onClick = {},
-                            label = { Text("Custom", style = MaterialTheme.typography.labelSmall) }
-                        )
-                    }
+                    SuggestionChip(
+                        onClick = {},
+                        label = {
+                            Text(
+                                if (definition.isBuiltIn) "Built-in" else "Custom",
+                                style = MaterialTheme.typography.labelSmall
+                            )
+                        }
+                    )
                 }
                 if (!definition.description.isNullOrBlank()) {
                     Text(
@@ -237,7 +246,6 @@ private fun DbcDefinitionCard(
                 )
             }
 
-            // Context menu (delete only — not for built-ins)
             if (!definition.isBuiltIn) {
                 Box {
                     IconButton(onClick = { showMenu = true }, modifier = Modifier.size(32.dp)) {
@@ -285,97 +293,104 @@ private fun DefinitionDetailPanel(
     onDeleteSignal: (CanSignal) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    if (definition == null) {
-        Box(modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-            Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                Icon(
-                    Icons.Default.TouchApp,
-                    contentDescription = null,
-                    tint = MaterialTheme.colorScheme.onSurfaceVariant,
-                    modifier = Modifier.size(48.dp)
-                )
-                Spacer(Modifier.height(12.dp))
-                Text(
-                    "Selecciona una definición DBC",
-                    style = MaterialTheme.typography.bodyLarge,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                )
-                Text(
-                    "o crea una nueva con el botón +",
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                )
-            }
-        }
-        return
-    }
-
-    Column(modifier = modifier.padding(16.dp)) {
-        // ── Header ─────────────────────────────────────────────────────────
-        Text(
-            definition.name,
-            style = MaterialTheme.typography.titleMedium,
-            fontWeight = FontWeight.Bold
-        )
-        Spacer(Modifier.height(4.dp))
-        Text(
-            "Protocolo: ${definition.protocol}  ·  ${if (definition.isBuiltIn) "Integrado (solo lectura)" else "Personalizado"}",
-            style = MaterialTheme.typography.labelMedium,
-            color = MaterialTheme.colorScheme.onSurfaceVariant
-        )
-
-        HorizontalDivider(modifier = Modifier.padding(vertical = 12.dp))
-
-        // ── Signals section ────────────────────────────────────────────────
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier.fillMaxWidth()
-        ) {
-            Text(
-                "Señales (${signals.size})",
-                style = MaterialTheme.typography.titleSmall,
-                fontWeight = FontWeight.SemiBold,
-                modifier = Modifier.weight(1f)
-            )
-            if (!definition.isBuiltIn) {
-                FilledTonalButton(
-                    onClick = onAddSignal,
-                    contentPadding = PaddingValues(horizontal = 12.dp, vertical = 6.dp)
-                ) {
-                    Icon(Icons.Default.Add, contentDescription = null, modifier = Modifier.size(16.dp))
-                    Spacer(Modifier.width(4.dp))
-                    Text("Agregar Señal", style = MaterialTheme.typography.labelMedium)
+    // Use a stable `when` branch — no early returns that confuse the slot table
+    when (definition) {
+        null -> {
+            Box(modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                    Icon(
+                        Icons.Default.TouchApp,
+                        contentDescription = null,
+                        tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                        modifier = Modifier.size(48.dp)
+                    )
+                    Spacer(Modifier.height(12.dp))
+                    Text(
+                        "Selecciona una definición DBC",
+                        style = MaterialTheme.typography.bodyLarge,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                    Text(
+                        "o crea una nueva con el botón +",
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
                 }
             }
         }
-        Spacer(Modifier.height(8.dp))
-
-        if (isLoading) {
-            Box(Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
-                CircularProgressIndicator(modifier = Modifier.size(28.dp))
-            }
-        } else if (signals.isEmpty()) {
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(vertical = 24.dp),
-                contentAlignment = Alignment.Center
-            ) {
+        else -> {
+            Column(modifier = modifier.padding(16.dp)) {
+                // ── Header ──
                 Text(
-                    "Sin señales asociadas",
-                    style = MaterialTheme.typography.bodyMedium,
+                    definition.name,
+                    style = MaterialTheme.typography.titleMedium,
+                    fontWeight = FontWeight.Bold
+                )
+                Spacer(Modifier.height(4.dp))
+                Text(
+                    "Protocolo: ${definition.protocol}  ·  ${if (definition.isBuiltIn) "Integrado (solo lectura)" else "Personalizado"}",
+                    style = MaterialTheme.typography.labelMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
-            }
-        } else {
-            LazyColumn(verticalArrangement = Arrangement.spacedBy(6.dp)) {
-                items(signals, key = { it.id }) { signal ->
-                    DbcSignalItem(
-                        signal = signal,
-                        readOnly = definition.isBuiltIn,
-                        onEdit = { onEditSignal(signal) },
-                        onDelete = { onDeleteSignal(signal) }
+
+                HorizontalDivider(modifier = Modifier.padding(vertical = 12.dp))
+
+                // ── Signals section ──
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Text(
+                        "Señales (${signals.size})",
+                        style = MaterialTheme.typography.titleSmall,
+                        fontWeight = FontWeight.SemiBold,
+                        modifier = Modifier.weight(1f)
                     )
+                    if (!definition.isBuiltIn) {
+                        FilledTonalButton(
+                            onClick = onAddSignal,
+                            contentPadding = PaddingValues(horizontal = 12.dp, vertical = 6.dp)
+                        ) {
+                            Icon(Icons.Default.Add, contentDescription = null, modifier = Modifier.size(16.dp))
+                            Spacer(Modifier.width(4.dp))
+                            Text("Agregar Señal", style = MaterialTheme.typography.labelMedium)
+                        }
+                    }
+                }
+                Spacer(Modifier.height(8.dp))
+
+                when {
+                    isLoading -> {
+                        Box(Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
+                            CircularProgressIndicator(modifier = Modifier.size(28.dp))
+                        }
+                    }
+                    signals.isEmpty() -> {
+                        Box(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(vertical = 24.dp),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Text(
+                                "Sin señales asociadas",
+                                style = MaterialTheme.typography.bodyMedium,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                            )
+                        }
+                    }
+                    else -> {
+                        LazyColumn(verticalArrangement = Arrangement.spacedBy(6.dp)) {
+                            items(signals, key = { it.id }) { signal ->
+                                DbcSignalItem(
+                                    signal = signal,
+                                    readOnly = definition.isBuiltIn,
+                                    onEdit = { onEditSignal(signal) },
+                                    onDelete = { onDeleteSignal(signal) }
+                                )
+                            }
+                        }
+                    }
                 }
             }
         }

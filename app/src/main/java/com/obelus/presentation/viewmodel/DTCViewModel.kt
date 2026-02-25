@@ -37,6 +37,9 @@ class DTCViewModel @Inject constructor(
     private val _detectedManufacturer = MutableStateFlow("GENERIC")
     val detectedManufacturer: StateFlow<String> = _detectedManufacturer.asStateFlow()
 
+    private val _error = MutableStateFlow<String?>(null)
+    val error: StateFlow<String?> = _error.asStateFlow()
+
     init {
         // Asegurar que la DB de DTCs de fabricante está inicializada
         viewModelScope.launch {
@@ -49,9 +52,11 @@ class DTCViewModel @Inject constructor(
             _isScanning.value = true
             try {
                 if (!obdRepository.isConnected()) {
+                    _error.value = "Conecta al adaptador OBD2 primero"
                     _isScanning.value = false
                     return@launch
                 }
+                _error.value = null
 
                 // 1. Leer DTCs OBD2 raw
                 val response     = obdRepository.sendCommand(DTCCommand.GET_CURRENT_DTCS)
@@ -83,10 +88,17 @@ class DTCViewModel @Inject constructor(
 
     fun clearDTCs() {
         viewModelScope.launch {
-            if (obdRepository.isConnected()) {
+            if (!obdRepository.isConnected()) {
+                _error.value = "Conecta al adaptador OBD2 primero"
+                return@launch
+            }
+            try {
                 obdRepository.sendCommand(DTCCommand.CLEAR_DTCS)
                 _dtcs.value = emptyList()
                 _enrichedDtcs.value = emptyList()
+                _error.value = null
+            } catch (e: Exception) {
+                _error.value = "Error al borrar: ${e.message}"
             }
         }
     }
