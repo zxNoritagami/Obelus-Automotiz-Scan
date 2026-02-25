@@ -1,0 +1,402 @@
+[
+    {
+        "code": "P1351",
+        "descriptionEs": "Control de la distribución de encendido - circuito primario defectuoso (PSA)",
+        "descriptionEn": "Ignition Coil A Primary/Secondary Circuit Malfunction",
+        "severity": "ERROR",
+        "system": "ENGINE",
+        "possibleCauses": "Bobina de encendido|Módulo CDI|Cableado de encendido"
+    },
+    {
+        "code": "P0480",
+        "descriptionEs": "Circuito de control del ventilador de refrigeración 1 (PSA)",
+        "descriptionEn": "Cooling Fan 1 Control Circuit Malfunction",
+        "severity": "WARNING",
+        "system": "ENGINE",
+        "possibleCauses": "Relé del ventilador|ECM|Motor del ventilador quemado"
+    },
+    {
+        "code": "P0494",
+        "descriptionEs": "Velocidad del ventilador de refrigeración baja",
+        "descriptionEn": "Cooling Fan Speed Low",
+        "severity": "WARNING",
+        "system": "ENGINE",
+        "possibleCauses": "Ventilador de refrigeración|Resistencia del ventilador|BSM"
+    },
+    {
+        "code": "P1445",
+        "descriptionEs": "Válvula de purga EVAP - rango/rendimiento del circuito (PSA específico)",
+        "descriptionEn": "Evaporative Emission Purge Valve Circuit Range/Performance",
+        "severity": "WARNING",
+        "system": "EMISSIONS",
+        "possibleCauses": "Válvula de purga atascada|Cánister saturado|ECM"
+    },
+    {
+        "code": "U1113",
+        "descriptionEs": "Fallo en comunicación del Multiplex CAN con BSI",
+        "descriptionEn": "Lost Communication With BSI (Body Systems Interface)",
+        "severity": "ERROR",
+        "system": "NETWORK",
+        "possibleCauses": "BSI sin alimentación|Bus CAN Multiplex|Fusible BSI"
+    },
+    {
+        "code": "U1118",
+        "descriptionEs": "Fallo de comunicación con ABS/ESP vía Multiplex CAN",
+        "descriptionEn": "Lost Communication With ABS/ESP Module via Multiplex",
+        "severity": "ERROR",
+        "system": "NETWORK",
+        "possibleCauses": "Módulo ABS/ESP|Bus CAN|Cableado Multiplex"
+    },
+    {
+        "code": "B1003",
+        "descriptionEs": "Señal de airbag del conductor ausente o defectuosa (PSA)",
+        "descriptionEn": "Driver Airbag Circuit Malfunction",
+        "severity": "ERROR",
+        "system": "AIRBAG",
+        "possibleCauses": "Espiral de reloj|Conector airbag conductor|UCH"
+    },
+    {
+        "code": "B1004",
+        "descriptionEs": "Señal de airbag del pasajero ausente o defectuosa (PSA)",
+        "descriptionEn": "Passenger Airbag Circuit Malfunction",
+        "severity": "ERROR",
+        "system": "AIRBAG",
+        "possibleCauses": "Airbag pasajero|Conector airbag|UCH defectuoso"
+    },
+    {
+        "code": "P0001",
+        "descriptionEs": "Circuito del regulador de volumen de combustible abierto",
+        "descriptionEn": "Fuel Volume Regulator Control Circuit Open",
+        "severity": "WARNING",
+        "system": "FUEL",
+        "possibleCauses": "Regulador de presión common rail|Cableado|ECM"
+    },
+    {
+        "code": "P0016",
+        "descriptionEs": "Árbol de levas de admisión y posición del cigüeñal fuera de correlación",
+        "descriptionEn": "Crankshaft Position - Camshaft Position Correlation Bank 1 Sensor A",
+        "severity": "ERROR",
+        "system": "ENGINE",
+        "possibleCauses": "Cadena de distribución|Sensor de árbol levas|Rueda fónica"
+    },
+    {
+        "code": "P0087",
+        "descriptionEs": "Presión de combustible en rail demasiado baja (PSA)",
+        "descriptionEn": "Fuel Rail/System Pressure Too Low",
+        "severity": "ERROR",
+        "system": "FUEL",
+        "possibleCauses": "Bomba de alta presión|Inyectores de retorno|Sensor de presión rail"
+    },
+    {
+        "code": "P0090",
+        "descriptionEs": "Circuito del actuador regulador de presión de combustible abierto/roto",
+        "descriptionEn": "Fuel Pressure Regulator 1 Control Circuit Open",
+        "severity": "WARNING",
+        "system": "FUEL",
+        "possibleCauses": "Regulador de presión|Cableado|ECM"
+    },
+    {
+        "code": "P0093",
+        "descriptionEs": "Fuga grande detectada en el sistema de combustible",
+        "descriptionEn": "Fuel System Leak Detected - Large Leak",
+        "severity": "ERROR",
+        "system": "FUEL",
+        "possibleCauses": "Fugas en línea de combustible|Inyectores|Bomba de alta presión"
+    },
+    {
+        "code": "P0100",
+        "descriptionEs": "Circuito del caudalímetro de masa de aire (MAF) - mal funcionamiento",
+        "descriptionEn": "Mass or Volume Air Flow Circuit Malfunction",
+        "severity": "WARNING",
+        "system": "ENGINE",
+        "possibleCauses": "MAF sucio o defectuoso|Fuga de admisión|Cableado MAF"
+    },
+    {
+        "code": "P0112",
+        "descriptionEs": "Circuito del sensor de temperatura de aire entrante - señal baja",
+        "descriptionEn": "Intake Air Temperature Circuit Low Input",
+        "severity": "INFO",
+        "system": "ENGINE",
+        "possibleCauses": "Sensor IAT cortocircuitado|Conector|ECM"
+    },
+    {
+        "code": "P0182",
+        "descriptionEs": "Circuito del sensor de temperatura de combustible - señal baja",
+        "descriptionEn": "Fuel Temperature Sensor A Circuit Low Input",
+        "severity": "INFO",
+        "system": "FUEL",
+        "possibleCauses": "Sensor de temperatura de combustible|Cableado|ECM"
+    },
+    {
+        "code": "P0191",
+        "descriptionEs": "Rendimiento del circuito del sensor de temperatura de la rampa de combustible",
+        "descriptionEn": "Fuel Rail Pressure Sensor Circuit Range/Performance",
+        "severity": "WARNING",
+        "system": "FUEL",
+        "possibleCauses": "Sensor de presión rail|Presión fluctuante|ECM"
+    },
+    {
+        "code": "P0230",
+        "descriptionEs": "Circuito primario de la bomba de combustible defectuoso",
+        "descriptionEn": "Fuel Pump Primary Circuit Malfunction",
+        "severity": "ERROR",
+        "system": "FUEL",
+        "possibleCauses": "Relé bomba combustible|Bomba débil|Fusible de bomba"
+    },
+    {
+        "code": "P0235",
+        "descriptionEs": "Circuito del sensor de presión del turbocompresor defectuoso (banco 1)",
+        "descriptionEn": "Turbocharger Boost Sensor A Circuit",
+        "severity": "WARNING",
+        "system": "ENGINE",
+        "possibleCauses": "Sensor MAP turbo|Manguera de turbo|ECM"
+    },
+    {
+        "code": "P0243",
+        "descriptionEs": "Circuito del actuador de presión del turbo (wastegate solenoide)",
+        "descriptionEn": "Turbocharger Wastegate Solenoid A",
+        "severity": "WARNING",
+        "system": "ENGINE",
+        "possibleCauses": "Solenoide wastegate|Manguera rota|Actuador turbo"
+    },
+    {
+        "code": "P0252",
+        "descriptionEs": "Circuito 'A' del actuador de cantidad de inyección fuera de rango",
+        "descriptionEn": "Injection Pump Fuel Metering Control A Range/Performance",
+        "severity": "WARNING",
+        "system": "FUEL",
+        "possibleCauses": "Actuador de metering|Bomba de inyección|ECM"
+    },
+    {
+        "code": "P0299",
+        "descriptionEs": "Sobrealimentación del turbocompresor - caudal bajo",
+        "descriptionEn": "Turbocharger/Supercharger A Underboost Condition",
+        "severity": "WARNING",
+        "system": "ENGINE",
+        "possibleCauses": "Turbina defectuosa|Fuga de manguera de turbo|Wastegate bloqueado"
+    },
+    {
+        "code": "P0341",
+        "descriptionEs": "Rendimiento del circuito del sensor de posición del árbol de levas",
+        "descriptionEn": "Camshaft Position Sensor A Circuit Range/Performance Bank 1",
+        "severity": "WARNING",
+        "system": "ENGINE",
+        "possibleCauses": "Sensor CMP|Rueda fónica árbol levas|Cableado"
+    },
+    {
+        "code": "P0370",
+        "descriptionEs": "Rendimiento del circuito de sincronización de referencia de alta resolución",
+        "descriptionEn": "Timing Reference High Resolution Signal A Performance",
+        "severity": "ERROR",
+        "system": "ENGINE",
+        "possibleCauses": "Sensor de cigüeñal|Rueda fónica|ECM"
+    },
+    {
+        "code": "P0380",
+        "descriptionEs": "Circuito de control de bujía de precalentamiento (PSA Diesel)",
+        "descriptionEn": "Glow Plug/Heater Circuit A Malfunction",
+        "severity": "WARNING",
+        "system": "ENGINE",
+        "possibleCauses": "Bujía de precalentamiento|Relé de precalentamiento|UCH"
+    },
+    {
+        "code": "P0400",
+        "descriptionEs": "Flujo de recirculación de gases de escape deficiente",
+        "descriptionEn": "Exhaust Gas Recirculation Flow Malfunction",
+        "severity": "WARNING",
+        "system": "EMISSIONS",
+        "possibleCauses": "Válvula EGR atascada|Tubería EGR obstruida|Sensor EGR"
+    },
+    {
+        "code": "P0404",
+        "descriptionEs": "Rendimiento del circuito de control EGR fuera de rango",
+        "descriptionEn": "Exhaust Gas Recirculation Control Circuit Range/Performance",
+        "severity": "WARNING",
+        "system": "EMISSIONS",
+        "possibleCauses": "Válvula EGR|Sensor diferencial de presión EGR|ECM"
+    },
+    {
+        "code": "P0406",
+        "descriptionEs": "Circuito del sensor de posición de la válvula EGR con señal alta",
+        "descriptionEn": "Exhaust Gas Recirculation Sensor A Circuit High",
+        "severity": "WARNING",
+        "system": "EMISSIONS",
+        "possibleCauses": "Sensor posición EGR|Cortocircuito positivo|ECM"
+    },
+    {
+        "code": "P0473",
+        "descriptionEs": "Sensor de presión diferencial del filtro de partículas - señal alta",
+        "descriptionEn": "Exhaust Pressure Sensor High",
+        "severity": "WARNING",
+        "system": "EMISSIONS",
+        "possibleCauses": "FAP obstruido|Sensor diferencial|Coche necesita regeneración"
+    },
+    {
+        "code": "P0477",
+        "descriptionEs": "Circuito del actuador de mariposa de escape - señal baja",
+        "descriptionEn": "Exhaust Pressure Control Valve Low",
+        "severity": "WARNING",
+        "system": "EMISSIONS",
+        "possibleCauses": "Mariposa de escape|ECM|Cableado actuador"
+    },
+    {
+        "code": "P2002",
+        "descriptionEs": "Eficiencia del filtro de partículas diesel por debajo del umbral banco 1",
+        "descriptionEn": "Particulate Filter Efficiency Below Threshold Bank 1",
+        "severity": "WARNING",
+        "system": "EMISSIONS",
+        "possibleCauses": "FAP saturado|Regeneración incompleta|Sensor diferencial FAP"
+    },
+    {
+        "code": "P2453",
+        "descriptionEs": "Circuito del sensor diferencial de presión del filtro de partículas diesel",
+        "descriptionEn": "Diesel Particulate Filter Pressure Sensor A Circuit Range/Performance",
+        "severity": "WARNING",
+        "system": "EMISSIONS",
+        "possibleCauses": "Sensor DP FAP|Mangueras sensor|ECM"
+    },
+    {
+        "code": "P0500",
+        "descriptionEs": "Circuito del sensor de velocidad del vehículo (VSS)",
+        "descriptionEn": "Vehicle Speed Sensor Malfunction",
+        "severity": "WARNING",
+        "system": "ENGINE",
+        "possibleCauses": "Sensor VSS|ABS módulo|Cableado"
+    },
+    {
+        "code": "P0560",
+        "descriptionEs": "Voltaje del sistema eléctrico - mal funcionamiento",
+        "descriptionEn": "System Voltage Malfunction",
+        "severity": "WARNING",
+        "system": "ELECTRICAL",
+        "possibleCauses": "Alternador|Batería|Conexiones a masa"
+    },
+    {
+        "code": "P0563",
+        "descriptionEs": "Voltaje del sistema eléctrico alto",
+        "descriptionEn": "System Voltage High",
+        "severity": "WARNING",
+        "system": "ELECTRICAL",
+        "possibleCauses": "Alternador regulando mal|Batería en mal estado|BSI"
+    },
+    {
+        "code": "P0601",
+        "descriptionEs": "Error de suma de verificación de memoria interna del ECM",
+        "descriptionEn": "Internal Control Module Memory Check Sum Error",
+        "severity": "ERROR",
+        "system": "ELECTRICAL",
+        "possibleCauses": "ECM defectuoso|Corrupción de memoria|Reprogramar ECM"
+    },
+    {
+        "code": "P0610",
+        "descriptionEs": "Opciones del módulo de control - identificación de vehículo incorrecta",
+        "descriptionEn": "Control Module Vehicle Options Error",
+        "severity": "WARNING",
+        "system": "ELECTRICAL",
+        "possibleCauses": "ECM mal configurado|Actualización software|Clonación incorrecta"
+    },
+    {
+        "code": "P0615",
+        "descriptionEs": "Circuito del relé del motor de arranque - defectuoso",
+        "descriptionEn": "Starter Relay Circuit",
+        "severity": "ERROR",
+        "system": "ELECTRICAL",
+        "possibleCauses": "Relé de arranque|BSI|Cableado de arranque"
+    },
+    {
+        "code": "P0700",
+        "descriptionEs": "Sistema de control de transmisión - fallo (PSA)",
+        "descriptionEn": "Transmission Control System Malfunction",
+        "severity": "ERROR",
+        "system": "TRANSMISSION",
+        "possibleCauses": "TCM|Señal de sensores transmisión|BVA defectuosa"
+    },
+    {
+        "code": "P0810",
+        "descriptionEs": "Control del embrague - rendimiento fuera de rango",
+        "descriptionEn": "Clutch Position Control Error",
+        "severity": "ERROR",
+        "system": "TRANSMISSION",
+        "possibleCauses": "Embrague robotizado|Sensor de posición embrague|TCM"
+    },
+    {
+        "code": "P0830",
+        "descriptionEs": "Circuito del interruptor del pedal de embrague A",
+        "descriptionEn": "Clutch Pedal Switch A Circuit",
+        "severity": "INFO",
+        "system": "TRANSMISSION",
+        "possibleCauses": "Interruptor pedal embrague|Conector|ECM"
+    },
+    {
+        "code": "P1336",
+        "descriptionEs": "Sensor de velocidad del motor - CKP no concuerda con árbol levas",
+        "descriptionEn": "Crankshaft Speed Fluctuation Sensor",
+        "severity": "WARNING",
+        "system": "ENGINE",
+        "possibleCauses": "Rueda fónica del cigüeñal|Sensor CKP|Cadena de distribución"
+    },
+    {
+        "code": "P1397",
+        "descriptionEs": "Velocidad del motor - sensor de árbol de levas B circuito fuera de rango",
+        "descriptionEn": "Camshaft Position Sensor B Circuit Range/Performance",
+        "severity": "WARNING",
+        "system": "ENGINE",
+        "possibleCauses": "Sensor árbol levas B|Rueda fónica|ECM"
+    },
+    {
+        "code": "P1461",
+        "descriptionEs": "Sistema de aire acondicionado - señal de solicitud de A/C fuera de rango",
+        "descriptionEn": "Air Conditioning Control Switch Signal Low",
+        "severity": "INFO",
+        "system": "BODY",
+        "possibleCauses": "Interruptor A/C|UCH|Cableado"
+    },
+    {
+        "code": "P1550",
+        "descriptionEs": "Alternador - señal de regulación ausente o defectuosa",
+        "descriptionEn": "Battery Current Sensor Circuit Range/Performance",
+        "severity": "WARNING",
+        "system": "ELECTRICAL",
+        "possibleCauses": "Alternador|Sensor de corriente|BSI alternador"
+    },
+    {
+        "code": "C1300",
+        "descriptionEs": "Circuito del airbag del conductor - cortocircuito a masa",
+        "descriptionEn": "Driver Airbag Circuit Short to Ground",
+        "severity": "ERROR",
+        "system": "AIRBAG",
+        "possibleCauses": "Espiral de reloj|Bolsa de aire conductor|UCH airbag"
+    },
+    {
+        "code": "C1310",
+        "descriptionEs": "Circuito del airbag del pasajero - cortocircuito a masa",
+        "descriptionEn": "Passenger Airbag Circuit Short to Ground",
+        "severity": "ERROR",
+        "system": "AIRBAG",
+        "possibleCauses": "Bolsa de aire pasajero|Pretensor de cinturón|UCH"
+    },
+    {
+        "code": "C1413",
+        "descriptionEs": "Sensor trasero izquierdo ABS - circuito defectuoso",
+        "descriptionEn": "Rear Left ABS Sensor Circuit Fault",
+        "severity": "ERROR",
+        "system": "ABS",
+        "possibleCauses": "Sensor ABS trasero izq|Anillo magnético|Cableado"
+    },
+    {
+        "code": "C1417",
+        "descriptionEs": "Sensor trasero derecho ABS - circuito defectuoso",
+        "descriptionEn": "Rear Right ABS Sensor Circuit Fault",
+        "severity": "ERROR",
+        "system": "ABS",
+        "possibleCauses": "Sensor ABS trasero der|Anillo magnético|Cableado"
+    },
+    {
+        "code": "B1020",
+        "descriptionEs": "Sin comunicación con la UCH (unidad central habitáculo) - BSI no responde",
+        "descriptionEn": "No Communication With UCH/BSI Module",
+        "severity": "ERROR",
+        "system": "BODY",
+        "possibleCauses": "BSI sin alimentación|Bus CAN Comfort|Fusible BSI"
+    }
+]

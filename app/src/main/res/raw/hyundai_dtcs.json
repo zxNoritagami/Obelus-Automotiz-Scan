@@ -1,0 +1,442 @@
+[
+    {
+        "code": "P0011",
+        "descriptionEs": "Árbol de levas de admisión banco 1 - posición excesivamente avanzada (Hyundai)",
+        "descriptionEn": "Camshaft Position A Timing Over-Advanced Bank 1",
+        "severity": "WARNING",
+        "system": "ENGINE",
+        "possibleCauses": "Actuador CVVT|Aceite motor bajo|Válvula de control OCV"
+    },
+    {
+        "code": "P0014",
+        "descriptionEs": "Árbol de levas de escape banco 1 - posición excesivamente avanzada (Hyundai)",
+        "descriptionEn": "Camshaft Position B Timing Over-Advanced Bank 1",
+        "severity": "WARNING",
+        "system": "ENGINE",
+        "possibleCauses": "Actuador CVVT escape|OCV escape|Aceite bajo"
+    },
+    {
+        "code": "P0016",
+        "descriptionEs": "Correlación árbol levas admisión / cigüeñal fuera de rango (Hyundai)",
+        "descriptionEn": "Crankshaft Position - Camshaft Position Correlation Bank 1 Sensor A",
+        "severity": "ERROR",
+        "system": "ENGINE",
+        "possibleCauses": "Cadena distribución|Sensor CMP|Sensor CKP|Timing"
+    },
+    {
+        "code": "P0017",
+        "descriptionEs": "Correlación árbol levas escape / cigüeñal fuera de rango (Hyundai)",
+        "descriptionEn": "Crankshaft Position - Camshaft Position Correlation Bank 1 Sensor B",
+        "severity": "ERROR",
+        "system": "ENGINE",
+        "possibleCauses": "Cadena distribución|Sensor CMP escape|Timing"
+    },
+    {
+        "code": "P0030",
+        "descriptionEs": "Calefactor del sensor O2 banco 1 sensor 1 - circuito (Hyundai)",
+        "descriptionEn": "HO2S Heater Control Circuit Bank 1 Sensor 1",
+        "severity": "WARNING",
+        "system": "EMISSIONS",
+        "possibleCauses": "Sensor O2 calefactor|Fusible|Cableado"
+    },
+    {
+        "code": "P0036",
+        "descriptionEs": "Calefactor del sensor O2 banco 1 sensor 2 - circuito (Hyundai)",
+        "descriptionEn": "HO2S Heater Control Circuit Bank 1 Sensor 2",
+        "severity": "WARNING",
+        "system": "EMISSIONS",
+        "possibleCauses": "Sensor O2 B1S2|Fusible|Cableado cortocircuito"
+    },
+    {
+        "code": "P0050",
+        "descriptionEs": "Calefactor del sensor O2 banco 2 sensor 1 - circuito (Hyundai)",
+        "descriptionEn": "HO2S Heater Control Circuit Bank 2 Sensor 1",
+        "severity": "WARNING",
+        "system": "EMISSIONS",
+        "possibleCauses": "Sensor O2 B2S1 calefactor|Fusible banco 2|ECM"
+    },
+    {
+        "code": "P0056",
+        "descriptionEs": "Calefactor del sensor O2 banco 2 sensor 2 - circuito (Hyundai)",
+        "descriptionEn": "HO2S Heater Control Circuit Bank 2 Sensor 2",
+        "severity": "WARNING",
+        "system": "EMISSIONS",
+        "possibleCauses": "Sensor O2 B2S2|Cableado|Cortocircuito"
+    },
+    {
+        "code": "P0068",
+        "descriptionEs": "Correlación MAP/MAF - posición mariposa fuera de rango (Hyundai)",
+        "descriptionEn": "MAP/MAF - Throttle Position Correlation",
+        "severity": "WARNING",
+        "system": "ENGINE",
+        "possibleCauses": "Sensor MAP|Sensor MAF|Sensor TPS|Fuga de aire"
+    },
+    {
+        "code": "P0106",
+        "descriptionEs": "Sensor MAP - rendimiento fuera de rango (Hyundai)",
+        "descriptionEn": "Manifold Absolute Pressure Sensor Range/Performance",
+        "severity": "WARNING",
+        "system": "ENGINE",
+        "possibleCauses": "Sensor MAP|Manguera de vacío|ECM Hyundai"
+    },
+    {
+        "code": "P0113",
+        "descriptionEs": "Sensor IAT - señal alta (Hyundai)",
+        "descriptionEn": "Intake Air Temperature Sensor Circuit High Input",
+        "severity": "INFO",
+        "system": "ENGINE",
+        "possibleCauses": "Sensor IAT abierto|Conector|ECM"
+    },
+    {
+        "code": "P0123",
+        "descriptionEs": "Sensor de posición de la mariposa A - señal alta (Hyundai)",
+        "descriptionEn": "Throttle/Pedal Position Sensor A Circuit High Input",
+        "severity": "ERROR",
+        "system": "ENGINE",
+        "possibleCauses": "Sensor TPS cortocircuito|Cuerpo mariposa|ECM"
+    },
+    {
+        "code": "P0130",
+        "descriptionEs": "Sensor O2 banco 1 sensor 1 - circuito defectuoso (Hyundai)",
+        "descriptionEn": "O2 Sensor Circuit Malfunction Bank 1 Sensor 1",
+        "severity": "WARNING",
+        "system": "EMISSIONS",
+        "possibleCauses": "Sensor O2 agotado|Fuga escape|ECM"
+    },
+    {
+        "code": "P0133",
+        "descriptionEs": "Respuesta lenta del sensor O2 banco 1 sensor 1 (Hyundai)",
+        "descriptionEn": "O2 Sensor Circuit Slow Response Bank 1 Sensor 1",
+        "severity": "WARNING",
+        "system": "EMISSIONS",
+        "possibleCauses": "Sensor O2 viejo|Veneno por plomo|Contaminación por aceite"
+    },
+    {
+        "code": "P0136",
+        "descriptionEs": "Circuito del sensor O2 banco 1 sensor 2 (Hyundai)",
+        "descriptionEn": "O2 Sensor Circuit Malfunction Bank 1 Sensor 2",
+        "severity": "WARNING",
+        "system": "EMISSIONS",
+        "possibleCauses": "Sensor O2 aguas abajo|Fuga escape|Cable roto"
+    },
+    {
+        "code": "P0139",
+        "descriptionEs": "Respuesta lenta del sensor O2 banco 1 sensor 2 (Hyundai)",
+        "descriptionEn": "O2 Sensor Circuit Slow Response Bank 1 Sensor 2",
+        "severity": "INFO",
+        "system": "EMISSIONS",
+        "possibleCauses": "Sensor O2 B1S2 envejecido|Contaminación"
+    },
+    {
+        "code": "P0140",
+        "descriptionEs": "Sin actividad del sensor O2 banco 1 sensor 2 (Hyundai)",
+        "descriptionEn": "O2 Sensor Circuit No Activity Detected Bank 1 Sensor 2",
+        "severity": "WARNING",
+        "system": "EMISSIONS",
+        "possibleCauses": "Sensor O2 muerto|Cable abierto|ECM"
+    },
+    {
+        "code": "P0171",
+        "descriptionEs": "Sistema demasiado pobre banco 1 (Hyundai)",
+        "descriptionEn": "System Too Lean Bank 1",
+        "severity": "WARNING",
+        "system": "FUEL",
+        "possibleCauses": "MAF sucio|Fuga de vacío|Inyector obstruido"
+    },
+    {
+        "code": "P0174",
+        "descriptionEs": "Sistema demasiado pobre banco 2 (Hyundai)",
+        "descriptionEn": "System Too Lean Bank 2",
+        "severity": "WARNING",
+        "system": "FUEL",
+        "possibleCauses": "Fuga de vacío banco 2|Sensor MAF|Presión combustible baja"
+    },
+    {
+        "code": "P0300",
+        "descriptionEs": "Fallo de encendido aleatorio múltiple (Hyundai)",
+        "descriptionEn": "Random/Multiple Cylinder Misfire Detected",
+        "severity": "ERROR",
+        "system": "ENGINE",
+        "possibleCauses": "Bujías|Bobinas directas|Inyectores|Compresión"
+    },
+    {
+        "code": "P0301",
+        "descriptionEs": "Fallo de encendido cilindro 1 (Hyundai)",
+        "descriptionEn": "Cylinder 1 Misfire Detected",
+        "severity": "ERROR",
+        "system": "ENGINE",
+        "possibleCauses": "Bujía cil.1|Bobina cil.1|Inyector 1"
+    },
+    {
+        "code": "P0302",
+        "descriptionEs": "Fallo de encendido cilindro 2 (Hyundai)",
+        "descriptionEn": "Cylinder 2 Misfire Detected",
+        "severity": "ERROR",
+        "system": "ENGINE",
+        "possibleCauses": "Bujía cil.2|Bobina cil.2|Inyector 2"
+    },
+    {
+        "code": "P0303",
+        "descriptionEs": "Fallo de encendido cilindro 3 (Hyundai)",
+        "descriptionEn": "Cylinder 3 Misfire Detected",
+        "severity": "ERROR",
+        "system": "ENGINE",
+        "possibleCauses": "Bujía cil.3|Bobina cil.3|Inyector 3"
+    },
+    {
+        "code": "P0304",
+        "descriptionEs": "Fallo de encendido cilindro 4 (Hyundai)",
+        "descriptionEn": "Cylinder 4 Misfire Detected",
+        "severity": "ERROR",
+        "system": "ENGINE",
+        "possibleCauses": "Bujía cil.4|Bobina cil.4|Inyector 4"
+    },
+    {
+        "code": "P0326",
+        "descriptionEs": "Rendimiento del circuito del sensor de detonación banco 1 (Hyundai)",
+        "descriptionEn": "Knock Sensor 1 Circuit Range/Performance Bank 1",
+        "severity": "WARNING",
+        "system": "ENGINE",
+        "possibleCauses": "Sensor detonación flojo|Cortocircuito|ECM"
+    },
+    {
+        "code": "P0335",
+        "descriptionEs": "Circuito del sensor de posición del cigüeñal A (Hyundai)",
+        "descriptionEn": "Crankshaft Position Sensor A Circuit",
+        "severity": "ERROR",
+        "system": "ENGINE",
+        "possibleCauses": "Sensor CKP|Rueda fónica|Cableado"
+    },
+    {
+        "code": "P0340",
+        "descriptionEs": "Circuito del sensor de posición árbol levas A banco 1 (Hyundai)",
+        "descriptionEn": "Camshaft Position Sensor A Circuit Bank 1",
+        "severity": "ERROR",
+        "system": "ENGINE",
+        "possibleCauses": "Sensor CMP|Target wheel|ECM"
+    },
+    {
+        "code": "P0420",
+        "descriptionEs": "Eficiencia del catalizador por debajo del umbral banco 1 (Hyundai)",
+        "descriptionEn": "Catalyst System Efficiency Below Threshold Bank 1",
+        "severity": "WARNING",
+        "system": "EMISSIONS",
+        "possibleCauses": "Catalizador desgastado|Sensor O2 B1S2|Fuga de escape"
+    },
+    {
+        "code": "P0442",
+        "descriptionEs": "Fuga pequeña en el sistema EVAP (Hyundai)",
+        "descriptionEn": "Evaporative Emission Control System Leak Detected Small Leak",
+        "severity": "INFO",
+        "system": "EMISSIONS",
+        "possibleCauses": "Tapón combustible|Sello EVAP|Sensor presión"
+    },
+    {
+        "code": "P0445",
+        "descriptionEs": "Circuito del solenoide de purga EVAP - cortocircuito a positivo",
+        "descriptionEn": "Evaporative Emission Purge Solenoid Circuit Shorted",
+        "severity": "WARNING",
+        "system": "EMISSIONS",
+        "possibleCauses": "Solenoide de purga|Cortocircuito|ECM"
+    },
+    {
+        "code": "P0506",
+        "descriptionEs": "Velocidad de ralentí baja (Hyundai)",
+        "descriptionEn": "Idle Control System RPM Low",
+        "severity": "WARNING",
+        "system": "ENGINE",
+        "possibleCauses": "Cuerpo de mariposa sucio|Sensor TPS|Fuga vacío"
+    },
+    {
+        "code": "P0507",
+        "descriptionEs": "Velocidad de ralentí alta (Hyundai)",
+        "descriptionEn": "Idle Control System RPM High",
+        "severity": "WARNING",
+        "system": "ENGINE",
+        "possibleCauses": "Módulo de mariposa|Fuga de vacío|Sensor APP"
+    },
+    {
+        "code": "P0562",
+        "descriptionEs": "Voltaje del sistema eléctrico bajo (Hyundai)",
+        "descriptionEn": "System Voltage Low",
+        "severity": "WARNING",
+        "system": "ELECTRICAL",
+        "possibleCauses": "Batería débil|Alternador|Masa del motor"
+    },
+    {
+        "code": "P0605",
+        "descriptionEs": "Error de ROM del módulo de control interno (Hyundai)",
+        "descriptionEn": "Internal Control Module ROM Error",
+        "severity": "ERROR",
+        "system": "ELECTRICAL",
+        "possibleCauses": "ECM defectuoso|Reprogramar ECM|Interferencia"
+    },
+    {
+        "code": "P0705",
+        "descriptionEs": "Circuito del sensor del rango/posición del selector de transmisión (Hyundai)",
+        "descriptionEn": "Transmission Range Sensor Circuit Malfunction",
+        "severity": "WARNING",
+        "system": "TRANSMISSION",
+        "possibleCauses": "Sensor PRND|Cableado|TCM"
+    },
+    {
+        "code": "P0715",
+        "descriptionEs": "Circuito del sensor de velocidad de entrada/turbina (Hyundai)",
+        "descriptionEn": "Input/Turbine Speed Sensor Circuit",
+        "severity": "WARNING",
+        "system": "TRANSMISSION",
+        "possibleCauses": "Sensor ISS|ATF bajo|TCM"
+    },
+    {
+        "code": "P0748",
+        "descriptionEs": "Solenoide regulador de presión - circuito eléctrico (Hyundai)",
+        "descriptionEn": "Pressure Control Solenoid Electrical",
+        "severity": "WARNING",
+        "system": "TRANSMISSION",
+        "possibleCauses": "Solenoide regulador|ATF sucio|TCM"
+    },
+    {
+        "code": "P0750",
+        "descriptionEs": "Solenoide de cambio A - mal funcionamiento (Hyundai)",
+        "descriptionEn": "Shift Solenoid A Malfunction",
+        "severity": "ERROR",
+        "system": "TRANSMISSION",
+        "possibleCauses": "Solenoide A|ATF bajo|TCM defectuoso"
+    },
+    {
+        "code": "P0755",
+        "descriptionEs": "Solenoide de cambio B - mal funcionamiento (Hyundai)",
+        "descriptionEn": "Shift Solenoid B Malfunction",
+        "severity": "ERROR",
+        "system": "TRANSMISSION",
+        "possibleCauses": "Solenoide B|ATF sucio|TCM"
+    },
+    {
+        "code": "P0760",
+        "descriptionEs": "Solenoide de cambio C - mal funcionamiento (Hyundai)",
+        "descriptionEn": "Shift Solenoid C Malfunction",
+        "severity": "ERROR",
+        "system": "TRANSMISSION",
+        "possibleCauses": "Solenoide C|Válvula atascada|TCM"
+    },
+    {
+        "code": "P0765",
+        "descriptionEs": "Solenoide de cambio D - mal funcionamiento (Hyundai)",
+        "descriptionEn": "Shift Solenoid D Malfunction",
+        "severity": "ERROR",
+        "system": "TRANSMISSION",
+        "possibleCauses": "Solenoide D|ATF|TCM"
+    },
+    {
+        "code": "P0770",
+        "descriptionEs": "Solenoide de cambio E - mal funcionamiento (Hyundai)",
+        "descriptionEn": "Shift Solenoid E Malfunction",
+        "severity": "ERROR",
+        "system": "TRANSMISSION",
+        "possibleCauses": "Solenoide E|Presión hidráulica|TCM"
+    },
+    {
+        "code": "P0775",
+        "descriptionEs": "Solenoide de control de presión B - defectuoso (Hyundai)",
+        "descriptionEn": "Pressure Control Solenoid B Malfunction",
+        "severity": "WARNING",
+        "system": "TRANSMISSION",
+        "possibleCauses": "Solenoide presión B|ATF bajo|TCM"
+    },
+    {
+        "code": "P1105",
+        "descriptionEs": "Sensor MAP/BARO - circuito con señal alta (Hyundai)",
+        "descriptionEn": "MAP/BARO Pressure Switch Solenoid Valve",
+        "severity": "WARNING",
+        "system": "ENGINE",
+        "possibleCauses": "Válvula solenoide MAP/BARO|Sensor de presión|ECM"
+    },
+    {
+        "code": "P1115",
+        "descriptionEs": "Sensor ECT - circuito intermitente (Hyundai)",
+        "descriptionEn": "Engine Coolant Temperature Sensor Intermittent",
+        "severity": "INFO",
+        "system": "ENGINE",
+        "possibleCauses": "Sensor ECT conexión intermitente|Conector oxidado|Cableado"
+    },
+    {
+        "code": "P1400",
+        "descriptionEs": "Solenoide de control de caudal EGR deficiente (Hyundai)",
+        "descriptionEn": "EGR Control Solenoid Circuit",
+        "severity": "WARNING",
+        "system": "EMISSIONS",
+        "possibleCauses": "Solenoide EGR|Válvula EGR|ECM"
+    },
+    {
+        "code": "P1443",
+        "descriptionEs": "Sistema de control EVAP - válvula de control de retención de vapor (Hyundai)",
+        "descriptionEn": "Evaporative Emission Control System Purge Flow Sensing Malfunction",
+        "severity": "WARNING",
+        "system": "EMISSIONS",
+        "possibleCauses": "Válvula de retención EVAP|Cánister|ECM"
+    },
+    {
+        "code": "P1456",
+        "descriptionEs": "Sistema EVAP - fuga en el lado del depósito de combustible (Hyundai)",
+        "descriptionEn": "EVAP Emission Control System Leakage Detected Fuel Tank Side",
+        "severity": "WARNING",
+        "system": "EMISSIONS",
+        "possibleCauses": "Tapón combustible|Sello depósito|Cánister"
+    },
+    {
+        "code": "P1513",
+        "descriptionEs": "Rendimiento del sistema de mariposa electrónica (Hyundai)",
+        "descriptionEn": "Throttle Actuator Control (TAC) System Performance",
+        "severity": "ERROR",
+        "system": "ENGINE",
+        "possibleCauses": "Motor de mariposa|Módulo TAC|Resorte mariposa"
+    },
+    {
+        "code": "P2106",
+        "descriptionEs": "Modo de funcionamiento de emergencia del sistema de mariposa (Hyundai)",
+        "descriptionEn": "Throttle Actuator Control System - Forced Engine Shutdown",
+        "severity": "ERROR",
+        "system": "ENGINE",
+        "possibleCauses": "Módulo TAC|Múltiples fallos|Sensor APP o TPS"
+    },
+    {
+        "code": "U0001",
+        "descriptionEs": "Bus CAN de alta velocidad - fallo de comunicación (Hyundai)",
+        "descriptionEn": "High Speed CAN Communication Bus",
+        "severity": "ERROR",
+        "system": "NETWORK",
+        "possibleCauses": "Bus CAN defectuoso|Módulo fallando|Cableado CAN"
+    },
+    {
+        "code": "U0100",
+        "descriptionEs": "Comunicación perdida con ECM/PCM (Hyundai)",
+        "descriptionEn": "Lost Communication With ECM/PCM",
+        "severity": "ERROR",
+        "system": "NETWORK",
+        "possibleCauses": "ECM sin alimentación|Bus CAN|Fusible ECM"
+    },
+    {
+        "code": "U0101",
+        "descriptionEs": "Comunicación perdida con el módulo TCM (Hyundai)",
+        "descriptionEn": "Lost Communication With TCM",
+        "severity": "ERROR",
+        "system": "NETWORK",
+        "possibleCauses": "TCM sin alimentación|Bus CAN|Fusible TCM"
+    },
+    {
+        "code": "B1342",
+        "descriptionEs": "Unidad ECM/BCM - EEPROM defectuosa (Hyundai)",
+        "descriptionEn": "ECM/PCM Internal Fault",
+        "severity": "ERROR",
+        "system": "BODY",
+        "possibleCauses": "ECM defectuoso|EEPROM dañada|Actualizar firmware"
+    },
+    {
+        "code": "C1234",
+        "descriptionEs": "Sensor de velocidad de rueda delantera derecha - señal incorrecta (Hyundai)",
+        "descriptionEn": "Front Right Wheel Speed Sensor Signal Abnormal",
+        "severity": "ERROR",
+        "system": "ABS",
+        "possibleCauses": "Sensor VSS RF|Anillo ABS dañado|Cableado"
+    }
+]

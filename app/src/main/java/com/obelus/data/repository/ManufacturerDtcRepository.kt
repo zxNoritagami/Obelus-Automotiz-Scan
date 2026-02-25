@@ -73,6 +73,25 @@ class ManufacturerDtcRepository @Inject constructor(
             "JT3" to "TOYOTA", "JT2" to "TOYOTA", "1NX" to "TOYOTA", "4T1" to "TOYOTA",
             "VSS" to "VAG",  // Seat España
             "TBN" to "VAG",  // Škoda
+            // Honda (3-char WMIs)
+            "SHH" to "HONDA", "SH3" to "HONDA", "MLH" to "HONDA", "MR0" to "HONDA",
+            "JHM" to "HONDA", "19X" to "HONDA", "2HG" to "HONDA",
+            // Hyundai / Kia (3-char WMIs)
+            "KMH" to "HYUNDAI", "KM8" to "HYUNDAI", "KMJ" to "HYUNDAI",
+            "KME" to "HYUNDAI", "KMF" to "HYUNDAI", "KMX" to "HYUNDAI",
+            "MAL" to "HYUNDAI", "NLH" to "HYUNDAI",
+        )
+
+        // Prefijos de 2 caracteres para fabricantes norteamericanos y europeos comunes
+        private val VIN_PREFIX2_TO_MANUFACTURER = mapOf(
+            // Ford (USA, CAN, MEX)
+            "1F" to "FORD", "2F" to "FORD", "3F" to "FORD",
+            // General Motors
+            "1G" to "GM", "2G" to "GM", "3G" to "GM",
+            // PSA - Peugeot/Citroën (Francia, Europa)
+            "VF" to "PSA", "VR" to "PSA",
+            // Honda (América del Norte y Japón)
+            "1H" to "HONDA", "2H" to "HONDA", "3H" to "HONDA", "JH" to "HONDA",
         )
     }
 
@@ -87,17 +106,32 @@ class ManufacturerDtcRepository @Inject constructor(
 
     /**
      * Detecta el fabricante del vehículo a partir del VIN.
+     * Intenta primero con WMI de 3 chars; si no coincide, usa prefijo de 2 chars.
      * @param vin VIN completo o los primeros 3 caracteres (WMI)
-     * @return "VAG", "BMW", "TOYOTA", o "GENERIC"
+     * @return "VAG", "BMW", "TOYOTA", "FORD", "GM", "PSA", o "GENERIC"
      */
     fun detectManufacturerFromVin(vin: String): String {
-        if (vin.length < 3) return "GENERIC"
-        val wmi = vin.take(3).uppercase()
-        val manufacturer = VIN_TO_MANUFACTURER.entries
-            .firstOrNull { wmi.startsWith(it.key) }?.value ?: "GENERIC"
-        _detectedManufacturer = manufacturer
-        Log.i(TAG, "VIN WMI=$wmi → Fabricante: $manufacturer")
-        return manufacturer
+        if (vin.length < 2) return "GENERIC"
+
+        val upper = vin.uppercase()
+
+        // 1) Intento con WMI de 3 caracteres (coincidencia exacta)
+        if (upper.length >= 3) {
+            val wmi3 = upper.take(3)
+            val match3 = VIN_TO_MANUFACTURER[wmi3]
+            if (match3 != null) {
+                _detectedManufacturer = match3
+                Log.i(TAG, "VIN WMI-3=$wmi3 → Fabricante: $match3")
+                return match3
+            }
+        }
+
+        // 2) Fallback: prefijo de 2 caracteres
+        val prefix2 = upper.take(2)
+        val match2 = VIN_PREFIX2_TO_MANUFACTURER[prefix2] ?: "GENERIC"
+        _detectedManufacturer = match2
+        Log.i(TAG, "VIN prefix-2=$prefix2 → Fabricante: $match2")
+        return match2
     }
 
     /**

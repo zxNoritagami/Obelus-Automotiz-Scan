@@ -1,0 +1,402 @@
+[
+    {
+        "code": "P0420",
+        "descriptionEs": "Eficiencia del catalizador por debajo del umbral banco 1 (Honda)",
+        "descriptionEn": "Catalyst System Efficiency Below Threshold Bank 1",
+        "severity": "WARNING",
+        "system": "EMISSIONS",
+        "possibleCauses": "Catalizador desgastado|Sonda lambda B1S2 defectuosa|Fuga de escape banco 1"
+    },
+    {
+        "code": "P1457",
+        "descriptionEs": "Control de emisiones evaporativas - fuga en el lado del cánister (Honda)",
+        "descriptionEn": "Evaporative Emissions Control System Leakage - EVAP Control System",
+        "severity": "WARNING",
+        "system": "EMISSIONS",
+        "possibleCauses": "Válvula de sellado del cánister|Cánister saturado|Mangueras EVAP"
+    },
+    {
+        "code": "P1361",
+        "descriptionEs": "Circuito intermitente del sensor de posición del árbol de levas TDC (Honda)",
+        "descriptionEn": "Top Dead Center Position Sensor Intermittent Interruption",
+        "severity": "ERROR",
+        "system": "ENGINE",
+        "possibleCauses": "Sensor TDC defectuoso|Rueda fónica|Cableado intermitente"
+    },
+    {
+        "code": "P1362",
+        "descriptionEs": "Sin señal del sensor de posición TDC (Honda)",
+        "descriptionEn": "Top Dead Center Position Sensor No Signal",
+        "severity": "ERROR",
+        "system": "ENGINE",
+        "possibleCauses": "Sensor TDC defectuoso|Cableado roto|ECM"
+    },
+    {
+        "code": "P0118",
+        "descriptionEs": "Circuito del sensor ECT (temperatura de refrigerante) con señal alta",
+        "descriptionEn": "Engine Coolant Temperature Sensor Circuit High Input",
+        "severity": "WARNING",
+        "system": "ENGINE",
+        "possibleCauses": "Sensor ECT cortocircuito a positivo|Cable abierto|ECM"
+    },
+    {
+        "code": "P0113",
+        "descriptionEs": "Circuito del sensor de temperatura de aire de admisión (IAT) - señal alta (Honda)",
+        "descriptionEn": "Intake Air Temperature Sensor Circuit High Input",
+        "severity": "INFO",
+        "system": "ENGINE",
+        "possibleCauses": "Sensor IAT abierto|Conector suelto|ECM"
+    },
+    {
+        "code": "P0108",
+        "descriptionEs": "Circuito del sensor MAP con señal alta",
+        "descriptionEn": "Manifold Absolute Pressure Sensor Circuit High Input",
+        "severity": "WARNING",
+        "system": "ENGINE",
+        "possibleCauses": "Sensor MAP cortocircuito a positivo|Manguera desconectada|ECM"
+    },
+    {
+        "code": "P0102",
+        "descriptionEs": "Circuito del sensor MAF con señal baja (Honda)",
+        "descriptionEn": "Mass Air Flow Sensor Circuit Low Input",
+        "severity": "WARNING",
+        "system": "ENGINE",
+        "possibleCauses": "MAF desconectado|Cortocircuito a masa|Fuga de admisión"
+    },
+    {
+        "code": "P0135",
+        "descriptionEs": "Calefactor del sensor O2 (banco 1, sensor 1) defectuoso",
+        "descriptionEn": "O2 Sensor Heater Circuit Malfunction Bank 1 Sensor 1",
+        "severity": "WARNING",
+        "system": "EMISSIONS",
+        "possibleCauses": "Sensor O2 calefactor quemado|Fusible de sensor O2|Cableado"
+    },
+    {
+        "code": "P0141",
+        "descriptionEs": "Calefactor del sensor O2 (banco 1, sensor 2) defectuoso",
+        "descriptionEn": "O2 Sensor Heater Circuit Malfunction Bank 1 Sensor 2",
+        "severity": "WARNING",
+        "system": "EMISSIONS",
+        "possibleCauses": "Sensor O2 aguas abajo|Fusible|Cortocircuito"
+    },
+    {
+        "code": "P0155",
+        "descriptionEs": "Calefactor del sensor O2 (banco 2, sensor 1) defectuoso",
+        "descriptionEn": "O2 Sensor Heater Circuit Malfunction Bank 2 Sensor 1",
+        "severity": "WARNING",
+        "system": "EMISSIONS",
+        "possibleCauses": "Sensor O2 B2S1|Fusible quemado|Cableado dañado"
+    },
+    {
+        "code": "P0300",
+        "descriptionEs": "Fallo de encendido detectado en múltiples cilindros (Honda)",
+        "descriptionEn": "Random/Multiple Cylinder Misfire Detected",
+        "severity": "ERROR",
+        "system": "ENGINE",
+        "possibleCauses": "Bujías|Bobinas|Inyectores|Compresión baja"
+    },
+    {
+        "code": "P0301",
+        "descriptionEs": "Fallo de encendido - cilindro 1 (Honda)",
+        "descriptionEn": "Cylinder 1 Misfire Detected",
+        "severity": "ERROR",
+        "system": "ENGINE",
+        "possibleCauses": "Bujía cil.1|Bobina cil.1|Inyector 1"
+    },
+    {
+        "code": "P0302",
+        "descriptionEs": "Fallo de encendido - cilindro 2 (Honda)",
+        "descriptionEn": "Cylinder 2 Misfire Detected",
+        "severity": "ERROR",
+        "system": "ENGINE",
+        "possibleCauses": "Bujía cil.2|Bobina cil.2|Inyector 2"
+    },
+    {
+        "code": "P0303",
+        "descriptionEs": "Fallo de encendido - cilindro 3 (Honda)",
+        "descriptionEn": "Cylinder 3 Misfire Detected",
+        "severity": "ERROR",
+        "system": "ENGINE",
+        "possibleCauses": "Bujía cil.3|Bobina cil.3|Inyector 3"
+    },
+    {
+        "code": "P0304",
+        "descriptionEs": "Fallo de encendido - cilindro 4 (Honda)",
+        "descriptionEn": "Cylinder 4 Misfire Detected",
+        "severity": "ERROR",
+        "system": "ENGINE",
+        "possibleCauses": "Bujía cil.4|Bobina cil.4|Inyector 4"
+    },
+    {
+        "code": "P0305",
+        "descriptionEs": "Fallo de encendido - cilindro 5 (Honda)",
+        "descriptionEn": "Cylinder 5 Misfire Detected",
+        "severity": "ERROR",
+        "system": "ENGINE",
+        "possibleCauses": "Bujía cil.5|Bobina cil.5|Inyector 5"
+    },
+    {
+        "code": "P0306",
+        "descriptionEs": "Fallo de encendido - cilindro 6 (Honda)",
+        "descriptionEn": "Cylinder 6 Misfire Detected",
+        "severity": "ERROR",
+        "system": "ENGINE",
+        "possibleCauses": "Bujía cil.6|Bobina cil.6|Inyector 6"
+    },
+    {
+        "code": "P0325",
+        "descriptionEs": "Circuito del sensor de detonación banco 1 defectuoso (Honda)",
+        "descriptionEn": "Knock Sensor 1 Circuit Malfunction Bank 1",
+        "severity": "WARNING",
+        "system": "ENGINE",
+        "possibleCauses": "Sensor knock desconectado|Cortocircuito|ECM"
+    },
+    {
+        "code": "P0335",
+        "descriptionEs": "Circuito del sensor de posición del cigüeñal A (Honda)",
+        "descriptionEn": "Crankshaft Position Sensor A Circuit",
+        "severity": "ERROR",
+        "system": "ENGINE",
+        "possibleCauses": "Sensor CKP|Rueda fónica|Cableado"
+    },
+    {
+        "code": "P0336",
+        "descriptionEs": "Rendimiento del circuito del sensor CKP fuera de rango (Honda)",
+        "descriptionEn": "Crankshaft Position Sensor A Circuit Range/Performance",
+        "severity": "ERROR",
+        "system": "ENGINE",
+        "possibleCauses": "Rueda fónica dañada|Sensor CKP|Espacio de aire sensor"
+    },
+    {
+        "code": "P0340",
+        "descriptionEs": "Circuito del sensor de posición del árbol de levas A banco 1 (Honda)",
+        "descriptionEn": "Camshaft Position Sensor A Circuit Bank 1",
+        "severity": "ERROR",
+        "system": "ENGINE",
+        "possibleCauses": "Sensor CMP defectuoso|Rueda dentada árbol levas|Cableado"
+    },
+    {
+        "code": "P0341",
+        "descriptionEs": "Rendimiento del circuito del sensor CMP fuera de rango (Honda)",
+        "descriptionEn": "Camshaft Position Sensor A Circuit Range/Performance Bank 1",
+        "severity": "WARNING",
+        "system": "ENGINE",
+        "possibleCauses": "Sensor CMP|Timing distribución|Rueda fónica"
+    },
+    {
+        "code": "P0401",
+        "descriptionEs": "Flujo insuficiente del sistema EGR (Honda)",
+        "descriptionEn": "Exhaust Gas Recirculation Flow Insufficient",
+        "severity": "WARNING",
+        "system": "EMISSIONS",
+        "possibleCauses": "Válvula EGR carbón|EGR obstruido|Sensor EGRV"
+    },
+    {
+        "code": "P0740",
+        "descriptionEs": "Solenoide de embrague del convertidor de par - defectuoso (Honda)",
+        "descriptionEn": "Torque Converter Clutch Solenoid Circuit Malfunction",
+        "severity": "ERROR",
+        "system": "TRANSMISSION",
+        "possibleCauses": "Solenoide TCC|Aceite ATF bajo|TCM"
+    },
+    {
+        "code": "P0753",
+        "descriptionEs": "Solenoide de cambio A - circuito eléctrico (Honda)",
+        "descriptionEn": "Shift Solenoid A Electrical",
+        "severity": "WARNING",
+        "system": "TRANSMISSION",
+        "possibleCauses": "Solenoide A quemado|Aceite ATF sucio|TCM"
+    },
+    {
+        "code": "P1106",
+        "descriptionEs": "Sensor MAP - rendimiento fuera de rango periódico (Honda)",
+        "descriptionEn": "MAP Sensor Circuit Range/Performance Problem (Intermittent High Voltage)",
+        "severity": "WARNING",
+        "system": "ENGINE",
+        "possibleCauses": "Sensor MAP intermitente|Manguera de vacío|ECM"
+    },
+    {
+        "code": "P1107",
+        "descriptionEs": "Sensor MAP - tensión intermitente baja (Honda)",
+        "descriptionEn": "MAP Sensor Circuit Low Voltage",
+        "severity": "WARNING",
+        "system": "ENGINE",
+        "possibleCauses": "Sensor MAP cortocircuito|Manguera rota|ECM"
+    },
+    {
+        "code": "P1259",
+        "descriptionEs": "Sistema VTEC - fallo en banco 1 (Honda)",
+        "descriptionEn": "VTEC System Malfunction Bank 1",
+        "severity": "ERROR",
+        "system": "ENGINE",
+        "possibleCauses": "Válvula VTEC|Presión aceite baja|Sensor presión aceite VTEC"
+    },
+    {
+        "code": "P1298",
+        "descriptionEs": "Sistema de módulo de control de encendido eléctrico (ELD) - señal alta (Honda)",
+        "descriptionEn": "Electrical Load Detector Circuit High Voltage",
+        "severity": "WARNING",
+        "system": "ELECTRICAL",
+        "possibleCauses": "Sensor ELD defectuoso|Alternador regulando mal|Cableado ELD"
+    },
+    {
+        "code": "U0155",
+        "descriptionEs": "Comunicación perdida con el panel de instrumentos (Honda)",
+        "descriptionEn": "Lost Communication With Instrument Panel Cluster Control Module",
+        "severity": "ERROR",
+        "system": "NETWORK",
+        "possibleCauses": "Bus CAN|Panel instrumentos sin alimentación|Fusibles"
+    },
+    {
+        "code": "U0164",
+        "descriptionEs": "Comunicación perdida con módulo de control de A/C (Honda)",
+        "descriptionEn": "Lost Communication With HVAC Control Module",
+        "severity": "WARNING",
+        "system": "NETWORK",
+        "possibleCauses": "Módulo A/C|Bus CAN|Fusible módulo A/C"
+    },
+    {
+        "code": "B1000",
+        "descriptionEs": "Unidad de control de fuerza de restricción (SRS) - fallo interno (Honda)",
+        "descriptionEn": "SRS Control Unit Internal Error",
+        "severity": "ERROR",
+        "system": "AIRBAG",
+        "possibleCauses": "Unidad SRS defectuosa|Historial de colisión|Reprogramar SRS"
+    },
+    {
+        "code": "B1001",
+        "descriptionEs": "SRS - inactivador del airbag del pasajero fuera de posición",
+        "descriptionEn": "Passenger Airbag Disable Indicator Circuit",
+        "severity": "WARNING",
+        "system": "AIRBAG",
+        "possibleCauses": "Sensor de asiento|Cableado indicador airbag|SRS ECU"
+    },
+    {
+        "code": "C1011",
+        "descriptionEs": "Sensor de velocidad de rueda delantera derecha - fallo de señal (Honda)",
+        "descriptionEn": "Right Front Wheel Speed Sensor Circuit",
+        "severity": "ERROR",
+        "system": "ABS",
+        "possibleCauses": "Sensor VSS RF|Anillo ABS|Cableado"
+    },
+    {
+        "code": "C1021",
+        "descriptionEs": "Sensor de velocidad de rueda delantera izquierda - fallo de señal (Honda)",
+        "descriptionEn": "Left Front Wheel Speed Sensor Circuit",
+        "severity": "ERROR",
+        "system": "ABS",
+        "possibleCauses": "Sensor VSS LF|Anillo ABS|Cableado"
+    },
+    {
+        "code": "P0171",
+        "descriptionEs": "Sistema demasiado pobre banco 1 (Honda)",
+        "descriptionEn": "System Too Lean Bank 1",
+        "severity": "WARNING",
+        "system": "FUEL",
+        "possibleCauses": "Inyectores sucios|MAF contaminado|Fuga de vacío"
+    },
+    {
+        "code": "P0172",
+        "descriptionEs": "Sistema demasiado rico banco 1 (Honda)",
+        "descriptionEn": "System Too Rich Bank 1",
+        "severity": "WARNING",
+        "system": "FUEL",
+        "possibleCauses": "Sensor O2|Inyectores goteando|Presión combustible alta"
+    },
+    {
+        "code": "P0400",
+        "descriptionEs": "Flujo del sistema EGR defectuoso (Honda)",
+        "descriptionEn": "Exhaust Gas Recirculation Flow Malfunction",
+        "severity": "WARNING",
+        "system": "EMISSIONS",
+        "possibleCauses": "Válvula EGR|Sensor de posición EGR|Tubería obstruida"
+    },
+    {
+        "code": "P0455",
+        "descriptionEs": "Fuga grande en el sistema EVAP (Honda)",
+        "descriptionEn": "Evaporative Emission Control System Leak Detected Large Leak",
+        "severity": "WARNING",
+        "system": "EMISSIONS",
+        "possibleCauses": "Tapón combustible|Manguera EVAP|Cánister"
+    },
+    {
+        "code": "P0505",
+        "descriptionEs": "Mal funcionamiento del sistema de control de ralentí (Honda)",
+        "descriptionEn": "Idle Control System Malfunction",
+        "severity": "WARNING",
+        "system": "ENGINE",
+        "possibleCauses": "Válvula IAC sucia|Cuerpo mariposa|Fuga de vacío"
+    },
+    {
+        "code": "P0562",
+        "descriptionEs": "Voltaje bajo del sistema eléctrico (Honda)",
+        "descriptionEn": "System Voltage Low",
+        "severity": "WARNING",
+        "system": "ELECTRICAL",
+        "possibleCauses": "Batería débil|Alternador|Conexiones"
+    },
+    {
+        "code": "P0601",
+        "descriptionEs": "Error de suma de verificación de memoria ROM del ECM (Honda)",
+        "descriptionEn": "Internal Control Module Memory Check Sum Error",
+        "severity": "ERROR",
+        "system": "ELECTRICAL",
+        "possibleCauses": "ECM defectuoso|Actualización firmware|Interferencia"
+    },
+    {
+        "code": "P0700",
+        "descriptionEs": "Sistema de control de transmisión - fallo (Honda)",
+        "descriptionEn": "Transmission Control System Malfunction",
+        "severity": "ERROR",
+        "system": "TRANSMISSION",
+        "possibleCauses": "TCM|Sensores de transmisión|Bus CAN"
+    },
+    {
+        "code": "P0715",
+        "descriptionEs": "Sensor de velocidad del turbine de entrada - circuito (Honda)",
+        "descriptionEn": "Input/Turbine Speed Sensor Circuit",
+        "severity": "WARNING",
+        "system": "TRANSMISSION",
+        "possibleCauses": "Sensor turbina|ATF bajo|TCM"
+    },
+    {
+        "code": "P0720",
+        "descriptionEs": "Mal funcionamiento del sensor de velocidad del eje de salida (Honda)",
+        "descriptionEn": "Output Speed Sensor Circuit",
+        "severity": "WARNING",
+        "system": "TRANSMISSION",
+        "possibleCauses": "Sensor OSS|Cableado|TCM"
+    },
+    {
+        "code": "P0780",
+        "descriptionEs": "Fallo de cambio de marcha (Honda)",
+        "descriptionEn": "Shift Malfunction",
+        "severity": "ERROR",
+        "system": "TRANSMISSION",
+        "possibleCauses": "Solenoides de cambio|Presión ATF|TCM"
+    },
+    {
+        "code": "P1167",
+        "descriptionEs": "Relación aire-combustible en calentamiento - señal alta (Honda)",
+        "descriptionEn": "Air Fuel Ratio Sensor Heater System Circuit High Voltage",
+        "severity": "WARNING",
+        "system": "FUEL",
+        "possibleCauses": "Sensor A/F calefactor|ECM|Cableado"
+    },
+    {
+        "code": "P0138",
+        "descriptionEs": "Circuito del sensor O2 - señal alta (banco 1, sensor 2) (Honda)",
+        "descriptionEn": "O2 Sensor Circuit High Voltage Bank 1 Sensor 2",
+        "severity": "WARNING",
+        "system": "EMISSIONS",
+        "possibleCauses": "Sensor O2 saturado|Inyectores ricos|Presión combustible alta"
+    },
+    {
+        "code": "P0131",
+        "descriptionEs": "Señal baja en el circuito del sensor O2 banco 1 sensor 1 (Honda)",
+        "descriptionEn": "O2 Sensor Circuit Low Voltage Bank 1 Sensor 1",
+        "severity": "WARNING",
+        "system": "EMISSIONS",
+        "possibleCauses": "Sensor O2 viejo|Fuga de escape|Circuito abierto"
+    }
+]

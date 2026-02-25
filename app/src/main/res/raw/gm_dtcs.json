@@ -1,0 +1,402 @@
+[
+    {
+        "code": "P0650",
+        "descriptionEs": "Circuito de lámpara indicadora de fallo (MIL) defectuoso",
+        "descriptionEn": "Malfunction Indicator Lamp (MIL) Control Circuit",
+        "severity": "WARNING",
+        "system": "ELECTRICAL",
+        "possibleCauses": "Foco de tablero quemado|Cableado cortocircuitado|PCM defectuoso"
+    },
+    {
+        "code": "P1516",
+        "descriptionEs": "Actuador de mariposa electrónica (TAC) - posición del módulo fuera de rango",
+        "descriptionEn": "Throttle Actuator Control Module Throttle Actuator Position Performance",
+        "severity": "ERROR",
+        "system": "ENGINE",
+        "possibleCauses": "Módulo TAC defectuoso|Mariposa atascada|Resorte de retorno mariposa"
+    },
+    {
+        "code": "P2101",
+        "descriptionEs": "Rendimiento del motor del actuador de control de mariposa",
+        "descriptionEn": "Throttle Actuator Control Motor Circuit Range/Performance",
+        "severity": "ERROR",
+        "system": "ENGINE",
+        "possibleCauses": "Motor de mariposa defectuoso|Módulo TAC|Cuerpo de mariposa sucio"
+    },
+    {
+        "code": "P2135",
+        "descriptionEs": "Correlación de sensores de posición del acelerador/pedal (TPS1/TPS2)",
+        "descriptionEn": "Throttle/Pedal Position Sensor/Switch A/B Voltage Correlation",
+        "severity": "ERROR",
+        "system": "ENGINE",
+        "possibleCauses": "Sensor TPS defectuoso|Cableado entre sensores|Calibración TPS"
+    },
+    {
+        "code": "P2176",
+        "descriptionEs": "Posición mínima del cuerpo de mariposa no aprendida",
+        "descriptionEn": "Throttle Actuator Control System - Idle Position Not Learned",
+        "severity": "WARNING",
+        "system": "ENGINE",
+        "possibleCauses": "Cuerpo de mariposa sucio|Procedimiento de calibración requerido|TAC defectuoso"
+    },
+    {
+        "code": "U0100",
+        "descriptionEs": "Comunicación perdida con ECM/PCM (GM)",
+        "descriptionEn": "Lost Communication With ECM/PCM",
+        "severity": "ERROR",
+        "system": "NETWORK",
+        "possibleCauses": "Bus CAN defectuoso|ECM sin alimentación|Cortocircuito red CAN"
+    },
+    {
+        "code": "U0140",
+        "descriptionEs": "Comunicación perdida con módulo de carrocería (BCM)",
+        "descriptionEn": "Lost Communication With Body Control Module",
+        "severity": "ERROR",
+        "system": "NETWORK",
+        "possibleCauses": "BCM sin alimentación|Bus CAN|Fusible BCM abierto"
+    },
+    {
+        "code": "B1325",
+        "descriptionEs": "Voltaje de batería bajo detectado por BCM",
+        "descriptionEn": "Control Module Battery Voltage Low",
+        "severity": "WARNING",
+        "system": "BODY",
+        "possibleCauses": "Batería débil|Alternador|Conexiones de batería"
+    },
+    {
+        "code": "C0035",
+        "descriptionEs": "Sensor de velocidad de rueda delantera izquierda - señal de circuito",
+        "descriptionEn": "Left Front Wheel Speed Sensor Circuit",
+        "severity": "ERROR",
+        "system": "ABS",
+        "possibleCauses": "Sensor de velocidad rueda|Anillo tónico dañado|Cableado"
+    },
+    {
+        "code": "C0040",
+        "descriptionEs": "Sensor de velocidad de rueda delantera derecha - señal de circuito",
+        "descriptionEn": "Right Front Wheel Speed Sensor Circuit",
+        "severity": "ERROR",
+        "system": "ABS",
+        "possibleCauses": "Sensor de velocidad rueda|Anillo tónico|Cableado dañado"
+    },
+    {
+        "code": "P0010",
+        "descriptionEs": "Circuito del actuador de posición árbol de levas A (banco 1) - corto/abierto",
+        "descriptionEn": "Camshaft Position Actuator Circuit Bank 1",
+        "severity": "WARNING",
+        "system": "ENGINE",
+        "possibleCauses": "Actuador VVT banco 1|Cableado|Control de presión aceite"
+    },
+    {
+        "code": "P0014",
+        "descriptionEs": "Árbol de levas A excesivamente avanzado o bloqueado (banco 1)",
+        "descriptionEn": "Camshaft Position B - Timing Over-Advanced or System Performance Bank 1",
+        "severity": "WARNING",
+        "system": "ENGINE",
+        "possibleCauses": "Actuador árbol levas|Aceite motor bajo|PCM"
+    },
+    {
+        "code": "P0068",
+        "descriptionEs": "MAP/MAF - correlación de posición de mariposa fuera de rango",
+        "descriptionEn": "MAP/MAF - Throttle Position Correlation",
+        "severity": "WARNING",
+        "system": "ENGINE",
+        "possibleCauses": "Sensor MAP o MAF|Fuga de aire|Sensor TPS"
+    },
+    {
+        "code": "P0106",
+        "descriptionEs": "Señal del sensor MAP fuera de rango - rendimiento",
+        "descriptionEn": "Manifold Absolute Pressure Sensor Circuit Range/Performance",
+        "severity": "WARNING",
+        "system": "ENGINE",
+        "possibleCauses": "Sensor MAP defectuoso|Fuga de vacío|Manguera MAP rota"
+    },
+    {
+        "code": "P0131",
+        "descriptionEs": "Circuito del sensor O2 con señal baja (banco 1, sensor 1)",
+        "descriptionEn": "O2 Sensor Circuit Low Voltage Bank 1 Sensor 1",
+        "severity": "WARNING",
+        "system": "FUEL",
+        "possibleCauses": "Sensor O2 viejo|Circuito abierto|Fuga de escape"
+    },
+    {
+        "code": "P0171",
+        "descriptionEs": "Sistema demasiado pobre - banco 1 (GM)",
+        "descriptionEn": "System Too Lean Bank 1",
+        "severity": "WARNING",
+        "system": "FUEL",
+        "possibleCauses": "MAF sucio|Fuga de vacío|Inyector obstruido"
+    },
+    {
+        "code": "P0172",
+        "descriptionEs": "Sistema demasiado rico - banco 1",
+        "descriptionEn": "System Too Rich Bank 1",
+        "severity": "WARNING",
+        "system": "FUEL",
+        "possibleCauses": "Sensor O2 defectuoso|Inyectores que gotean|Presión combustible alta"
+    },
+    {
+        "code": "P0201",
+        "descriptionEs": "Circuito del inyector cilindro 1 abierto",
+        "descriptionEn": "Injector Circuit Open - Cylinder 1",
+        "severity": "ERROR",
+        "system": "FUEL",
+        "possibleCauses": "Inyector 1 defectuoso|Circuito abierto|Driver PCM"
+    },
+    {
+        "code": "P0202",
+        "descriptionEs": "Circuito del inyector cilindro 2 abierto",
+        "descriptionEn": "Injector Circuit Open - Cylinder 2",
+        "severity": "ERROR",
+        "system": "FUEL",
+        "possibleCauses": "Inyector 2 defectuoso|Circuito abierto|Driver PCM"
+    },
+    {
+        "code": "P0300",
+        "descriptionEs": "Fallo de encendido aleatorio/múltiple (GM)",
+        "descriptionEn": "Random/Multiple Cylinder Misfire Detected",
+        "severity": "ERROR",
+        "system": "ENGINE",
+        "possibleCauses": "Bujías|Bobinas|Inyectores|Compresión baja"
+    },
+    {
+        "code": "P0335",
+        "descriptionEs": "Circuito del sensor de posición del cigüeñal A",
+        "descriptionEn": "Crankshaft Position Sensor A Circuit",
+        "severity": "ERROR",
+        "system": "ENGINE",
+        "possibleCauses": "Sensor CKP defectuoso|Rueda fónica|Cableado"
+    },
+    {
+        "code": "P0380",
+        "descriptionEs": "Circuito de control de bujía de precalentamiento (calefacción A)",
+        "descriptionEn": "Glow Plug/Heater Circuit A",
+        "severity": "WARNING",
+        "system": "ENGINE",
+        "possibleCauses": "Bujía de precalentamiento quemada|Relé de precalentamiento|Cableado"
+    },
+    {
+        "code": "P0403",
+        "descriptionEs": "Circuito del actuador EGR defectuoso",
+        "descriptionEn": "Exhaust Gas Recirculation Control Circuit",
+        "severity": "WARNING",
+        "system": "EMISSIONS",
+        "possibleCauses": "Válvula EGR|Solenoide EGR|Cableado"
+    },
+    {
+        "code": "P0410",
+        "descriptionEs": "Mal funcionamiento del sistema de aire secundario",
+        "descriptionEn": "Secondary Air Injection System Malfunction",
+        "severity": "WARNING",
+        "system": "EMISSIONS",
+        "possibleCauses": "Bomba de aire|Válvula de control|Mangueras bloqueadas"
+    },
+    {
+        "code": "P0420",
+        "descriptionEs": "Eficiencia del catalizador por debajo del umbral banco 1 (GM)",
+        "descriptionEn": "Catalyst System Efficiency Below Threshold Bank 1",
+        "severity": "WARNING",
+        "system": "EMISSIONS",
+        "possibleCauses": "Catalizador desgastado|Sonda lambda|Fuga de escape"
+    },
+    {
+        "code": "P0440",
+        "descriptionEs": "Mal funcionamiento del sistema de control de emisiones evaporativas",
+        "descriptionEn": "Evaporative Emission Control System Malfunction",
+        "severity": "WARNING",
+        "system": "EMISSIONS",
+        "possibleCauses": "Tapón de combustible|Purga EVAP|Cánister"
+    },
+    {
+        "code": "P0446",
+        "descriptionEs": "Circuito de control de válvula ventilación sistema EVAP defectuoso",
+        "descriptionEn": "Evaporative Emission Control System Vent Control Circuit",
+        "severity": "WARNING",
+        "system": "EMISSIONS",
+        "possibleCauses": "Válvula de ventilación EVAP|Cableado|PCM"
+    },
+    {
+        "code": "P0449",
+        "descriptionEs": "Circuito del solenoide de conducción del sistema EVAP defectuoso",
+        "descriptionEn": "Evaporative Emission Control System Vent Control Circuit",
+        "severity": "INFO",
+        "system": "EMISSIONS",
+        "possibleCauses": "Solenoide EVAP|Conector suelto|Cableado"
+    },
+    {
+        "code": "P0496",
+        "descriptionEs": "Flujo de purga de sistema EVAP alto en posición de no purga",
+        "descriptionEn": "Evaporative Emission System High Purge Flow",
+        "severity": "WARNING",
+        "system": "EMISSIONS",
+        "possibleCauses": "Válvula de purga atascada abierta|Cánister saturado"
+    },
+    {
+        "code": "P0506",
+        "descriptionEs": "Circuito de control del sistema de ralentí - RPM bajas",
+        "descriptionEn": "Idle Control System RPM Low",
+        "severity": "WARNING",
+        "system": "ENGINE",
+        "possibleCauses": "Cuerpo de mariposa sucio|Válvula IAC|Fuga de vacío"
+    },
+    {
+        "code": "P0507",
+        "descriptionEs": "Circuito de control del sistema de ralentí - RPM altas",
+        "descriptionEn": "Idle Control System RPM High",
+        "severity": "WARNING",
+        "system": "ENGINE",
+        "possibleCauses": "Válvula IAC atascada|Fuga de aire|Sensores de posición mariposa"
+    },
+    {
+        "code": "P0530",
+        "descriptionEs": "Circuito del sensor de presión del aire acondicionado defectuoso",
+        "descriptionEn": "A/C Refrigerant Pressure Sensor Circuit",
+        "severity": "INFO",
+        "system": "BODY",
+        "possibleCauses": "Sensor de presión A/C|Refrigerante bajo|Cableado"
+    },
+    {
+        "code": "P0601",
+        "descriptionEs": "Error de memoria ROM del módulo de control interno",
+        "descriptionEn": "Internal Control Module Memory Check Sum Error",
+        "severity": "ERROR",
+        "system": "ELECTRICAL",
+        "possibleCauses": "PCM/ECM defectuoso|Reprogramar módulo|Interferencia eléctrica"
+    },
+    {
+        "code": "P0643",
+        "descriptionEs": "Circuito de alimentación del sensor - voltaje alto",
+        "descriptionEn": "Sensor Reference Voltage A Circuit High",
+        "severity": "WARNING",
+        "system": "ELECTRICAL",
+        "possibleCauses": "Cortocircuito a positivo|PCM|Múltiples sensores afectados"
+    },
+    {
+        "code": "P0685",
+        "descriptionEs": "Circuito de control del relé de alimentación del PCM/ECM/TCM abierto",
+        "descriptionEn": "ECM/PCM Power Relay Control Circuit Open",
+        "severity": "ERROR",
+        "system": "ELECTRICAL",
+        "possibleCauses": "Relé principal|Fusible del PCM|Cableado de alimentación"
+    },
+    {
+        "code": "P0700",
+        "descriptionEs": "Sistema de control de transmisión - fallo (GM)",
+        "descriptionEn": "Transmission Control System Malfunction",
+        "severity": "ERROR",
+        "system": "TRANSMISSION",
+        "possibleCauses": "TCM|Sensores de transmisión|Bus CAN"
+    },
+    {
+        "code": "P0753",
+        "descriptionEs": "Solenoide de cambio A - circuito eléctrico",
+        "descriptionEn": "Shift Solenoid A Electrical",
+        "severity": "WARNING",
+        "system": "TRANSMISSION",
+        "possibleCauses": "Solenoide turno A|Aceite ATF|TCM defectuoso"
+    },
+    {
+        "code": "P0758",
+        "descriptionEs": "Solenoide de cambio B - circuito eléctrico",
+        "descriptionEn": "Shift Solenoid B Electrical",
+        "severity": "WARNING",
+        "system": "TRANSMISSION",
+        "possibleCauses": "Solenoide turno B|Aceite ATF|TCM defectuoso"
+    },
+    {
+        "code": "P0776",
+        "descriptionEs": "Solenoide de control de presión B - rendimiento o atascado apagado",
+        "descriptionEn": "Pressure Control Solenoid B Performance or Stuck Off",
+        "severity": "WARNING",
+        "system": "TRANSMISSION",
+        "possibleCauses": "Solenoide presión|Aceite ATF sucio|TCM"
+    },
+    {
+        "code": "P1125",
+        "descriptionEs": "Mal funcionamiento del sistema de posición del pedal del acelerador (APP)",
+        "descriptionEn": "Accelerator Pedal Position System Performance",
+        "severity": "ERROR",
+        "system": "ENGINE",
+        "possibleCauses": "Sensor APP defectuoso|Módulo TAC|Cableado"
+    },
+    {
+        "code": "P1174",
+        "descriptionEs": "Aprendizaje de combustible banco 1 - mezcla fuera de balance",
+        "descriptionEn": "Fuel Trim Cylinder Balance Bank 1",
+        "severity": "WARNING",
+        "system": "FUEL",
+        "possibleCauses": "Inyectores desequilibrados|Fuga de compresión|Sensor O2"
+    },
+    {
+        "code": "P1345",
+        "descriptionEs": "Correlación del sensor de posición del cigüeñal con árbol de levas fuera de rango",
+        "descriptionEn": "Crankshaft/Camshaft Position Sensor Correlation",
+        "severity": "ERROR",
+        "system": "ENGINE",
+        "possibleCauses": "Timing cadena|Sensor CMP o CKP|Ajuste de distribución"
+    },
+    {
+        "code": "P1380",
+        "descriptionEs": "Variación de cilindro 1 detectada por sistema antibloqueo",
+        "descriptionEn": "Misfire Detected - Rough Road Data Not Available",
+        "severity": "INFO",
+        "system": "ENGINE",
+        "possibleCauses": "Sensor ABS|Bus CAN entre ABS y PCM|Bujías"
+    },
+    {
+        "code": "P1415",
+        "descriptionEs": "Sistema de aire secundario banco 1",
+        "descriptionEn": "Secondary Air Injection System Bank 1",
+        "severity": "WARNING",
+        "system": "EMISSIONS",
+        "possibleCauses": "Bomba de aire|Válvula de desvío|Mangueras de aire"
+    },
+    {
+        "code": "P1632",
+        "descriptionEs": "Modo de mantenimiento de la batería del vehículo activado",
+        "descriptionEn": "Theft Deterrent Fuel Enable Signal Not Received",
+        "severity": "WARNING",
+        "system": "BODY",
+        "possibleCauses": "Sistema anti-robo|PCM|Clave no reconocida"
+    },
+    {
+        "code": "P1779",
+        "descriptionEs": "Reducción de combustible del motor - entrada de tracción",
+        "descriptionEn": "Engine Torque Delivered to TCM Signal",
+        "severity": "INFO",
+        "system": "TRANSMISSION",
+        "possibleCauses": "Señal TCM|Comunicación PCM-TCM|Bus CAN"
+    },
+    {
+        "code": "C0060",
+        "descriptionEs": "Sensor de velocidad de rueda trasera izquierda - circuito",
+        "descriptionEn": "Left Rear Wheel Speed Sensor Circuit",
+        "severity": "ERROR",
+        "system": "ABS",
+        "possibleCauses": "Sensor LR|Cable|Anillo tónico trasero"
+    },
+    {
+        "code": "C0065",
+        "descriptionEs": "Sensor de velocidad de rueda trasera derecha - circuito",
+        "descriptionEn": "Right Rear Wheel Speed Sensor Circuit",
+        "severity": "ERROR",
+        "system": "ABS",
+        "possibleCauses": "Sensor RR|Cable|Anillo tónico trasero"
+    },
+    {
+        "code": "C0110",
+        "descriptionEs": "Motor de la bomba de ABS - circuito defectuoso",
+        "descriptionEn": "ABS Pump Motor Circuit Malfunction",
+        "severity": "ERROR",
+        "system": "ABS",
+        "possibleCauses": "Motor bomba ABS|Relé bomba|EBCM defectuoso"
+    },
+    {
+        "code": "B2960",
+        "descriptionEs": "Sistema de seguridad con llave - código de llave incorrecto o no programado",
+        "descriptionEn": "Security System Sensor Data Incorrect After Ignition Cycle",
+        "severity": "WARNING",
+        "system": "BODY",
+        "possibleCauses": "Llave no programada|Módulo VTD|Anillo transpondedor"
+    }
+]

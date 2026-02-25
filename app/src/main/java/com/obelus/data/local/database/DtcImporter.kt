@@ -30,9 +30,14 @@ class DtcImporter @Inject constructor(
         // Mapa: fabricante → resource raw ID
         // Los IDs se resuelven en runtime usando getIdentifier()
         private val MANUFACTURERS = mapOf(
-            "VAG"    to "vag_dtcs",
-            "BMW"    to "bmw_dtcs",
-            "TOYOTA" to "toyota_dtcs"
+            "VAG"     to "vag_dtcs",
+            "BMW"     to "bmw_dtcs",
+            "TOYOTA"  to "toyota_dtcs",
+            "FORD"    to "ford_dtcs",
+            "GM"      to "gm_dtcs",
+            "PSA"     to "psa_dtcs",
+            "HONDA"   to "honda_dtcs",
+            "HYUNDAI" to "hyundai_dtcs"
         )
     }
 

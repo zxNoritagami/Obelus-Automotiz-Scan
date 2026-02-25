@@ -34,6 +34,7 @@ import com.obelus.presentation.ui.screens.RaceHistoryScreen
 import com.obelus.presentation.ui.screens.SecurityAccessScreen
 import com.obelus.presentation.ui.screens.WebServerScreen
 import com.obelus.presentation.ui.screens.CrashLogScreen
+import com.obelus.presentation.ui.screens.ActuatorTestScreen
 import com.obelus.data.crash.CrashReporter
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
@@ -88,6 +89,7 @@ fun MainScreen(crashReporter: CrashReporter) {
                             "web_server"     -> "Dashboard Web"
                             "security_access" -> "Security Access 0x27"
                             "dbc_editor"     -> "Editor DBC"
+                            "actuator_test"  -> "Tests de Actuadores"
                             "settings"       -> "Configuración"
                             else             -> "Obelus Scan"
                         }
@@ -112,7 +114,8 @@ fun MainScreen(crashReporter: CrashReporter) {
                 val items = listOf(
                     Triple("dashboard",  "Dash",     Icons.Default.Dashboard),
                     Triple("race",       "Race",     Icons.Default.Flag),
-                    Triple("dtc",        "DTCs",     Icons.Default.Warning),
+                    Triple("dtc",          "DTCs",    Icons.Default.Warning),
+                    Triple("actuator_test", "Tests",   Icons.Default.Build),
                     Triple("history",    "Historial", Icons.Default.History),
                     Triple("web_server", "Web",       Icons.Default.Language),
                     Triple("dbc_editor", "DBC",      Icons.Default.Edit),
@@ -174,6 +177,7 @@ fun MainScreen(crashReporter: CrashReporter) {
                     onBack = { navController.popBackStack() }
                 )
             }
+            composable("actuator_test") { ActuatorTestScreen() }
             composable("crash_logs") {
                 CrashLogScreen(
                     crashReporter = crashReporter,

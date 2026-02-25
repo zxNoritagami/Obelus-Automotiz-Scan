@@ -3,6 +3,8 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <uses-feature android:name="android.hardware.bluetooth" android:required="true" />
+    <!-- USB Host for ELM327 USB OTG adapters (optional — app works without it) -->
+    <uses-feature android:name="android.hardware.usb.host" android:required="false" />
 
     <!-- Android 12+ Permissions -->
     <uses-permission android:name="android.permission.BLUETOOTH_SCAN"
@@ -23,6 +25,7 @@
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.WAKE_LOCK" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
 
     <!-- Exportación: solo necesario en Android 9 y anteriores.
          Android 10+: SAF (Storage Access Framework) no necesita permiso de escritura. -->
@@ -48,7 +51,24 @@
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+            <!-- Notify app when ELM327 USB adapter is plugged in -->
+            <intent-filter>
+                <action android:name="android.hardware.usb.action.USB_DEVICE_ATTACHED" />
+            </intent-filter>
+            <meta-data
+                android:name="android.hardware.usb.action.USB_DEVICE_ATTACHED"
+                android:resource="@xml/usb_device_filter" />
         </activity>
+
+        <!-- USB Permission + Detach receiver -->
+        <receiver
+            android:name=".protocol.usb.UsbPermissionReceiver"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="com.obelus.USB_PERMISSION" />
+                <action android:name="android.hardware.usb.action.USB_DEVICE_DETACHED" />
+            </intent-filter>
+        </receiver>
         <provider
             android:name="androidx.core.content.FileProvider"
             android:authorities="${applicationId}.provider"

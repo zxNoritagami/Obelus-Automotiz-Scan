@@ -11,6 +11,7 @@ import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
+import javax.inject.Named
 import javax.inject.Singleton
 
 @Module
@@ -19,6 +20,7 @@ abstract class BluetoothModule {
 
     @Binds
     @Singleton
+    @Named("bluetooth")
     abstract fun bindElmConnection(
         impl: BluetoothElmConnection
     ): ElmConnection
