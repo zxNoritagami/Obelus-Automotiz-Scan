@@ -11,4 +11,9 @@ data class Ddt4allEcu(
     val protocol: String,
     val group: String,
     val originFile: String
-)
+) {
+    @androidx.room.Ignore
+    var parameters: List<com.obelus.data.ddt4all.Ddt4allParameter> = emptyList()
+    @androidx.room.Ignore
+    var commands: List<com.obelus.data.ddt4all.Ddt4allCommand> = emptyList()
+}

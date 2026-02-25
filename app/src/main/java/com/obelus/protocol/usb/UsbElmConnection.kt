@@ -63,6 +63,12 @@ class UsbElmConnection @Inject constructor(
     private val _connectionState = MutableStateFlow(ConnectionState.DISCONNECTED)
     override val connectionState: StateFlow<ConnectionState> = _connectionState.asStateFlow()
 
+    // Optimizacion: Buffer re-utilizable (PROMPT 13)
+    private val readBuffer = ByteArray(1024)
+    // Limite reconexiones
+    private var reconnectAttempts = 0
+    private val MAX_RECONNECT_ATTEMPTS = 3
+
     private var usbConnection: UsbDeviceConnection? = null
     private var usbInterface: UsbInterface? = null
     private var endpointIn: UsbEndpoint? = null
@@ -77,6 +83,7 @@ class UsbElmConnection @Inject constructor(
      */
     override suspend fun connect(deviceAddress: String): Boolean = withContext(Dispatchers.IO) {
         _connectionState.value = ConnectionState.CONNECTING
+        reconnectAttempts = 0
 
         val device = findElm327Device()
         if (device == null) {
@@ -101,7 +108,15 @@ class UsbElmConnection @Inject constructor(
     }
 
     override suspend fun disconnect() = withContext(Dispatchers.IO) {
-        closeInternal()
+        try {
+            _connectionState.value = ConnectionState.DISCONNECTING
+            closeInternal()
+        } catch (e: Exception) {
+            Log.e(TAG, "Error during disconnect: ${e.message}", e)
+        } finally {
+            // Ensure state is DISCONNECTED even if closeInternal() failed
+            _connectionState.value = ConnectionState.DISCONNECTED
+        }
     }
 
     override suspend fun send(command: String): String = withContext(Dispatchers.IO) {
@@ -269,13 +284,12 @@ class UsbElmConnection @Inject constructor(
         timeoutMs: Long
     ): String {
         val sb = StringBuilder()
-        val buf = ByteArray(BUFFER_SIZE)
         val deadline = System.currentTimeMillis() + timeoutMs
 
         while (System.currentTimeMillis() < deadline) {
-            val read = conn.bulkTransfer(epIn, buf, buf.size, READ_TIMEOUT_MS)
+            val read = conn.bulkTransfer(epIn, readBuffer, readBuffer.size, READ_TIMEOUT_MS)
             if (read > 0) {
-                val chunk = String(buf, 0, read)
+                val chunk = String(readBuffer, 0, read)
                 sb.append(chunk)
                 if (chunk.contains('>')) break // ELM327 prompt = end of response
             }

@@ -1,5 +1,6 @@
 package com.obelus.data.local.entity
 
+import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.ForeignKey
 import androidx.room.Index
@@ -21,8 +22,7 @@ import androidx.room.PrimaryKey
         )
     ],
     indices = [
-        Index(value = ["raceId"]),
-        Index(value = ["timestampOffset"])
+        Index(value = ["raceId", "timestampOffset"]) // Optimizacion PROMPT 13: Indice compuesto
     ]
 )
 data class RaceTelemetryPoint(

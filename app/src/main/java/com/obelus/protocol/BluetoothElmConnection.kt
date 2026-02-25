@@ -37,8 +37,14 @@ class BluetoothElmConnection @Inject constructor(
     private var inputStream: InputStream? = null
     private var outputStream: OutputStream? = null
 
-    private val _connectionState = MutableStateFlow(ConnectionState.DISCONNECTED)
-    override val connectionState: StateFlow<ConnectionState> = _connectionState.asStateFlow()
+    private var _connectionState = MutableStateFlow(ConnectionState.DISCONNECTED)
+    override val connectionState: StateFlow<ConnectionState> = _connectionState
+
+    // Optimizacion: Buffer re-utilizable (PROMPT 13)
+    private val readBuffer = ByteArray(1024)
+    // Limite de intentos
+    private var reconnectAttempts = 0
+    private val MAX_RECONNECT_ATTEMPTS = 3
 
     @SuppressLint("MissingPermission")
     override suspend fun connect(deviceAddress: String): Boolean = withContext(Dispatchers.IO) {
@@ -49,9 +55,11 @@ class BluetoothElmConnection @Inject constructor(
         }
 
         _connectionState.value = ConnectionState.CONNECTING
+        reconnectAttempts = 0 // Reset fallos al conectar forzosamente
 
         try {
             val device = bluetoothAdapter.getRemoteDevice(deviceAddress)
+                ?: throw Exception("Dispositivo no encontrado")
             // Create socket
             socket = device.createRfcommSocketToServiceRecord(SPP_UUID)
             
@@ -87,15 +95,34 @@ class BluetoothElmConnection @Inject constructor(
 
     private suspend fun disconnectInternal() = withContext(Dispatchers.IO) {
         try {
+            inputStream?.close()
+            outputStream?.close()
             socket?.close()
         } catch (e: IOException) {
-            Log.e(TAG, "Error closing socket", e)
+            Log.e(TAG, "Error closing socket or streams", e)
         } finally {
             socket = null
             inputStream = null
             outputStream = null
             _connectionState.value = ConnectionState.DISCONNECTED
             Log.i(TAG, "Disconnected")
+        }
+    }
+
+    override suspend fun reconnect() {
+        if (reconnectAttempts >= MAX_RECONNECT_ATTEMPTS) {
+            Log.e("BluetoothElm", "Maximo de intentos alcanzados ($MAX_RECONNECT_ATTEMPTS). Abortando loop de reconexión.")
+            _connectionState.value = ConnectionState.ERROR
+            return
+        }
+        reconnectAttempts++
+        Log.w("BluetoothElm", "Intentando reconectar... (Intento $reconnectAttempts)")
+        
+        val lastDevice = socket?.remoteDevice?.address
+        disconnect()
+        if (lastDevice != null) {
+            kotlinx.coroutines.delay(2000) // Backoff
+            connect(lastDevice)
         }
     }
 
@@ -125,9 +152,7 @@ class BluetoothElmConnection @Inject constructor(
 
     private suspend fun readResponse(): String {
         return withTimeout(READ_TIMEOUT_MS) {
-            val buffer = ByteArray(BUFFER_SIZE)
             val sb = StringBuilder()
-            var bytesRead: Int
             
             // Simple reading loop checking for prompt '>' character which usually indicates end of ELM response
             try {
@@ -135,9 +160,9 @@ class BluetoothElmConnection @Inject constructor(
                     val stream = inputStream ?: throw IOException("Input stream null")
                     
                     if (stream.available() > 0) {
-                        bytesRead = stream.read(buffer)
+                        val bytesRead = stream.read(readBuffer)
                         if (bytesRead > 0) {
-                            val chunk = String(buffer, 0, bytesRead)
+                            val chunk = String(readBuffer, 0, bytesRead)
                             sb.append(chunk)
                             if (chunk.contains(">")) {
                                 break // End of response

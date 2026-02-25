@@ -1,5 +1,6 @@
 package com.obelus.data.local.entity
 
+import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.Index
 import androidx.room.PrimaryKey
@@ -16,7 +17,7 @@ import androidx.room.PrimaryKey
     tableName = "race_records",
     indices = [
         Index(value = ["raceType"]),
-        Index(value = ["startTime"]),
+        Index(value = ["startTime"]), // Optimizacion PROMPT 13: Indice por tiempo para historial mas rapido
         Index(value = ["isReference"])
     ]
 )

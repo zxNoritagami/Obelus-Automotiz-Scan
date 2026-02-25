@@ -22,10 +22,17 @@ class WebServerViewModel @Inject constructor(
     val serverState: StateFlow<WebServerState> = webServerManager.state
 
     fun toggleServer() {
+        val intent = Intent(context, com.obelus.service.WebServerService::class.java)
         if (serverState.value is WebServerState.Stopped) {
-            webServerManager.startServer()
+            intent.action = com.obelus.service.WebServerService.ACTION_START
+            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
+                context.startForegroundService(intent)
+            } else {
+                context.startService(intent)
+            }
         } else {
-            webServerManager.stopServer()
+            intent.action = com.obelus.service.WebServerService.ACTION_STOP
+            context.startService(intent)
         }
     }
 

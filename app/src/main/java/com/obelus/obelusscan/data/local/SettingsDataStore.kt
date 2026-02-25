@@ -57,6 +57,10 @@ class SettingsDataStore @Inject constructor(
         // Race Mode
         val VEHICLE_WEIGHT_KG     = intPreferencesKey("vehicle_weight_kg")
 
+        // Settings Generales
+        val IS_FIRST_LAUNCH       = booleanPreferencesKey("is_first_launch")
+        val PREFERRED_OBD_DEVICE  = stringPreferencesKey("preferred_obd_device")
+
         // Defaults
         const val DEFAULT_BROKER_URL       = "tcp://broker.hivemq.com:1883"
         const val DEFAULT_PUBLISH_INTERVAL = 5_000L
@@ -142,5 +146,27 @@ class SettingsDataStore @Inject constructor(
 
     suspend fun setVehicleWeight(kg: Int) {
         dataStore.edit { it[VEHICLE_WEIGHT_KG] = kg.coerceIn(100, 5000) }
+    }
+
+    // --- Onboarding & General ---
+
+    val isFirstLaunch: Flow<Boolean> = dataStore.data.map { preferences ->
+        preferences[IS_FIRST_LAUNCH] ?: true
+    }
+
+    suspend fun setFirstLaunchCompleted() {
+        dataStore.edit { preferences ->
+            preferences[IS_FIRST_LAUNCH] = false
+        }
+    }
+
+    val preferredObdDevice: Flow<String> = dataStore.data.map { preferences ->
+        preferences[PREFERRED_OBD_DEVICE] ?: "AUTO"
+    }
+
+    suspend fun setPreferredObdDevice(device: String) {
+        dataStore.edit { preferences ->
+            preferences[PREFERRED_OBD_DEVICE] = device
+        }
     }
 }

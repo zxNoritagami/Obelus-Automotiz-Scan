@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Ecu name="EMS3120" protocol="CAN" group="Engine">
+    <Target name="EMS3120" href="CAN_Protocol"/>
+    <Parameters>
+        <Parameter name="RPM" desc="Engine Speed" byte="3" bit="0" length="16" min="0" max="8000" unit="RPM" step="1.0" targetId="T1">
+            <Value value="0" desc="Off" />
+            <Value value="1" desc="On" />
+        </Parameter>
+        <Parameter name="COOLANT" desc="Coolant Temperature" byte="5" bit="0" length="8" min="-40" max="215" unit="°C" step="1.0" targetId="T1" />
+        <Parameter name="MAF" desc="Mass Air Flow" byte="6" bit="0" length="16" min="0" max="655.35" unit="g/s" step="0.01" targetId="T1" />
+        <Parameter name="MAP" desc="Manifold Absolute Pressure" byte="8" bit="0" length="8" min="0" max="255" unit="kPa" step="1.0" targetId="T1" />
+    </Parameters>
+    <Commands>
+        <Command name="Reset" desc="Reset ECU" send="11 01">
+            <Send>
+                <Parameter name="RPM" />
+            </Send>
+        </Command>
+        <Command name="ClearDTC" desc="Clear Diagnostic Trouble Codes" send="14 FF 00">
+            <Send />
+        </Command>
+    </Commands>
+</Ecu>

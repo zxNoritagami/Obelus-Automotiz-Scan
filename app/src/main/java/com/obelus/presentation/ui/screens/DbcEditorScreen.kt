@@ -56,40 +56,62 @@ fun DbcEditorScreen(
                 }
             }
         ) { padding ->
-            Row(
+            Column(
                 modifier = Modifier
                     .fillMaxSize()
                     .padding(padding)
+                    .background(Color(0xFF0A0A0F))
             ) {
-                // ── Left panel: definition list (30%) ─────────────────────────
+                // Header Dashboard
+                Row(
+                    modifier = Modifier.fillMaxWidth().padding(16.dp),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text("DBC NETWORK MATRIX", color = com.obelus.ui.theme.NeonCyan, fontSize = 20.sp, fontWeight = FontWeight.Black, fontFamily = androidx.compose.ui.text.font.FontFamily.Monospace)
+                    
+                    // Simple Statistics
+                    Row(horizontalArrangement = Arrangement.spacedBy(16.dp)) {
+                        Column(horizontalAlignment = Alignment.End) {
+                            Text("ACTIVE DBs", color = Color.Gray, fontSize = 10.sp, fontFamily = androidx.compose.ui.text.font.FontFamily.Monospace)
+                            Text("${uiState.definitions.size}", color = Color.White, fontSize = 16.sp, fontWeight = FontWeight.Bold)
+                        }
+                    }
+                }
+
+                HorizontalDivider(color = Color.DarkGray)
+
+                // List
                 DefinitionListPanel(
                     definitions = uiState.definitions,
                     selectedDefinition = uiState.selectedDefinition,
                     isLoading = uiState.isLoading,
                     onSelect = { viewModel.selectDefinition(it) },
                     onDelete = { viewModel.deleteDefinition(it) },
-                    modifier = Modifier
-                        .weight(0.30f)
-                        .fillMaxHeight()
+                    modifier = Modifier.fillMaxWidth().weight(1f)
                 )
 
-                VerticalDivider()
-
-                // ── Right panel: definition detail (70%) ──────────────────────
-                DefinitionDetailPanel(
-                    definition = uiState.selectedDefinition,
-                    signals = uiState.selectedSignals,
-                    isLoading = uiState.isLoading,
-                    onUpdateDefinition = { name, desc, proto ->
-                        viewModel.updateDefinition(name, desc, proto)
-                    },
-                    onAddSignal = { viewModel.showSignalEditorDialog() },
-                    onEditSignal = { viewModel.showSignalEditorDialog(it) },
-                    onDeleteSignal = { viewModel.deleteSignal(it) },
-                    modifier = Modifier
-                        .weight(0.70f)
-                        .fillMaxHeight()
-                )
+                // Si hay un seleccionado, mostramos un BottomSheet estilizado o expandimos.
+                // Aquí usamos una implementación simple de Bottom o Modal para las señales
+                if (uiState.selectedDefinition != null) {
+                    ModalBottomSheet(
+                        onDismissRequest = { viewModel.selectDefinition(uiState.selectedDefinition!!) }, // Simplificado para cerrar
+                        containerColor = com.obelus.ui.theme.DeepSurface,
+                    ) {
+                        DefinitionDetailPanel(
+                            definition = uiState.selectedDefinition,
+                            signals = uiState.selectedSignals,
+                            isLoading = uiState.isLoading,
+                            onUpdateDefinition = { name, desc, proto ->
+                                viewModel.updateDefinition(name, desc, proto)
+                            },
+                            onAddSignal = { viewModel.showSignalEditorDialog() },
+                            onEditSignal = { viewModel.showSignalEditorDialog(it) },
+                            onDeleteSignal = { viewModel.deleteSignal(it) },
+                            modifier = Modifier.fillMaxWidth().heightIn(min = 400.dp, max = 800.dp)
+                        )
+                    }
+                }
             }
         }
 
@@ -234,15 +256,24 @@ private fun DbcDefinitionCard(
                     Text(
                         definition.description,
                         style = MaterialTheme.typography.labelSmall,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        color = Color.Gray,
                         maxLines = 2,
                         overflow = TextOverflow.Ellipsis
                     )
                 }
+                Spacer(Modifier.height(8.dp))
+                // Visual Matrix Preview (Mock for Hacker aesthetics)
+                Row(horizontalArrangement = Arrangement.spacedBy(2.dp), modifier = Modifier.fillMaxWidth()) {
+                    repeat(8) { i ->
+                        Box(modifier = Modifier.weight(1f).height(4.dp).background(if (i % 2 == 0) com.obelus.ui.theme.NeonCyan else Color.DarkGray))
+                    }
+                }
+                Spacer(Modifier.height(4.dp))
                 Text(
-                    "${definition.signalCount} señal(es) · ${definition.protocol}",
+                    "${definition.signalCount} MAPS REGISTERED · ${definition.protocol}",
                     style = MaterialTheme.typography.labelSmall,
-                    color = MaterialTheme.colorScheme.outline
+                    color = Color.Gray,
+                    fontFamily = androidx.compose.ui.text.font.FontFamily.Monospace
                 )
             }
 

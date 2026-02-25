@@ -1,230 +1,87 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Obelus Web Dashboard</title>
-    <style>
-        :root {
-            --bg: #0f0f12;
-            --panel: #1a1b25;
-            --accent-purple: #9d56ff;
-            --accent-blue: #00c2ff;
-            --text: #e1e1e6;
-            --text-muted: #8d8d99;
-        }
-
-        body {
-            background-color: var(--bg);
-            color: var(--text);
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            margin: 0;
-            padding: 20px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-        }
-
-        .header {
-            width: 100%;
-            max-width: 800px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 30px;
-        }
-
-        .logo {
-            font-size: 24px;
-            font-weight: bold;
-            color: var(--accent-purple);
-        }
-
-        .status-badge {
-            background: rgba(157, 86, 255, 0.1);
-            color: var(--accent-purple);
-            padding: 5px 12px;
-            border-radius: 20px;
-            font-size: 12px;
-            border: 1px solid var(--accent-purple);
-        }
-
-        .dashboard-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 20px;
-            width: 100%;
-            max-width: 800px;
-        }
-
-        .card {
-            background: var(--panel);
-            border-radius: 16px;
-            padding: 20px;
-            text-align: center;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
-            border: 1px solid rgba(255,255,255,0.05);
-        }
-
-        .card h3 {
-            margin: 0 0 15px 0;
-            color: var(--text-muted);
-            font-size: 14px;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
-
-        .gauge-container {
-            position: relative;
-            width: 180px;
-            height: 180px;
-            margin: 0 auto;
-        }
-
-        .value-display {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            text-align: center;
-        }
-
-        .main-value {
-            font-size: 36px;
-            font-weight: bold;
-            display: block;
-        }
-
-        .unit {
-            font-size: 14px;
-            color: var(--text-muted);
-        }
-
-        svg {
-            transform: rotate(-90deg);
-        }
-
-        circle {
-            fill: none;
-            stroke-width: 8;
-            stroke-linecap: round;
-        }
-
-        .bg-circle {
-            stroke: rgba(255,255,255,0.1);
-        }
-
-        .progress-circle {
-            stroke: var(--accent-purple);
-            stroke-dasharray: 440;
-            stroke-dashoffset: 440;
-            transition: stroke-dashoffset 0.5s ease;
-        }
-
-        .stats-item {
-            display: flex;
-            justify-content: space-between;
-            margin-top: 15px;
-            padding-top: 15px;
-            border-top: 1px solid rgba(255,255,255,0.05);
-        }
-    </style>
+    <link rel="stylesheet" href="/dashboard.css">
+    <!-- Cargar Google Fonts para la familia Monospace similar a la app -->
+    <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@400;700&display=swap" rel="stylesheet">
 </head>
-<body>
+
+<body class="theme-cyber">
     <div class="header">
-        <div class="logo">OBELUS <span style="color:var(--text)">WEB</span></div>
-        <div id="status" class="status-badge">Sincronizando...</div>
+        <div class="logo">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"
+                style="vertical-align: middle; margin-right: 8px;">
+                <path d="M12 2L2 22h20L12 2z" fill="var(--primary)" />
+            </svg>
+            OBELUS <span style="color:var(--text); font-weight: 300;">WEB</span>
+        </div>
+        <div id="status" class="status-badge disconnected">
+            <span class="status-dot"></span> SIN CONEXIÓN OBD
+        </div>
     </div>
 
     <div class="dashboard-grid">
         <!-- RPM -->
-        <div class="card">
+        <div class="card glass">
             <h3>RPM</h3>
             <div class="gauge-container">
                 <svg width="180" height="180">
                     <circle class="bg-circle" cx="90" cy="90" r="70"></circle>
-                    <circle id="rpm-progress" class="progress-circle" cx="90" cy="90" r="70" style="stroke: var(--accent-purple)"></circle>
+                    <circle id="rpm-progress" class="progress-circle" cx="90" cy="90" r="70"></circle>
                 </svg>
                 <div class="value-display">
-                    <span id="rpm-value" class="main-value">0</span>
+                    <span id="rpm-value" class="main-value">----</span>
                     <span class="unit">RPM</span>
                 </div>
             </div>
         </div>
 
         <!-- Speed -->
-        <div class="card">
+        <div class="card glass">
             <h3>Velocidad</h3>
             <div class="gauge-container">
                 <svg width="180" height="180">
                     <circle class="bg-circle" cx="90" cy="90" r="70"></circle>
-                    <circle id="speed-progress" class="progress-circle" cx="90" cy="90" r="70" style="stroke: var(--accent-blue)"></circle>
+                    <circle id="speed-progress" class="progress-circle accent" cx="90" cy="90" r="70"></circle>
                 </svg>
                 <div class="value-display">
-                    <span id="speed-value" class="main-value">0</span>
+                    <span id="speed-value" class="main-value">----</span>
                     <span class="unit">KM/H</span>
                 </div>
             </div>
         </div>
 
-        <!-- System -->
-        <div class="card">
-            <h3>Sistema</h3>
+        <!-- System & Telemetry -->
+        <div class="card glass system-card">
+            <h3>Sistema OBD</h3>
             <div class="stats-item">
-                <span>Voltaje</span>
-                <span id="voltage-value">0.0V</span>
+                <span>Voltaje Batería</span>
+                <span id="voltage-value" class="mono-text">--.-V</span>
             </div>
             <div class="stats-item">
-                <span>Sesión</span>
-                <span id="session-status">Inactiva</span>
+                <span>Temp. Motor</span>
+                <span id="temp-value" class="mono-text">--°C</span>
+            </div>
+            <div class="stats-item">
+                <span>Flujo SSE</span>
+                <span id="sse-status" class="mono-text status-text disconnected">Desconectado</span>
+            </div>
+        </div>
+
+        <!-- Chart (Opcional, ocupando ancho completo en desktop) -->
+        <div class="card glass chart-card">
+            <h3>Histórico (Últimos 60s)</h3>
+            <div class="chart-container" id="chart-container">
+                <!-- Barras generadas dinámicamente -->
             </div>
         </div>
     </div>
 
-    <script>
-        function updateGauge(id, value, max) {
-            const circle = document.getElementById(id + '-progress');
-            const text = document.getElementById(id + '-value');
-            if (!circle || !text) return;
-
-            const radius = 70;
-            const circumference = 2 * Math.PI * radius;
-            const percentage = Math.min(Math.max(value / max, 0), 1);
-            const offset = circumference - (percentage * circumference);
-            
-            circle.style.strokeDasharray = circumference;
-            circle.style.strokeDashoffset = offset;
-            text.innerText = Math.round(value);
-        }
-
-        async function fetchData() {
-            try {
-                const [statusRes, pidsRes] = await Promise.all([
-                    fetch('/api/status').then(r => r.json()),
-                    fetch('/api/pids').then(r => r.json())
-                ]);
-
-                updateGauge('rpm', pidsRes.rpm || 0, 8000);
-                updateGauge('speed', pidsRes.speed || 0, 240);
-                
-                document.getElementById('voltage-value').innerText = (statusRes.voltage || 0).toFixed(1) + 'V';
-                document.getElementById('status').innerText = 'EN LINÉA';
-                document.getElementById('status').style.color = '#00ff88';
-                document.getElementById('status').style.borderColor = '#00ff88';
-                document.getElementById('status').style.backgroundColor = 'rgba(0, 255, 136, 0.1)';
-
-            } catch (error) {
-                console.error('Fetch error:', error);
-                document.getElementById('status').innerText = 'DESCONECTADO';
-                document.getElementById('status').style.color = '#ff4444';
-                document.getElementById('status').style.borderColor = '#ff4444';
-                document.getElementById('status').style.backgroundColor = 'rgba(255, 68, 68, 0.1)';
-            }
-        }
-
-        // Refresh cada 500ms
-        setInterval(fetchData, 500);
-        fetchData();
-    </script>
+    <script src="/dashboard.js"></script>
 </body>
+
 </html>

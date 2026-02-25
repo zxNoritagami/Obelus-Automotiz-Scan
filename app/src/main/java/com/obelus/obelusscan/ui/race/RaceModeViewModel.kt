@@ -1,6 +1,7 @@
 package com.obelus.obelusscan.ui.race
 
 import android.os.SystemClock
+import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.obelus.data.local.dao.RaceRecordDao
@@ -30,6 +31,7 @@ import kotlin.math.abs
 
 @HiltViewModel
 class RaceModeViewModel @Inject constructor(
+    private val savedStateHandle: SavedStateHandle,
     private val repository: ObdRepository,
     private val raceRecordDao: RaceRecordDao,
     private val raceTelemetryPointDao: RaceTelemetryPointDao,
@@ -40,10 +42,16 @@ class RaceModeViewModel @Inject constructor(
     private var raceJob: Job? = null
 
     // ── UI states ────────────────────────────────────────────────────────
-    private val _raceState  = MutableStateFlow(RaceState.IDLE)
+    
+    // Modificacion PROMPT 13: Usar SavedStateHandle para sobrevivir rotaciones de pantalla
+    private val _raceState  = MutableStateFlow(
+        savedStateHandle.get<RaceState>("RACE_STATE") ?: RaceState.IDLE
+    )
     val raceState: StateFlow<RaceState> = _raceState.asStateFlow()
 
-    private val _currentSpeed = MutableStateFlow(0)
+    private val _currentSpeed = MutableStateFlow(
+        savedStateHandle.get<Int>("CURRENT_SPEED") ?: 0
+    )
     val currentSpeed: StateFlow<Int> = _currentSpeed.asStateFlow()
 
     private val _session = MutableStateFlow<RaceSession?>(null)
@@ -139,6 +147,7 @@ class RaceModeViewModel @Inject constructor(
                 if (speedVal != null) {
                     val speed = speedVal.toInt()
                     _currentSpeed.value = speed
+                    savedStateHandle["CURRENT_SPEED"] = speed // Save state
 
                     when (_raceState.value) {
                         RaceState.ARMED     -> handleArmedState(speed)
@@ -165,11 +174,13 @@ class RaceModeViewModel @Inject constructor(
         if (s.type == RaceType.BRAKING_100_0) {
             if (speed >= s.targetSpeedStart) {
                 _raceState.value = RaceState.RUNNING
+                savedStateHandle["RACE_STATE"] = RaceState.RUNNING
                 startTimestamp = SystemClock.elapsedRealtime()
             }
         } else {
             if (lastSpeed == 0 && speed > 0) {
                 _raceState.value = RaceState.RUNNING
+                savedStateHandle["RACE_STATE"] = RaceState.RUNNING
                 startTimestamp = SystemClock.elapsedRealtime()
             }
         }
@@ -178,6 +189,7 @@ class RaceModeViewModel @Inject constructor(
     private suspend fun handleCountdownState() {
         delay(3000)
         _raceState.value = RaceState.RUNNING
+        savedStateHandle["RACE_STATE"] = RaceState.RUNNING
         startTimestamp = SystemClock.elapsedRealtime()
     }
 
@@ -219,6 +231,11 @@ class RaceModeViewModel @Inject constructor(
     }
 
     private fun captureTelemetryPoint(speed: Int) {
+        // Modificacion PROMPT 13: Limit telemetry points memory to avoid OOM
+        if (telemetryBuffer.size >= 1000) {
+            telemetryBuffer.removeAt(0) 
+        }
+
         val offset = SystemClock.elapsedRealtime() - startTimestamp
         telemetryBuffer.add(
             RaceTelemetryPoint(

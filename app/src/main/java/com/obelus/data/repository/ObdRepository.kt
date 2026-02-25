@@ -3,6 +3,7 @@ package com.obelus.data.repository
 import com.obelus.data.obd2.Obd2Decoder
 import com.obelus.data.obd2.ObdReading
 import com.obelus.data.obd2.PidDefinition
+import com.obelus.data.local.entity.RaceRecord
 import com.obelus.data.protocol.wifi.WifiConnection
 import com.obelus.protocol.ConnectionState
 import com.obelus.protocol.ElmConnection
@@ -26,6 +27,7 @@ interface ObdRepository {
     suspend fun requestPid(pid: String): ObdReading?
     fun getSupportedPids(): List<PidDefinition>
     suspend fun sendCommand(command: String): String
+    suspend fun getRaceHistory(): List<RaceRecord>
 }
 
 class ObdRepositoryImpl @Inject constructor(
@@ -91,4 +93,13 @@ class ObdRepositoryImpl @Inject constructor(
             ConnectionType.WIFI -> if (wifiConnection.isConnected()) wifiConnection.sendCommand(command) else "NO DATA"
             else -> if (bluetoothConnection.isConnected()) bluetoothConnection.send(command) else "NO DATA"
         }
+
+    override suspend fun getRaceHistory(): List<RaceRecord> {
+        // Fallback simuation for UI
+        return listOf(
+            RaceRecord(id = 1, timestamp = System.currentTimeMillis() - 86400000, type = "0-100 km/h", timeMs = 4250, topSpeed = 105.0),
+            RaceRecord(id = 2, timestamp = System.currentTimeMillis() - 172800000, type = "0-200 km/h", timeMs = 12400, topSpeed = 202.0),
+            RaceRecord(id = 3, timestamp = System.currentTimeMillis() - 259200000, type = "1/4 Milla", timeMs = 11800, topSpeed = 185.0)
+        )
+    }
 }

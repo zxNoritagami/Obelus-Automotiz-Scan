@@ -134,28 +134,29 @@ class DashboardViewModel @Inject constructor(
                     updatePid(ObdPid.FUEL_LEVEL, _fuelLevel)
                     updatePid(ObdPid.AMBIENT_TEMP, _ambientTemp)
                 }
+                if (repository.isConnected()) {
+                    var needsDelay = false
+                    try {
+                        val rpmRaw = repository.requestPid("0C")?.value?.toIntOrNull()
+                        if (rpmRaw != null) _rpm.value = rpmRaw.toFloat() // Convert to Float
 
-                // 3. Calcular Consumo (Cada ciclo, usando últimos valores conocidos)
-                calculateConsumption()
+                        val speedRaw = repository.requestPid("0D")?.value?.toIntOrNull()
+                        if (speedRaw != null) _speed.value = speedRaw.toFloat() // Convert to Float
 
-                // 4. Empujar snapshot de telemetría al TelemetryRepository
-                telemetryRepository.updateTelemetry(
-                    ObdTelemetry(
-                        rpm          = _rpm.value,
-                        speed        = _speed.value,
-                        coolantTemp  = _coolantTemp.value,
-                        engineLoad   = _engineLoad.value,
-                        throttlePos  = _throttlePos.value,
-                        mafRate      = _mafRate.value,
-                        fuelLevel    = _fuelLevel.value,
-                        dtcCount     = 0
-                    )
-                )
-
-                loopCounter++
-                loopCounter++
-                
-                // Update Widget (Throttled)
+                        val engineTempRaw = repository.requestPid("05")?.value?.toIntOrNull()
+                        if (engineTempRaw != null) _engineLoad.value = engineTempRaw.toFloat() // Temp hack for load ui, convert to Float
+                        
+                        // Modificacion PROMPT 13: Limite de 10Hz por bateria (throttle)
+                        needsDelay = true
+                    } catch (e: Exception) {
+                        e.printStackTrace()
+                        needsDelay = true
+                    }
+                    if(needsDelay) kotlinx.coroutines.delay(100) // 10Hz limit
+                } else {
+                    kotlinx.coroutines.delay(1000)
+                }
+            }    // Update Widget (Throttled)
                 checkWidgetUpdate(_rpm.value, _speed.value, _coolantTemp.value, _fuelConsumption.value)
                 
                 delay(500) // Base delay

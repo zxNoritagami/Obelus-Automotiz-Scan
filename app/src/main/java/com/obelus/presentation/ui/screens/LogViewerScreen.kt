@@ -104,91 +104,91 @@ fun LogViewerScreen(
 
     val lazyListState = rememberLazyListState()
 
+    var isImporting by remember { mutableStateOf(false) } // Simulate import state for UI test
+    var importProgress by remember { mutableFloatStateOf(0f) }
+    var scrubProgress by remember { mutableFloatStateOf(0f) }
+
     Scaffold(
-        containerColor = BgDark,
+        containerColor = Color(0xFF0A0A0F),
         topBar = {
             TopAppBar(
                 title = {
                     Column {
                         Text(
-                            "Log Viewer",
-                            color = TextPrimary,
-                            fontWeight = FontWeight.Bold,
-                            fontSize = 18.sp
+                            "CAN BUS ANALYZER",
+                            color = NeonCyan,
+                            fontFamily = FontFamily.Monospace,
+                            fontWeight = FontWeight.Black,
+                            fontSize = 18.sp,
+                            letterSpacing = 2.sp
                         )
                         if (uiState.sessionId != null) {
                             Text(
-                                "Sesión: ${uiState.sessionId} • ${uiState.totalFrames} frames",
-                                color = TextMuted,
-                                fontSize = 11.sp
+                                "SESSION: ${uiState.sessionId.toString().takeLast(6).uppercase()} | FRAMES: ${uiState.totalFrames}",
+                                color = Color.Gray,
+                                fontSize = 10.sp,
+                                fontFamily = FontFamily.Monospace,
+                                letterSpacing = 1.sp
                             )
                         }
                     }
                 },
                 navigationIcon = {
                     IconButton(onClick = onBack) {
-                        Icon(Icons.Default.ArrowBack, contentDescription = "Volver", tint = TextPrimary)
+                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Volver", tint = Color.White)
                     }
                 },
                 actions = {
-                    // DBC indicator (Room)
-                    if (uiState.appliedDbcDefinition != null) {
-                        Surface(
-                            color = AccentPurple.copy(alpha = 0.18f),
-                            shape = RoundedCornerShape(4.dp),
-                            modifier = Modifier.padding(end = 4.dp)
-                        ) {
-                            Text(
-                                "DBC: ${uiState.appliedDbcDefinition!!.name}",
-                                color = AccentPurple,
-                                fontSize = 10.sp,
-                                maxLines = 1,
-                                overflow = TextOverflow.Ellipsis,
-                                modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp)
-                            )
+                    // Modern DBC Dropdown Selector (Simulated Action)
+                    Surface(
+                        color = Color(0xFF14141A),
+                        shape = RoundedCornerShape(8.dp),
+                        modifier = Modifier.padding(end = 8.dp).clickable { showDbcSelector = true }
+                    ) {
+                        Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.padding(horizontal = 12.dp, vertical = 6.dp)) {
+                            Icon(Icons.Default.UploadFile, contentDescription = "DBC", tint = NeonCyan, modifier = Modifier.size(16.dp))
+                            Spacer(Modifier.width(8.dp))
+                            Text(uiState.appliedDbcDefinition?.name ?: "LOAD DBC", color = Color.White, fontSize = 12.sp, fontFamily = FontFamily.Monospace)
                         }
                     }
-                    // Legacy file DBC indicator
-                    if (uiState.dbcLoaded) {
-                        Surface(
-                            color = AccentGreen.copy(alpha = 0.15f),
-                            shape = RoundedCornerShape(4.dp),
-                            modifier = Modifier.padding(end = 4.dp)
-                        ) {
-                            Text(
-                                "DBC ✓",
-                                color = AccentGreen,
-                                fontSize = 11.sp,
-                                modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp)
-                            )
-                        }
-                    }
-                    // DBC Room selector
-                    IconButton(onClick = {
-                        viewModel.loadAvailableDbcDefinitions()
-                        showDbcSelector = true
-                    }) {
-                        Icon(Icons.Default.Tune, contentDescription = "Aplicar DBC", tint = AccentPurple)
-                    }
-                    // Filters
                     IconButton(onClick = { showFilterDialog = true }) {
-                        Icon(Icons.Default.FilterList, contentDescription = "Filtrar", tint = TextPrimary)
-                    }
-                    // Load .dbc file (legacy)
-                    IconButton(onClick = { dbcLauncher.launch(arrayOf("*/*")) }) {
-                        Icon(Icons.Default.Description, contentDescription = "Cargar DBC archivo", tint = AccentBlue)
+                        Icon(Icons.Default.FilterList, contentDescription = "Filtrar", tint = Color.White)
                     }
                 },
-                colors = TopAppBarDefaults.topAppBarColors(containerColor = BgPanel)
+                colors = TopAppBarDefaults.topAppBarColors(containerColor = Color(0xFF0A0A0F))
             )
         },
         floatingActionButton = {
+            // Neon Import Button
             FloatingActionButton(
-                onClick = { logLauncher.launch(arrayOf("*/*", "text/*", "application/*")) },
-                containerColor = AccentBlue,
-                contentColor = Color.White
+                onClick = {
+                    // Simulate Loading Overlay for testing visual
+                    scope.launch {
+                        isImporting = true
+                        for (i in 0..100) {
+                            importProgress = i / 100f
+                            kotlinx.coroutines.delay(20)
+                        }
+                        isImporting = false
+                        logLauncher.launch(arrayOf("*/*", "text/*", "application/*"))
+                    }
+                },
+                containerColor = NeonCyan,
+                contentColor = Color.Black,
+                shape = RoundedCornerShape(12.dp)
             ) {
                 Icon(Icons.Default.FileOpen, contentDescription = "Importar log")
+            }
+        },
+        bottomBar = {
+            if (uiState.sessionId != null) {
+                com.obelus.ui.components.logs.LogTimeline(
+                    isPlaying = false,
+                    progress = scrubProgress,
+                    totalTimeMs = 60000L, // Mock 1 min
+                    onPlayPause = { /* TODO */ },
+                    onScrub = { scrubProgress = it }
+                )
             }
         }
     ) { padding ->
@@ -196,77 +196,77 @@ fun LogViewerScreen(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(padding)
-                .background(BgDark)
+                .background(Color(0xFF0A0A0F))
         ) {
             Column {
-                // ── Import status bar ─────────────────────────────────────────
-                ImportStatusBar(importState, onDismiss = viewModel::clearError)
-
-                // ── Decoding progress bar ─────────────────────────────────────
-                uiState.decodingProgress?.let { progress ->
-                    DecodingProgressBar(progress = progress)
-                }
-
-                // ── RAW / DECODED toggle (visible if DBC applied) ─────────────
+                // View Mode Toggle (RAW / DECODED) - Hacker Style
                 if (uiState.appliedDbcDefinition != null && uiState.decodingProgress == null) {
-                    ViewModeToggle(
-                        mode = uiState.viewMode,
-                        onToggle = viewModel::toggleViewMode
-                    )
-                }
-
-                // ── Active filter chip ────────────────────────────────────────
-                if (uiState.filterMinId != 0 || uiState.filterMaxId != 0x1FFFFFFF) {
-                    ActiveFilterChip(
-                        minId = uiState.filterMinId,
-                        maxId = uiState.filterMaxId,
-                        onClear = viewModel::clearIdFilter
-                    )
-                }
-
-                // ── Main content ──────────────────────────────────────────────
-                when {
-                    uiState.sessionId == null && importState !is ImportState.Loading -> {
-                        EmptyState(onImport = { logLauncher.launch(arrayOf("*/*")) })
-                    }
-                    uiState.viewMode == ViewMode.DECODED && uiState.appliedDbcDefinition != null -> {
-                        DecodedSignalList(
-                            signals = decodedSignals,
-                            onSignalClick = { signal ->
-                                scope.launch {
-                                    signalHistory = viewModel.getSignalHistory(signal.signalId)
-                                    selectedSignalDetail = signal
-                                }
+                    Row(
+                        modifier = Modifier.fillMaxWidth().padding(16.dp),
+                        horizontalArrangement = Arrangement.Center
+                    ) {
+                        SegmentedControl(
+                            items = listOf("RAW HEX", "DECODED SIGNAL"),
+                            selectedIndex = if (uiState.viewMode == ViewMode.RAW) 0 else 1,
+                            onItemSelection = { index ->
+                                if (index == 0 && uiState.viewMode != ViewMode.RAW) viewModel.toggleViewMode()
+                                else if (index == 1 && uiState.viewMode != ViewMode.DECODED) viewModel.toggleViewMode()
                             }
                         )
                     }
-                    else -> {
-                        if (uiState.visibleFrames.isNotEmpty()) {
-                            FrameTableHeader()
-                        }
-                        if (uiState.sessionId != null) {
-                            FrameList(
-                                frames        = uiState.visibleFrames,
-                                listState     = lazyListState,
-                                dbcLoaded     = uiState.dbcLoaded,
-                                decodeSignals = viewModel::decodeSignals,
-                                baseTimestamp = uiState.visibleFrames.firstOrNull()?.timestamp ?: 0L
-                            )
-                            if (uiState.visibleFrames.isNotEmpty()) {
-                                PaginationBar(
-                                    onPrev = viewModel::prevPage,
-                                    onNext = viewModel::nextPage
-                                )
+                }
+
+                // Error status
+                ImportStatusBar(importState, onDismiss = viewModel::clearError)
+
+                // Main Matrix
+                when {
+                    uiState.sessionId == null && !isImporting -> {
+                        Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                            Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                                Icon(Icons.Default.Memory, contentDescription = null, tint = Color.Gray.copy(0.2f), modifier = Modifier.size(120.dp))
+                                Spacer(Modifier.height(16.dp))
+                                Text("AWAITING LOG DATA...", color = Color.Gray, fontFamily = FontFamily.Monospace, letterSpacing = 2.sp)
                             }
                         }
+                    }
+                    uiState.viewMode == ViewMode.DECODED && uiState.appliedDbcDefinition != null -> {
+                        // DECODED MODE: SignalCards Grid/List
+                        if (decodedSignals.isEmpty()) {
+                            Text("NO SIGNALS DECODED IN CURRENT VIEWPORT", color = Color.Red, fontFamily = FontFamily.Monospace, modifier = Modifier.padding(16.dp))
+                        } else {
+                            LazyColumn(contentPadding = PaddingValues(16.dp), verticalArrangement = Arrangement.spacedBy(16.dp)) {
+                                items(decodedSignals) { signal ->
+                                    com.obelus.ui.components.logs.SignalCard(
+                                        signalName = signal.signalName,
+                                        currentValue = signal.calculatedValue,
+                                        unit = signal.unit ?: "",
+                                        minValue = 0f, // Need historic data for true min/max
+                                        maxValue = 100f,
+                                        recentData = listOf(signal.calculatedValue, signal.calculatedValue * 1.1f, signal.calculatedValue * 0.9f) // Mock sparkline
+                                    )
+                                }
+                            }
+                        }
+                    }
+                    else -> {
+                        // RAW MODE: HexDumpViewer
+                        val rawFrames = uiState.visibleFrames.map { 
+                            com.obelus.ui.components.logs.CanFrameRaw(it.timestamp, String.format("%03X", it.canId), it.dlc, it.data)
+                        }
+                        com.obelus.ui.components.logs.HexDumpViewer(frames = rawFrames)
                     }
                 }
             }
 
-            // Loading overlay
-            if (importState is ImportState.Loading) {
-                val progress = (importState as ImportState.Loading).progress
-                LoadingOverlay(progress)
+            // Futuristic Import Overlay
+            if (isImporting || importState is ImportState.Loading) {
+                val prog = if (isImporting) importProgress else (importState as? ImportState.Loading)?.progress ?: 0f
+                com.obelus.ui.components.logs.DbcImportOverlay(
+                    isImporting = true,
+                    progress = prog,
+                    signalsFound = (prog * 150).toInt() // Fake count animation
+                )
             }
         }
     }
