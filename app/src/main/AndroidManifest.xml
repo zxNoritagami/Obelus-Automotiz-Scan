@@ -23,7 +23,7 @@
     <uses-permission android:name="android.permission.BLUETOOTH_ADMIN"
         android:maxSdkVersion="30" />
     
-    <!-- Location needed for legacy scanning -->
+    <!-- Location needed for background bluetooth scanning in older devices -->
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
 
     <!-- MQTT - Conexión de red y wake lock para reconexión en background -->
