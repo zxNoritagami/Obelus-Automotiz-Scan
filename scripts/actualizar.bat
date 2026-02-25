@@ -2,65 +2,78 @@
 setlocal enabledelayedexpansion
 
 :: ==========================================
-:: CONFIGURACION DE ENTORNO JAVA (CRITICO)
+:: CONFIGURACION DE ENTORNO
 :: ==========================================
 set "JAVA_HOME=C:\Users\Angelo\AppData\Local\Programs\Eclipse Adoptium\jdk-17.0.17.10-hotspot"
-set "PATH=%JAVA_HOME%\bin;%PATH%"
+set "GRADLE_HOME=C:\Gradle\gradle-9.3.0"
+set "PATH=%JAVA_HOME%\bin;%GRADLE_HOME%\bin;%PATH%"
+set "REPO_PATH=C:\Users\Angelo\Desktop\scaner\scanner pro\repos\Obelus"
+
+echo ======================================================
+echo         ACTUALIZADOR AUTOMATICO OBELUS v2
+echo ======================================================
 
 :: Verificar Java
 java -version >nul 2>&1
 if %ERRORLEVEL% NEQ 0 (
-    echo [ERROR] No se detecto Java 17 en la ruta especificada.
-    echo Ruta: "%JAVA_HOME%"
-    pause
-    exit /b
+    echo [ERROR] Java 17 no encontrado en: %JAVA_HOME%
+    pause & exit /b 1
 )
 
-:: ==========================================
-:: ACTUALIZADOR AUTOMATICO OBELUS
-:: ==========================================
-set REPO_PATH=C:\Users\Angelo\Desktop\scaner\scanner pro\repos\Obelus
-
-echo ======================================================
-echo           ACTUALIZADOR AUTOMATICO OBELUS
-echo ======================================================
-
-if not exist "%REPO_PATH%" (
-    echo [ERROR] No se encuentra la carpeta del proyecto en:
-    echo "%REPO_PATH%"
-    pause
-    exit /b
+:: Verificar repo
+if not exist "%REPO_PATH%\.git" (
+    echo [ERROR] Repositorio no encontrado en: %REPO_PATH%
+    pause & exit /b 1
 )
 
 cd /d "%REPO_PATH%"
 
-:: Generar Wrapper si no existe (Intento automatico)
+:: ── Generar wrapper si falta ──────────────────────────────────────────────
 if not exist "gradlew.bat" (
-    echo [INFO] Generando Gradle Wrapper...
-    call gradle wrapper --gradle-version 8.4 --distribution-type bin
+    echo [INFO] Generando Gradle Wrapper 8.5...
+    call gradle wrapper --gradle-version 8.5 --distribution-type bin --no-daemon
+    if %ERRORLEVEL% NEQ 0 (
+        echo [WARN] No se pudo generar wrapper, continuando solo con git push...
+    )
 )
 
-echo [1/3] Preparando archivos...
-git add .
+:: ── Git: stage → commit → push ────────────────────────────────────────────
+echo.
+echo [1/3] Preparando archivos para commit...
+git add -A
+if %ERRORLEVEL% NEQ 0 (
+    echo [ERROR] git add fallo.
+    pause & exit /b 1
+)
 
-set dt=%DATE% %TIME%
-echo [2/3] Creando commit: "Auto-update: %dt%"
-git commit -m "Auto-update: %dt%"
+:: Verificar si hay cambios para commitear
+git diff --cached --quiet
+if %ERRORLEVEL% EQU 0 (
+    echo [INFO] No hay cambios nuevos. El repositorio esta al dia.
+    timeout /t 3 & exit /b 0
+)
 
-echo [3/3] Subiendo a GitHub (Rama main)...
+set "dt=%DATE:~6,4%-%DATE:~3,2%-%DATE:~0,2% %TIME:~0,8%"
+set "MSG=fix: DBC Editor crash fix + actualizacion %dt%"
+echo [2/3] Creando commit: "%MSG%"
+git commit -m "%MSG%"
+if %ERRORLEVEL% NEQ 0 (
+    echo [ERROR] git commit fallo.
+    pause & exit /b 1
+)
+
+echo [3/3] Subiendo a GitHub (main)...
 git push origin main
-
 if %ERRORLEVEL% EQU 0 (
     echo.
     echo ======================================================
-    echo     EXITO: Repositorio actualizado correctamente
+    echo   [OK] Repositorio actualizado. GitHub Actions activo.
     echo ======================================================
 ) else (
     echo.
-    echo [ERROR] Hubo un problema al subir los cambios.
-    echo Verifica tu conexion o permisos.
+    echo [ERROR] git push fallo. Verifica credenciales o conexion.
+    pause & exit /b 1
 )
 
-:: Pausa breve para leer mensajes
 timeout /t 5
-exit /b
+exit /b 0
