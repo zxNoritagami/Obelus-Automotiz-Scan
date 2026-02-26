@@ -35,7 +35,7 @@ class WebServerService : Service() {
         super.onCreate()
         notificationManager = WebServerNotificationManager(this)
         
-        // Mantener viva la notificación reactivamente si cambia la IP o puerto del Manager
+        // Mantener viva la notificación reactivamente si cambia la IP o el puerto
         serviceScope.launch {
             webServerManager.state.collectLatest { state ->
                 when (state) {

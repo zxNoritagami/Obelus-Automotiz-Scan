@@ -23,6 +23,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.obelus.data.webserver.WebServerState
 import com.obelus.obelusscan.ui.theme.*
 import com.obelus.presentation.viewmodel.WebServerViewModel
+import kotlinx.coroutines.delay
 
 // ─────────────────────────────────────────────────────────────────────────────
 // PALETA DE COLORES (Unificada con LogViewer)
@@ -43,8 +44,6 @@ fun WebServerScreen(
 ) {
     val state by viewModel.serverState.collectAsState()
     val scrollState = rememberScrollState()
-    val snackbarHostState = remember { SnackbarHostState() }
-    val scope = rememberCoroutineScope()
 
     Scaffold(
         topBar = {
@@ -52,8 +51,7 @@ fun WebServerScreen(
                 title = { Text("Dashboard Web", color = TextPrimary, fontWeight = FontWeight.Bold) },
                 colors = TopAppBarDefaults.topAppBarColors(containerColor = BgDark)
             )
-        },
-        snackbarHost = { SnackbarHost(snackbarHostState) }
+        }
     ) { padding ->
         Column(
             modifier = Modifier
@@ -64,45 +62,51 @@ fun WebServerScreen(
                 .padding(16.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            // SECCIÓN A: CONTROL
             ServerControlCard(
                 isRunning = state is WebServerState.Running,
-                error = (state as? WebServerState.Error)?.message,
-                onToggle = viewModel::toggleServer,
-                onRefresh = { viewModel.toggleServer(); viewModel.toggleServer() } // Re-trigger detection
+                onToggle = viewModel::toggleServer
             )
 
-            Spacer(Modifier.height(24.dp))
+            Spacer(Modifier.height(16.dp))
 
-            // SECCIÓN B: URL (Solo si running)
-            AnimatedVisibility(
-                visible = state is WebServerState.Running,
-                enter = fadeIn() + expandVertically(),
-                exit = fadeOut() + shrinkVertically()
-            ) {
-                val url = (state as? WebServerState.Running)?.url ?: ""
-                UrlDisplayCard(
-                    url = url,
-                    onCopy = {
-                        viewModel.copyUrlToClipboard(url)
-                        // Snackbar (impl simplificada)
-                    },
-                    onShare = { viewModel.shareUrl(url) },
-                    onOpen = { viewModel.openLocally(url) }
-                )
+            AnimatedVisibility(visible = state is WebServerState.Running) {
+                Column {
+                    UrlDisplayCard(
+                        url = (state as WebServerState.Running).url,
+                        onCopy = { viewModel.copyUrlToClipboard((state as WebServerState.Running).url) },
+                        onShare = { viewModel.shareUrl((state as WebServerState.Running).url) },
+                        onOpen = { viewModel.openLocally((state as WebServerState.Running).url) }
+                    )
+                    Spacer(Modifier.height(16.dp))
+                    
+                    // Instruct to issue an OTP from settings
+                    Card(
+                        modifier = Modifier.fillMaxWidth(),
+                        colors = CardDefaults.cardColors(containerColor = BgPanel),
+                        shape = RoundedCornerShape(16.dp)
+                    ) {
+                        Column(modifier = Modifier.padding(16.dp), horizontalAlignment = Alignment.CenterHorizontally) {
+                            Icon(Icons.Default.VpnKey, null, tint = AccentPurple, modifier = Modifier.size(32.dp))
+                            Spacer(Modifier.height(8.dp))
+                            Text("Autorización Requerida", color = TextPrimary, fontWeight = FontWeight.Bold)
+                            Text(
+                                text = "El acceso al Dashboard Web requiere una contraseña (OTP) válida. Puedes generar una nueva llave de acceso desde la pantalla de Configuración.",
+                                color = TextMuted,
+                                fontSize = 12.sp,
+                                textAlign = TextAlign.Center,
+                                modifier = Modifier.padding(top = 8.dp)
+                            )
+                        }
+                    }
+                }
             }
 
-            Spacer(Modifier.height(24.dp))
-
-            // SECCIÓN C: GUÍA VISUAL
-            ConnectionGuideCard(isRunning = state is WebServerState.Running)
-            
             if (state is WebServerState.Error) {
                 Text(
                     text = (state as WebServerState.Error).message,
                     color = Color.Red,
                     fontSize = 12.sp,
-                    modifier = Modifier.padding(top = 8.dp)
+                    modifier = Modifier.padding(top = 16.dp)
                 )
             }
         }
@@ -111,10 +115,8 @@ fun WebServerScreen(
 
 @Composable
 private fun ServerControlCard(
-    isRunning: Boolean, 
-    error: String?,
-    onToggle: () -> Unit,
-    onRefresh: () -> Unit
+    isRunning: Boolean,
+    onToggle: () -> Unit
 ) {
     Card(
         modifier = Modifier.fillMaxWidth(),
@@ -130,40 +132,21 @@ private fun ServerControlCard(
                 Column(modifier = Modifier.weight(1f)) {
                     Text(
                         text = if (isRunning) "Servidor Activo" else "Servidor Inactivo",
-                        color = if (isRunning) Color(0xFF00FF88) else TextMuted,
+                        color = if (isRunning) AccentBlue else TextMuted,
                         fontWeight = FontWeight.Bold,
                         fontSize = 18.sp
                     )
                     Text(
-                        text = if (isRunning) "Transmitiendo PIDs en tiempo real" else "Toca para iniciar el servidor web",
-                        color = if (error != null) AccentRed else TextMuted,
+                        text = if (isRunning) "Servidor web disponible en red local" else "Toca para transmitir por red local",
+                        color = TextMuted,
                         fontSize = 12.sp
                     )
                 }
                 Switch(
                     checked = isRunning,
                     onCheckedChange = { onToggle() },
-                    colors = SwitchDefaults.colors(
-                        checkedThumbColor = Color.White,
-                        checkedTrackColor = AccentPurple,
-                        uncheckedThumbColor = TextMuted,
-                        uncheckedTrackColor = BgDark
-                    )
+                    colors = SwitchDefaults.colors(checkedTrackColor = AccentBlue)
                 )
-            }
-            
-            if (error != null || !isRunning) {
-                Spacer(Modifier.height(12.dp))
-                OutlinedButton(
-                    onClick = onRefresh,
-                    modifier = Modifier.align(Alignment.End),
-                    contentPadding = PaddingValues(horizontal = 12.dp, vertical = 4.dp),
-                    shape = RoundedCornerShape(8.dp)
-                ) {
-                    Icon(Icons.Default.Refresh, null, Modifier.size(14.dp))
-                    Spacer(Modifier.width(4.dp))
-                    Text("Refrescar Red", fontSize = 11.sp)
-                }
             }
         }
     }
@@ -173,16 +156,21 @@ private fun ServerControlCard(
 private fun UrlDisplayCard(url: String, onCopy: () -> Unit, onShare: () -> Unit, onOpen: () -> Unit) {
     Card(
         modifier = Modifier.fillMaxWidth(),
-        colors = CardDefaults.cardColors(containerColor = AccentPurple.copy(alpha = 0.1f)),
-        border = CardDefaults.outlinedCardBorder().copy(brush = androidx.compose.ui.graphics.SolidColor(AccentPurple.copy(alpha = 0.5f))),
+        colors = CardDefaults.cardColors(containerColor = BgPanel),
+        border = CardDefaults.outlinedCardBorder().copy(brush = androidx.compose.ui.graphics.SolidColor(DividerColor)),
         shape = RoundedCornerShape(16.dp)
     ) {
         Column(
             modifier = Modifier.padding(20.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Text("Tu dirección local:", color = TextMuted, fontSize = 12.sp)
-            Spacer(Modifier.height(8.dp))
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Icon(Icons.Default.CellTower, null, tint = AccentBlue)
+                Spacer(Modifier.width(8.dp))
+                Text("Red Local", color = TextPrimary, fontWeight = FontWeight.Bold)
+            }
+            Text("Alcance físico estimado: ~50 metros del vehículo", color = TextMuted, fontSize = 12.sp, modifier = Modifier.padding(top = 4.dp, bottom = 16.dp))
+            
             Text(
                 url,
                 color = AccentPurple,
@@ -200,25 +188,12 @@ private fun UrlDisplayCard(url: String, onCopy: () -> Unit, onShare: () -> Unit,
                     Spacer(Modifier.width(8.dp))
                     Text("Copiar")
                 }
-                OutlinedButton(onClick = onShare, modifier = Modifier.weight(1f)) {
-                    Icon(Icons.Default.Share, null, Modifier.size(16.dp))
-                    Spacer(Modifier.width(8.dp))
-                    Text("Enviar")
-                }
-            }
-            Spacer(Modifier.height(12.dp))
-            Button(
-                onClick = onOpen,
-                modifier = Modifier.fillMaxWidth(),
-                colors = ButtonDefaults.buttonColors(containerColor = AccentPurple)
-            ) {
-                Icon(Icons.Default.Language, null, Modifier.size(18.dp))
-                Spacer(Modifier.width(8.dp))
-                Text("Abrir en este dispositivo")
             }
         }
     }
 }
+
+// Removed ConnectedClientsCard
 
 @Composable
 private fun ConnectionGuideCard(isRunning: Boolean) {

@@ -11,10 +11,10 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import org.json.JSONObject
-import org.json.JSONObject
 import javax.inject.Inject
 import javax.inject.Singleton
 import kotlinx.coroutines.CoroutineScope
+import com.obelus.data.security.PasswordSessionManager
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.delay
@@ -24,9 +24,13 @@ import java.io.InputStream
 import java.io.PipedInputStream
 import java.io.PipedOutputStream
 import java.util.concurrent.CopyOnWriteArrayList
+import kotlinx.coroutines.Job
 import com.obelus.data.repository.ObdRepository
 import com.obelus.data.repository.TelemetryRepository
 
+data class SseClient(
+    val stream: PipedOutputStream
+)
 sealed class WebServerState {
     object Stopped : WebServerState()
     data class Running(val url: String) : WebServerState()
@@ -38,7 +42,8 @@ sealed class WebServerState {
 class WebServerManager @Inject constructor(
     @ApplicationContext private val context: Context,
     private val obdRepository: ObdRepository,
-    private val telemetryRepository: TelemetryRepository
+    private val telemetryRepository: TelemetryRepository,
+    private val sessionManager: PasswordSessionManager
 ) : NanoHttpdServer.WebDataProvider {
 
     private var server: NanoHttpdServer? = null
@@ -47,8 +52,21 @@ class WebServerManager @Inject constructor(
     val state: StateFlow<WebServerState> = _state.asStateFlow()
 
     private val scope = CoroutineScope(Dispatchers.IO + SupervisorJob())
-    private val clientStreams = CopyOnWriteArrayList<PipedOutputStream>()
-    private var isBroadcasting = false
+    private val sseClients = CopyOnWriteArrayList<SseClient>()
+    private var broadcastJob: Job? = null
+
+    // Helper functions for UI
+    suspend fun copyNewPassword(): String {
+        return sessionManager.generateAndStoreNewPassword()
+    }
+    
+    suspend fun invalidateCurrentPassword() {
+        sessionManager.invalidateCurrentPassword()
+    }
+    
+    suspend fun getRemainingMinutes(): Int {
+        return sessionManager.getRemainingMinutes()
+    }
 
     fun startServer(port: Int = 8080) {
         if (_state.value is WebServerState.Running) return
@@ -60,29 +78,29 @@ class WebServerManager @Inject constructor(
                 return
             }
 
-            server = NanoHttpdServer(context, port, this)
-            server?.start()
+            server = NanoHttpdServer(context, port, this, sessionManager)
+            server?.start(5000)
             _state.value = WebServerState.Running("http://$ip:$port")
-            startSseBroadcastLoop()
-            startStatusBroadcaster() // Renamed function call
+            startStatusBroadcaster()
         } catch (e: Exception) {
             _state.value = WebServerState.Error(e.message ?: "Error al iniciar servidor")
         }
     }
 
     fun stopServer() {
-        broadcastJob?.cancel() // Cancel the broadcasting job
+        broadcastJob?.cancel()
         
-        // Modificacion PROMPT 13: Cerrar flujos SSE de clientes colgados
         try {
-            sseClients.forEach { it.close() } // Close all client streams
+            sseClients.forEach { 
+                try { it.stream.close() } catch (e: Exception) {} 
+            }
             sseClients.clear()
         } catch (e: Exception) {
             println("Error closing client SSE ports: ${e.message}")
         }
         
-        nanoServer?.stop() // Stop the NanoHttpd server
-        nanoServer = null
+        server?.stop()
+        server = null
         _state.value = WebServerState.Stopped
     }
 
@@ -109,17 +127,16 @@ class WebServerManager @Inject constructor(
 
     // --- SSE Broadcasting ---
 
-    private fun startStatusBroadcaster() { // Renamed from startSseBroadcastLoop
-        broadcastJob?.cancel() // Ensure any previous job is cancelled
-        broadcastJob = serviceScope.launch { // Uses serviceScope and broadcastJob
+    private fun startStatusBroadcaster() {
+        broadcastJob?.cancel()
+        broadcastJob = scope.launch {
             while (isActive) {
-                // Modificacion PROMPT 13: Reducir broadcast a 250ms si no hay clientes (Standby throttling)
-                val isStandby = sseClients.isEmpty() // Check if there are any active clients
-                delay(if (isStandby) 250 else 100) // Adjust delay based on client presence
+                val isStandby = sseClients.isEmpty()
+                delay(if (isStandby) 250 else 100)
                 
                 try {
-                    val status = getAggregatedStatusJson() // Use existing JSON generation
-                    broadcastStatus(status) // New helper function to broadcast
+                    val status = getAggregatedStatusJson()
+                    broadcastStatus(status)
                 } catch (e: Exception) {
                     println("SSE Broadcast tick error: ${e.message}")
                 }
@@ -129,23 +146,20 @@ class WebServerManager @Inject constructor(
 
     private fun broadcastStatus(eventData: String) {
         if (sseClients.isNotEmpty()) {
-            // SSE format: data: {json}\n\n
             val message = "data: $eventData\n\n".toByteArray(Charsets.UTF_8)
+            val deadStreams = mutableListOf<SseClient>()
             
-            val deadStreams = mutableListOf<PipedOutputStream>()
-            
-            for (stream in sseClients) { // Iterate through sseClients
+            for (client in sseClients) {
                 try {
-                    stream.write(message)
-                    stream.flush()
+                    client.stream.write(message)
+                    client.stream.flush()
                 } catch (e: Exception) {
-                    // Client disconnected or stream broken
-                    deadStreams.add(stream)
+                    deadStreams.add(client)
                 }
             }
             
-            sseClients.removeAll(deadStreams) // Remove dead clients
-            deadStreams.forEach { try { it.close() } catch (ex: Exception) {} } // Close their streams
+            sseClients.removeAll(deadStreams)
+            deadStreams.forEach { try { it.stream.close() } catch (ex: Exception) {} }
         }
     }
 
@@ -153,13 +167,12 @@ class WebServerManager @Inject constructor(
         val inputStream = PipedInputStream()
         val outputStream = PipedOutputStream(inputStream)
         
-        // Initial connection ok padding
         try {
             outputStream.write(": ok\n\n".toByteArray(Charsets.UTF_8))
             outputStream.flush()
         } catch (e: Exception) {}
 
-        clientStreams.add(outputStream)
+        sseClients.add(SseClient(stream = outputStream))
         return inputStream
     }
 

@@ -8,7 +8,9 @@ import java.io.InputStream
 import java.io.PipedInputStream
 import java.io.PipedOutputStream
 import java.util.Scanner
-import java.util.concurrent.ConcurrentLinkedQueue
+import com.obelus.data.security.PasswordSessionManager
+import com.obelus.data.security.ValidationResult
+import kotlinx.coroutines.runBlocking
 
 /**
  * Servidor NanoHTTPD ligero para el Dashboard Web.
@@ -16,11 +18,34 @@ import java.util.concurrent.ConcurrentLinkedQueue
 class NanoHttpdServer(
     private val context: Context,
     port: Int = 8080,
-    private val dataProvider: WebDataProvider
+    private val dataProvider: WebDataProvider,
+    private val sessionManager: PasswordSessionManager
 ) : NanoHTTPD(port) {
 
     override fun serve(session: IHTTPSession): Response {
         val uri = session.uri
+        
+        // --- 1. POST /auth Endpoint ---
+        if (session.method == Method.POST && uri == "/auth") {
+            return processAuthRequest(session)
+        }
+
+        // --- 2. Middleware: Verify OTP Header for anything under /api/ ---
+        if (uri.startsWith("/api/")) {
+            val authHeader = session.headers["x-web-auth"] ?: session.parameters["auth"]?.firstOrNull() 
+            
+            if (authHeader == null) {
+                return newFixedLengthResponse(Response.Status.UNAUTHORIZED, "application/json", "{\"error\":\"Missing OTP Auth Token\"}")
+            }
+            
+            val authResult = runBlocking { sessionManager.validatePassword(authHeader) }
+            
+            when (authResult) {
+                ValidationResult.EXPIRED -> return newFixedLengthResponse(Response.Status.UNAUTHORIZED, "application/json", "{\"error\":\"PASSWORD_EXPIRED\", \"message\":\"Genera nueva contraseña en la app\"}")
+                ValidationResult.INVALID -> return newFixedLengthResponse(Response.Status.UNAUTHORIZED, "application/json", "{\"error\":\"INVALID_PASSWORD\"}")
+                ValidationResult.VALID -> { /* Pass through */ }
+            }
+        }
         
         return when {
             uri == "/" || uri == "/index.html" -> serveHtml("web/dashboard.html")
@@ -29,6 +54,27 @@ class NanoHttpdServer(
             uri == "/api/events"    -> serveSseEvents()
             uri.startsWith("/api/") -> serveApi(uri)
             else -> newFixedLengthResponse(Response.Status.NOT_FOUND, MIME_PLAINTEXT, "404 Not Found")
+        }
+    }
+
+    private fun processAuthRequest(session: IHTTPSession): Response {
+        try {
+            val map = HashMap<String, String>()
+            session.parseBody(map)
+            val jsonBody = map["postData"] ?: "{}"
+            val jsonObj = JSONObject(jsonBody)
+            val password = jsonObj.optString("password", "")
+
+            val authResult = runBlocking { sessionManager.validatePassword(password) }
+            val remaining = runBlocking { sessionManager.getRemainingMinutes() }
+
+            return when (authResult) {
+                ValidationResult.EXPIRED -> newFixedLengthResponse(Response.Status.UNAUTHORIZED, "application/json", "{\"error\":\"PASSWORD_EXPIRED\", \"message\":\"Genera nueva contraseña en la app\"}")
+                ValidationResult.INVALID -> newFixedLengthResponse(Response.Status.UNAUTHORIZED, "application/json", "{\"error\":\"INVALID_PASSWORD\"}")
+                ValidationResult.VALID -> newFixedLengthResponse(Response.Status.OK, "application/json", "{\"status\":\"ok\", \"expiresInMinutes\":$remaining}")
+            }
+        } catch (e: Exception) {
+            return newFixedLengthResponse(Response.Status.BAD_REQUEST, "application/json", "{\"error\":\"Bad format\"}")
         }
     }
 

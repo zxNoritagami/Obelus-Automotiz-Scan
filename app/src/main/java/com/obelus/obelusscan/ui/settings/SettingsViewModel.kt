@@ -12,12 +12,16 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import com.obelus.obelusscan.data.local.MechanicDataStore
+import com.obelus.data.security.PasswordSessionManager
 import javax.inject.Inject
 
 @HiltViewModel
 class SettingsViewModel @Inject constructor(
     private val settingsDataStore: SettingsDataStore,
-    private val telemetryRepository: TelemetryRepository
+    private val telemetryRepository: TelemetryRepository,
+    private val mechanicDataStore: MechanicDataStore,
+    private val passwordSessionManager: PasswordSessionManager
 ) : ViewModel() {
 
     // --- StateFlows expuestos a la UI ---
@@ -49,6 +53,12 @@ class SettingsViewModel @Inject constructor(
                 isTelemetryEnabled = false
             )
         )
+
+    val mechanicName = mechanicDataStore.mechanicNameFlow
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), "Mecanico")
+
+    private val _remainingMinutes = MutableStateFlow(0)
+    val remainingMinutes: StateFlow<Int> = _remainingMinutes
 
     // Estado del test de conexión: null = idle, true = OK, false = ERROR
     private val _testConnectionResult = MutableStateFlow<Boolean?>(null)
@@ -134,5 +144,39 @@ class SettingsViewModel @Inject constructor(
     /** Resetea el resultado del test para no mostrarlo de nuevo */
     fun clearTestResult() {
         _testConnectionResult.value = null
+    }
+
+    // --- Identidad y OTP Web ---
+
+    fun setMechanicName(name: String) {
+        viewModelScope.launch {
+            val cleanName = name.filter { it.isLetter() }.take(10)
+            mechanicDataStore.setMechanicName(cleanName)
+        }
+    }
+
+    fun copyPasswordToClipboard(
+        clipboardManager: androidx.compose.ui.platform.ClipboardManager,
+        onCopied: () -> Unit
+    ) {
+        viewModelScope.launch {
+            val otp = passwordSessionManager.generateAndStoreNewPassword()
+            clipboardManager.setText(androidx.compose.ui.text.AnnotatedString(otp))
+            refreshOtpRemainingTime()
+            onCopied()
+        }
+    }
+
+    fun invalidatePassword() {
+        viewModelScope.launch {
+            passwordSessionManager.invalidateCurrentPassword()
+            refreshOtpRemainingTime()
+        }
+    }
+
+    fun refreshOtpRemainingTime() {
+        viewModelScope.launch {
+            _remainingMinutes.value = passwordSessionManager.getRemainingMinutes()
+        }
     }
 }

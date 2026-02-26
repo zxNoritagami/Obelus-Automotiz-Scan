@@ -63,8 +63,8 @@ class WebServerNotificationManager(private val context: Context) {
 
         return NotificationCompat.Builder(context, CHANNEL_ID)
             .setSmallIcon(R.mipmap.ic_launcher_round) // Replace with a neon silhouette ic_neon_web or similar 
-            .setContentTitle("Obelus Web - Transmitiendo...")
-            .setContentText("Local: $url")
+            .setContentTitle("Obelus Web - Servidor activo")
+            .setContentText("Red: $url")
             .setOngoing(true) // Persistent
             .setPriority(NotificationCompat.PRIORITY_LOW)
             .setContentIntent(mainPendingIntent)

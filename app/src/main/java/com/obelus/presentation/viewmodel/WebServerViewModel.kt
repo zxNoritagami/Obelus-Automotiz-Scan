@@ -8,7 +8,6 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.obelus.data.webserver.WebServerManager
 import com.obelus.data.webserver.WebServerState
-import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.StateFlow
 import javax.inject.Inject
@@ -19,6 +18,7 @@ class WebServerViewModel @Inject constructor(
     @ApplicationContext private val context: Context
 ) : ViewModel() {
 
+    val serverState: StateFlow<WebServerState> = webServerManager.state
     val serverState: StateFlow<WebServerState> = webServerManager.state
 
     fun toggleServer() {
