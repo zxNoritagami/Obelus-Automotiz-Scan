@@ -1,8 +1,17 @@
 package com.obelus.domain.model
 
 /**
- * Categories that group actuator tests by vehicle system.
+ * Risk level of an actuator test.
+ * Used to display color-coded warnings in the UI and trigger sound alerts.
  */
+enum class DangerLevel(val label: String, val colorHex: Long) {
+    /** Lectura de datos, ningún riesgo de daño. */
+    LOW("Bajo",    0xFF4CAF50),   // green
+    /** Activa componentes, posible olor/vibración. */
+    MEDIUM("Medio", 0xFFFFC107),  // amber
+    /** Puede dañar componentes si se realiza incorrectamente. */
+    HIGH("Alto",   0xFFF44336)    // red
+}
 enum class ActuatorCategory(val displayName: String) {
     ENGINE("Motor"),
     FUEL("Combustible"),
@@ -26,10 +35,18 @@ data class ActuatorTest(
     val id: String,
     val name: String,
     val description: String,
+    /** OBD2 command to send (e.g. "010C"). */
     val command: String,
     val expectedResponse: String? = null,
+    /** Non-null → user must confirm before executing. */
     val safetyWarning: String? = null,
-    val category: ActuatorCategory
+    val category: ActuatorCategory,
+    /**
+     * Risk level of this test.
+     * Defaults to LOW for read-only diagnostic commands.
+     * HIGH tests will also trigger an audio alert on supported devices.
+     */
+    val dangerLevel: DangerLevel = DangerLevel.LOW
 )
 
 /**

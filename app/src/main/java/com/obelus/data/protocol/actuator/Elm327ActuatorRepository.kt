@@ -3,6 +3,7 @@ package com.obelus.data.protocol.actuator
 import android.util.Log
 import com.obelus.domain.model.ActuatorCategory
 import com.obelus.domain.model.ActuatorTest
+import com.obelus.domain.model.DangerLevel
 import com.obelus.domain.model.TestResult
 import com.obelus.protocol.ElmConnection
 import kotlinx.coroutines.CancellationException
@@ -88,7 +89,8 @@ class Elm327ActuatorRepository @Inject constructor() : ActuatorTestRepository {
             command     = "010A",
             expectedResponse = "41 0A",
             safetyWarning = "Este test lee la presión del combustible. Asegúrate de que el motor esté sin fugas visibles antes de proceder.",
-            category    = ActuatorCategory.FUEL
+            category    = ActuatorCategory.FUEL,
+            dangerLevel = DangerLevel.HIGH
         ),
         ActuatorTest(
             id          = "SHORT_FUEL_TRIM_B1",
@@ -122,7 +124,8 @@ class Elm327ActuatorRepository @Inject constructor() : ActuatorTestRepository {
             command     = "0105",
             expectedResponse = "41 05",
             safetyWarning = "Verifica que el nivel de refrigerante sea correcto antes de ejecutar este test. No abras el tapón del radiador con el motor caliente.",
-            category    = ActuatorCategory.COOLING
+            category    = ActuatorCategory.COOLING,
+            dangerLevel = DangerLevel.MEDIUM
         ),
         ActuatorTest(
             id          = "INTAKE_AIR_TEMP",
@@ -189,7 +192,8 @@ class Elm327ActuatorRepository @Inject constructor() : ActuatorTestRepository {
             command     = "0145",
             expectedResponse = "41 45",
             safetyWarning = "El test de purga EVAP puede activar olores a combustible si el cánister está saturado. Realízalo en área ventilada.",
-            category    = ActuatorCategory.EMISSIONS
+            category    = ActuatorCategory.EMISSIONS,
+            dangerLevel = DangerLevel.HIGH
         ),
         ActuatorTest(
             id          = "EGR_COMMANDED",
@@ -206,7 +210,8 @@ class Elm327ActuatorRepository @Inject constructor() : ActuatorTestRepository {
             command     = "013C",
             expectedResponse = "41 3C",
             safetyWarning = "El catalizador puede alcanzar temperaturas superiores a 800°C. No toques el escape ni trabajes debajo del vehículo durante este test.",
-            category    = ActuatorCategory.EMISSIONS
+            category    = ActuatorCategory.EMISSIONS,
+            dangerLevel = DangerLevel.HIGH
         )
     )
 

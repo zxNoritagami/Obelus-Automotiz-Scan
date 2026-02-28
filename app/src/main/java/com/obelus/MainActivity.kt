@@ -31,6 +31,7 @@ import kotlinx.coroutines.launch
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.obelus.ui.ddt4all.Ddt4allViewModel
 import com.obelus.presentation.ui.screens.*
+import com.obelus.presentation.ui.ObelusApp
 import com.obelus.ui.screens.history.HistoryDetailScreen
 import com.obelus.data.crash.CrashReporter
 import com.obelus.ui.ddt4all.Ddt4allEcuListScreen
@@ -81,7 +82,19 @@ class MainActivity : ComponentActivity() {
 
     override fun onNewIntent(intent: Intent) {
         super.onNewIntent(intent)
-        setIntent(intent) 
+        setIntent(intent)
+    }
+
+    // Lifecycle hooks for future scan-pause support
+    override fun onResume() {
+        super.onResume()
+        // ScanViewModel observes ConnectionState; no manual action needed here.
+    }
+
+    override fun onPause() {
+        super.onPause()
+        // Optionally pause scan when app goes to background.
+        // viewModel.pauseScan() — inject via Hilt if needed.
     }
 }
 
@@ -329,6 +342,13 @@ fun MainScreen(crashReporter: CrashReporter, settingsDataStore: SettingsDataStor
                     composable("web_server") {
                         val webViewModel: WebServerViewModel = hiltViewModel()
                         WebServerScreen(viewModel = webViewModel, onBack = { navController.popBackStack() })
+                    }
+
+                    // ── Módulo BT/OBD2 scan (Prompts 3–6) ─────────────────────────────
+                    composable("obelus_scan") {
+                        ObelusApp(
+                            onExit = { navController.popBackStack() }
+                        )
                     }
                 }
             }

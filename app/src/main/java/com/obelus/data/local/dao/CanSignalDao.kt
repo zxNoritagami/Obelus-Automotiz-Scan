@@ -37,4 +37,28 @@ interface CanSignalDao {
 
     @Query("UPDATE can_signals SET isFavorite = :favorite WHERE id = :id")
     suspend fun setFavorite(id: Long, favorite: Boolean)
+
+    // ── Optimizadas con LIMIT (caché / precarga) ───────────────────────────────
+
+    /**
+     * Igual que [getByFile] pero con límite de resultados.
+     * Se usa en precarga para no cargar DBCs enormes completos si no se necesitan.
+     */
+    @Query("SELECT * FROM can_signals WHERE sourceFile = :fileName ORDER BY name LIMIT :limit")
+    suspend fun getByFileLimited(fileName: String, limit: Int = 200): List<CanSignal>
+
+    /**
+     * Búsqueda con límite para autocomplete en [AddSignalDialog].
+     */
+    @Query(
+        "SELECT * FROM can_signals WHERE name LIKE '%' || :query || '%' " +
+        "ORDER BY isFavorite DESC, name ASC LIMIT :limit"
+    )
+    suspend fun searchByNameLimited(query: String, limit: Int = 30): List<CanSignal>
+
+    /**
+     * Total de señales en BD (para decidir si vale la pena pre-cargar).
+     */
+    @Query("SELECT COUNT(*) FROM can_signals")
+    suspend fun countAll(): Long
 }
