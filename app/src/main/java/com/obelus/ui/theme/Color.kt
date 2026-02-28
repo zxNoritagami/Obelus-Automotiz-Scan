@@ -29,4 +29,3 @@ val DtcInfo = Color(0xFF00D4AA)    // Info
 val TextPrimary = Color(0xFFE0E0E0)
 val TextSecondary = Color(0xFFA0A0B0)
 val TextMuted = Color(0xFF606070)
-

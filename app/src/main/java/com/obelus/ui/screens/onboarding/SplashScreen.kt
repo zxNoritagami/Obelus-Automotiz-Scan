@@ -5,7 +5,6 @@ import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -23,7 +22,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.obelus.R
-import com.obelus.ui.theme.NeonCyan
 import kotlinx.coroutines.delay
 
 @Composable
@@ -34,7 +32,7 @@ fun SplashScreen(
 
     LaunchedEffect(Unit) {
         isAnimTriggered = true
-        delay(2000L) // Show splash for 2 seconds
+        delay(2000L) 
         onTimeout()
     }
 
@@ -57,9 +55,8 @@ fun SplashScreen(
         contentAlignment = Alignment.Center
     ) {
         Column(horizontalAlignment = Alignment.CenterHorizontally) {
-            // Reemplaza R.mipmap.ic_launcher con un logo futurista o logo_obelus
             Image(
-                painter = painterResource(id = R.mipmap.ic_launcher),
+                painter = painterResource(id = R.drawable.logo_obelus),
                 contentDescription = "Obelus Logo",
                 modifier = Modifier
                     .size(120.dp)
@@ -71,7 +68,7 @@ fun SplashScreen(
             
             Text(
                 text = "OBELUS SCANNER",
-                color = NeonCyan.copy(alpha = alpha),
+                color = Color(0xFF00E5FF).copy(alpha = alpha),
                 fontSize = 24.sp,
                 fontWeight = FontWeight.Black,
                 letterSpacing = 4.sp,

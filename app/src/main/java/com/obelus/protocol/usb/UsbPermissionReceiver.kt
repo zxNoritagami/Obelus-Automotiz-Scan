@@ -7,7 +7,10 @@ import android.hardware.usb.UsbDevice
 import android.hardware.usb.UsbManager
 import android.util.Log
 import android.widget.Toast
-import dagger.hilt.android.AndroidEntryPoint
+import dagger.hilt.EntryPoint
+import dagger.hilt.InstallIn
+import dagger.hilt.android.EntryPointAccessors
+import dagger.hilt.components.SingletonComponent
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
@@ -26,8 +29,13 @@ import javax.inject.Inject
  * registerReceiver(usbReceiver, filter)
  * ```
  */
-@AndroidEntryPoint
 class UsbPermissionReceiver : BroadcastReceiver() {
+
+    @EntryPoint
+    @InstallIn(SingletonComponent::class)
+    interface UsbReceiverEntryPoint {
+        fun usbConnection(): UsbElmConnection
+    }
 
     companion object {
         const val ACTION_USB_PERMISSION = "com.obelus.USB_PERMISSION"
@@ -40,6 +48,14 @@ class UsbPermissionReceiver : BroadcastReceiver() {
     private val scope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
 
     override fun onReceive(context: Context, intent: Intent) {
+        if (!::usbConnection.isInitialized) {
+            val entryPoint = EntryPointAccessors.fromApplication(
+                context.applicationContext,
+                UsbReceiverEntryPoint::class.java
+            )
+            usbConnection = entryPoint.usbConnection()
+        }
+
         when (intent.action) {
             ACTION_USB_PERMISSION -> handlePermissionResult(context, intent)
             UsbManager.ACTION_USB_DEVICE_ATTACHED -> handleDeviceAttached(context, intent)

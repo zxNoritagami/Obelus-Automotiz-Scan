@@ -3,12 +3,14 @@ package com.obelus.ui.screens.history
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Delete
-import androidx.compose.material3.*
+import androidx.compose.animation.*
+import androidx.compose.animation.core.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -16,6 +18,12 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.material3.*
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.SwipeToDismissBox
+import androidx.compose.material3.rememberSwipeToDismissBoxState
+import androidx.compose.material3.SwipeToDismissBoxValue
+import androidx.compose.material3.SwipeToDismissBoxValue.*
 import com.obelus.ui.components.history.HistoryFilterChip
 import com.obelus.ui.components.history.HistoryItem
 import com.obelus.ui.components.history.HistoryItemType
@@ -119,9 +127,9 @@ fun <T> SwipeToDeleteContainer(
     content: @Composable (T) -> Unit
 ) {
     var isRemoved by remember { mutableStateOf(false) }
-    val dismissState = rememberDismissState(
+    val dismissState = rememberSwipeToDismissBoxState(
         confirmValueChange = { value ->
-            if (value == DismissValue.DismissedToStart) {
+            if (value == EndToStart) {
                 isRemoved = true
                 true
             } else {
@@ -144,11 +152,11 @@ fun <T> SwipeToDeleteContainer(
             shrinkTowards = Alignment.Top
         ) + androidx.compose.animation.fadeOut()
     ) {
-        SwipeToDismiss(
+        SwipeToDismissBox(
             state = dismissState,
-            background = {
-                val direction = dismissState.dismissDirection ?: return@SwipeToDismiss
-                val color = if (direction == DismissDirection.EndToStart) Color(0xFFF85149) else Color.Transparent
+            backgroundContent = {
+                val direction = dismissState.dismissDirection
+                val color = if (direction == EndToStart) Color(0xFFF85149) else Color.Transparent
                 val alignment = Alignment.CenterEnd
 
                 Box(
@@ -158,13 +166,13 @@ fun <T> SwipeToDeleteContainer(
                         .padding(horizontal = 20.dp),
                     contentAlignment = alignment
                 ) {
-                    if (direction == DismissDirection.EndToStart) {
+                    if (direction == EndToStart) {
                         Icon(Icons.Default.Delete, contentDescription = "Eliminar", tint = Color.White)
                     }
                 }
             },
-            dismissContent = { content(item) },
-            directions = setOf(DismissDirection.EndToStart)
+            content = { content(item) },
+            enableDismissFromStartToEnd = false
         )
     }
 }

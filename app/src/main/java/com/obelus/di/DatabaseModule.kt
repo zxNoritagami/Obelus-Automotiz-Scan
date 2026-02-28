@@ -5,6 +5,8 @@ import androidx.room.Room
 import com.obelus.data.local.dao.*
 import com.obelus.data.local.database.MIGRATION_5_6
 import com.obelus.data.local.database.MIGRATION_6_7
+import com.obelus.data.local.database.MIGRATION_7_8
+import com.obelus.data.local.database.MIGRATION_8_9
 import com.obelus.data.local.database.ObelusDatabase
 import dagger.Module
 import dagger.Provides
@@ -25,7 +27,7 @@ object DatabaseModule {
             ObelusDatabase::class.java,
             "obelus_database"
         )
-        .addMigrations(MIGRATION_5_6, MIGRATION_6_7)  // v6: DBC editor · v7: decoded_signals
+        .addMigrations(MIGRATION_5_6, MIGRATION_6_7, MIGRATION_7_8, MIGRATION_8_9)
         .fallbackToDestructiveMigration()   // keep for dev; remove in production
         .build()
     }
@@ -62,4 +64,10 @@ object DatabaseModule {
 
     @Provides
     fun provideDecodedSignalDao(db: ObelusDatabase): DecodedSignalDao = db.decodedSignalDao()  // v7
+
+    @Provides
+    fun provideSecurityAccessDao(db: ObelusDatabase): SecurityAccessDao = db.securityAccessDao() // v8
+    
+    @Provides
+    fun provideDiagnosticRuleDao(db: ObelusDatabase): DiagnosticRuleDao = db.diagnosticRuleDao() // v9
 }

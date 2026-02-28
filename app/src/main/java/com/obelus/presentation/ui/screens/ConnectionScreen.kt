@@ -11,6 +11,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Bluetooth
 import androidx.compose.material.icons.filled.UsbOff
 import androidx.compose.material.icons.filled.Usb
+import androidx.compose.material.icons.filled.Wifi
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -20,8 +21,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.obelus.presentation.viewmodel.ConnectionViewModel
 import com.obelus.presentation.viewmodel.UsbDeviceState
 import com.obelus.protocol.ConnectionState
@@ -99,6 +100,7 @@ fun ConnectionScreen(
                 UsbDeviceState.DEVICE_FOUND       -> "ELM327 detectado: ${uiState.usbDeviceName}"
                 UsbDeviceState.ERROR              -> uiState.errorMessage ?: "Error de conexión USB"
                 UsbDeviceState.DISCONNECTED       -> "Conecta tu adaptador ELM327 USB vía OTG"
+                else -> "Estado desconocido"
             },
             icon = {
                 Icon(
@@ -171,7 +173,7 @@ fun ConnectionScreen(
             },
             icon = {
                 Icon(
-                    androidx.compose.material.icons.Icons.Default.Bluetooth, // Use a placeholder since Wifi icon might not be imported
+                    Icons.Default.Wifi,
                     contentDescription = null,
                     tint = Color.White
                 )

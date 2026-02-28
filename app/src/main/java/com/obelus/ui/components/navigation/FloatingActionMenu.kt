@@ -1,5 +1,8 @@
 package com.obelus.ui.components.navigation
 
+import androidx.compose.material3.Text
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.sp
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
@@ -119,7 +122,3 @@ fun FloatingActionMenu(
         }
     }
 }
-// Placeholder imports para las fuentes en composable sueltas (se arreglaran en compilar/correr)
-import androidx.compose.material3.Text
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.unit.sp

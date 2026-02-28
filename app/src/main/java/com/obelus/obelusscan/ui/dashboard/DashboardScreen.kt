@@ -1,16 +1,24 @@
 package com.obelus.obelusscan.ui.dashboard
 
+import androidx.compose.animation.animateColorAsState
+import androidx.compose.animation.core.*
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.FiberManualRecord
+import androidx.compose.material.icons.filled.Save
+import androidx.compose.material.icons.filled.Warning
 import androidx.compose.material3.*
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -21,10 +29,6 @@ import com.obelus.ui.components.dashboard.GaugeArc
 import com.obelus.ui.components.dashboard.MetricCard
 import com.obelus.ui.components.dashboard.StatusBar
 import com.obelus.ui.components.animations.shimmerEffect
-import androidx.compose.animation.core.animateFloatAsState
-import androidx.compose.animation.core.tween
-import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.ui.draw.clip
 import com.obelus.ui.theme.*
 
 @Composable
@@ -38,158 +42,265 @@ fun DashboardScreen(
     val engineLoad by viewModel.engineLoad.collectAsState()
     val mafRate by viewModel.mafRate.collectAsState()
 
+    // Anomalías
+    val rpmAnomaly by viewModel.rpmAnomaly.collectAsState()
+    val tempAnomaly by viewModel.tempAnomaly.collectAsState()
+    val throttleAnomaly by viewModel.throttleAnomaly.collectAsState()
+    val loadAnomaly by viewModel.loadAnomaly.collectAsState()
+    val mafAnomaly by viewModel.mafAnomaly.collectAsState()
+
+    // Grabación
+    val recordingState by viewModel.recordingState.collectAsState()
+
     LaunchedEffect(Unit) {
         viewModel.startScanning()
     }
 
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(DarkBackground)
-            .padding(top = 8.dp, start = 12.dp, end = 12.dp)
-    ) {
-        // Status Bar
-        StatusBar(isConnected = true, modifier = Modifier.padding(bottom = 16.dp))
-
-        // Main Metric (RPM & Speed)
-        Row(
+    Box(modifier = Modifier.fillMaxSize()) {
+        Column(
             modifier = Modifier
-                .fillMaxWidth()
-                .padding(bottom = 16.dp),
-            verticalAlignment = Alignment.CenterVertically
+                .fillMaxSize()
+                .background(DarkBackground)
+                .padding(top = 8.dp, start = 12.dp, end = 12.dp)
         ) {
-            // Main Gauge: RPM
-            Box(
+            StatusBar(isConnected = true, modifier = Modifier.padding(bottom = 16.dp))
+
+            Row(
                 modifier = Modifier
-                    .weight(0.6f) // 60% of Width
-                    .padding(end = 16.dp),
-                contentAlignment = Alignment.Center
+                    .fillMaxWidth()
+                    .padding(bottom = 16.dp),
+                verticalAlignment = Alignment.CenterVertically
             ) {
-                // Color dynamico RPM: Cyan -> Amarillo -> Rojo
-                val rpmColor = when {
-                    rpm > 6000 -> NeonRed
-                    rpm > 4000 -> NeonAmber
-                    else -> NeonCyan
+                Box(
+                    modifier = Modifier
+                        .weight(0.6f)
+                        .padding(end = 16.dp),
+                    contentAlignment = Alignment.Center
+                ) {
+                    val rpmColor = when {
+                        rpm > 6000 -> NeonRed
+                        rpm > 4000 -> NeonAmber
+                        else -> NeonCyan
+                    }
+
+                    val animatedRpm by animateFloatAsState(
+                        targetValue = rpm,
+                        animationSpec = tween(durationMillis = 500),
+                        label = "rpmAnim"
+                    )
+
+                    if (rpm == 0f) {
+                        Box(modifier = Modifier.size(200.dp).clip(CircleShape).shimmerEffect())
+                    } else {
+                        AnomalyGaugeWrapper(isAnomalous = rpmAnomaly) {
+                            GaugeArc(
+                                value = animatedRpm,
+                                minValue = ObdPid.RPM.minValue,
+                                maxValue = ObdPid.RPM.maxValue,
+                                activeColor = if (rpmAnomaly) NeonRed else rpmColor,
+                                strokeWidth = 35f
+                            )
+                        }
+                    }
+
+                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                        Text(
+                            text = String.format("%.0f", rpm),
+                            style = FuturisticTypography.headlineLarge,
+                            color = if (rpmAnomaly) NeonRed else rpmColor
+                        )
+                        Text(
+                            text = "RPM",
+                            style = FuturisticTypography.labelMedium,
+                            color = TextSecondary
+                        )
+                    }
                 }
 
-                val animatedRpm by animateFloatAsState(
-                    targetValue = rpm,
-                    animationSpec = tween(durationMillis = 500),
-                    label = "rpmAnim"
-                )
-
-                if (rpm == 0f) { // Simula estado "Loading" o desconectado
-                    Box(modifier = Modifier.size(200.dp).clip(CircleShape).shimmerEffect())
-                } else {
-                    GaugeArc(
-                        value = animatedRpm,
-                        minValue = ObdPid.RPM.minValue,
-                        maxValue = ObdPid.RPM.maxValue,
-                        activeColor = rpmColor,
-                        strokeWidth = 35f
+                Column(
+                    modifier = Modifier.weight(0.4f),
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    val animatedSpeed by animateFloatAsState(
+                        targetValue = speed,
+                        animationSpec = tween(durationMillis = 500),
+                        label = "speedAnim"
                     )
-                }
 
-                Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                    if (speed == 0f && rpm == 0f) {
+                       Box(modifier = Modifier.fillMaxWidth(0.6f).height(60.dp).shimmerEffect())
+                    } else {
+                        Text(
+                            text = String.format("%.0f", animatedSpeed),
+                            style = FuturisticTypography.headlineLarge,
+                            color = TextPrimary
+                        )
+                    }
                     Text(
-                        text = String.format("%.0f", rpm),
-                        style = FuturisticTypography.headlineLarge,
-                        color = rpmColor
-                    )
-                    Text(
-                        text = "RPM",
+                        text = "km/h",
                         style = FuturisticTypography.labelMedium,
                         color = TextSecondary
                     )
                 }
             }
 
-            // Secondary Vital: Speed (Digital Style)
-            Column(
-                modifier = Modifier.weight(0.4f),
-                horizontalAlignment = Alignment.CenterHorizontally
+            LazyVerticalGrid(
+                columns = GridCells.Fixed(2),
+                horizontalArrangement = Arrangement.spacedBy(16.dp),
+                verticalArrangement = Arrangement.spacedBy(16.dp),
+                modifier = Modifier.fillMaxWidth()
             ) {
-                val animatedSpeed by animateFloatAsState(
-                    targetValue = speed,
-                    animationSpec = tween(durationMillis = 500),
-                    label = "speedAnim"
-                )
-
-                if (speed == 0f && rpm == 0f) {
-                   Box(modifier = Modifier.fillMaxWidth(0.6f).height(60.dp).shimmerEffect())
-                } else {
-                    Text(
-                        text = String.format("%.0f", animatedSpeed),
-                        style = FuturisticTypography.headlineLarge,
-                        color = TextPrimary
+                item {
+                    val tempColor = when {
+                        coolantTemp < 70 -> NeonBlue
+                        coolantTemp > 100 -> NeonRed
+                        coolantTemp > 90 -> NeonAmber
+                        else -> NeonGreen
+                    }
+                    SecondaryMetric(
+                        title = "TEMP",
+                        value = coolantTemp,
+                        unit = "°C",
+                        pid = ObdPid.COOLANT_TEMP,
+                        color = tempColor,
+                        isAnomalous = tempAnomaly,
+                        delay = 50
                     )
                 }
-                Text(
-                    text = "km/h",
-                    style = FuturisticTypography.labelMedium,
-                    color = TextSecondary
-                )
+                item {
+                    SecondaryMetric(
+                        title = "THROTTLE",
+                        value = throttlePos,
+                        unit = "%",
+                        pid = ObdPid.THROTTLE_POS,
+                        color = NeonCyan,
+                        isAnomalous = throttleAnomaly,
+                        delay = 100
+                    )
+                }
+                item {
+                    SecondaryMetric(
+                        title = "LOAD",
+                        value = engineLoad,
+                        unit = "%",
+                        pid = ObdPid.ENGINE_LOAD,
+                        color = NeonAmber,
+                        isAnomalous = loadAnomaly,
+                        delay = 150
+                    )
+                }
+                item {
+                    SecondaryMetric(
+                        title = "MAF",
+                        value = mafRate,
+                        unit = "g/s",
+                        pid = ObdPid.MAF_RATE,
+                        color = TextPrimary,
+                        isAnomalous = mafAnomaly,
+                        delay = 200
+                    )
+                }
             }
         }
 
-        // Secondary Metrics Grid 2x2
-        LazyVerticalGrid(
-            columns = GridCells.Fixed(2),
-            horizontalArrangement = Arrangement.spacedBy(16.dp),
-            verticalArrangement = Arrangement.spacedBy(16.dp),
-            modifier = Modifier.fillMaxWidth()
-        ) {
-            // Coolant Temp
-            item {
-                val tempColor = when {
-                    coolantTemp < 70 -> NeonBlue
-                    coolantTemp > 100 -> NeonRed
-                    coolantTemp > 90 -> NeonAmber
-                    else -> NeonGreen
-                }
-                SecondaryMetric(
-                    title = "TEMP",
-                    value = coolantTemp,
-                    unit = "°C",
-                    pid = ObdPid.COOLANT_TEMP,
-                    color = tempColor,
-                    delay = 50
-                )
-            }
-            // Throttle
-            item {
-                SecondaryMetric(
-                    title = "THROTTLE",
-                    value = throttlePos,
-                    unit = "%",
-                    pid = ObdPid.THROTTLE_POS,
-                    color = NeonCyan,
-                    delay = 100
-                )
-            }
-            // Engine Load
-            item {
-                SecondaryMetric(
-                    title = "LOAD",
-                    value = engineLoad,
-                    unit = "%",
-                    pid = ObdPid.ENGINE_LOAD,
-                    color = NeonAmber,
-                    delay = 150
-                )
-            }
-            // MAF Rate
-            item {
-                SecondaryMetric(
-                    title = "MAF",
-                    value = mafRate,
-                    unit = "g/s",
-                    pid = ObdPid.MAF_RATE,
-                    color = TextPrimary,
-                    delay = 200
-                )
-            }
+        // Botón REC Flotante
+        RecordingButton(
+            state = recordingState,
+            onClick = { viewModel.toggleRecording() },
+            modifier = Modifier
+                .align(Alignment.BottomEnd)
+                .padding(24.dp)
+        )
+    }
+}
+
+@Composable
+fun RecordingButton(
+    state: RecordingState,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    val infiniteTransition = rememberInfiniteTransition(label = "rec")
+    val alpha by infiniteTransition.animateFloat(
+        initialValue = 0.4f,
+        targetValue = 1f,
+        animationSpec = infiniteRepeatable(
+            animation = tween(800),
+            repeatMode = RepeatMode.Reverse
+        ), label = "alpha"
+    )
+
+    LargeFloatingActionButton(
+        onClick = onClick,
+        modifier = modifier,
+        containerColor = when (state) {
+            RecordingState.RECORDING -> NeonRed.copy(alpha = 0.2f)
+            RecordingState.SAVED -> NeonGreen.copy(alpha = 0.2f)
+            else -> DeepSurface
+        },
+        contentColor = when (state) {
+            RecordingState.RECORDING -> NeonRed
+            RecordingState.SAVED -> NeonGreen
+            else -> TextPrimary
         }
+    ) {
+        Column(horizontalAlignment = Alignment.CenterHorizontally) {
+            Icon(
+                imageVector = when (state) {
+                    RecordingState.RECORDING -> Icons.Default.FiberManualRecord
+                    RecordingState.SAVED -> Icons.Default.Save
+                    else -> Icons.Default.FiberManualRecord
+                },
+                contentDescription = null,
+                modifier = Modifier
+                    .size(32.dp)
+                    .then(if (state == RecordingState.RECORDING) Modifier.scale(alpha) else Modifier)
+            )
+            Text(
+                text = when (state) {
+                    RecordingState.RECORDING -> "REC"
+                    RecordingState.SAVED -> "SAVED"
+                    else -> "START"
+                },
+                style = FuturisticTypography.labelSmall,
+                fontWeight = FontWeight.Bold
+            )
+        }
+    }
+}
+
+@Composable
+fun AnomalyGaugeWrapper(
+    isAnomalous: Boolean,
+    content: @Composable () -> Unit
+) {
+    val infiniteTransition = rememberInfiniteTransition(label = "anomaly")
+    val alpha by infiniteTransition.animateFloat(
+        initialValue = 0.2f,
+        targetValue = 1f,
+        animationSpec = infiniteRepeatable(
+            animation = tween(600, easing = FastOutSlowInEasing),
+            repeatMode = RepeatMode.Reverse
+        ), label = "alpha"
+    )
+
+    Box(contentAlignment = Alignment.Center) {
+        if (isAnomalous) {
+            Box(
+                modifier = Modifier
+                    .matchParentSize()
+                    .border(2.dp, NeonRed.copy(alpha = alpha), CircleShape)
+            )
+            Icon(
+                imageVector = Icons.Default.Warning,
+                contentDescription = null,
+                tint = NeonRed,
+                modifier = Modifier
+                    .align(Alignment.TopEnd)
+                    .size(24.dp)
+            )
+        }
+        content()
     }
 }
 
@@ -200,22 +311,28 @@ fun SecondaryMetric(
     unit: String,
     pid: ObdPid,
     color: Color,
+    isAnomalous: Boolean,
     delay: Long
 ) {
     MetricCard(
         delayMillis = delay,
-        accentColor = color
+        accentColor = if (isAnomalous) NeonRed else color
     ) {
         Column(
             modifier = Modifier.fillMaxWidth(),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Text(
-                text = title,
-                style = FuturisticTypography.labelSmall,
-                color = TextMuted,
-                modifier = Modifier.padding(bottom = 8.dp)
-            )
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Text(
+                    text = title,
+                    style = FuturisticTypography.labelSmall,
+                    color = if (isAnomalous) NeonRed else TextMuted
+                )
+                if (isAnomalous) {
+                    Spacer(Modifier.width(4.dp))
+                    Icon(Icons.Default.Warning, null, tint = NeonRed, modifier = Modifier.size(12.dp))
+                }
+            }
 
             val animatedValue by animateFloatAsState(
                 targetValue = value,
@@ -236,13 +353,13 @@ fun SecondaryMetric(
                         value = animatedValue,
                         minValue = pid.minValue,
                         maxValue = pid.maxValue,
-                        activeColor = color,
+                        activeColor = if (isAnomalous) NeonRed else color,
                         strokeWidth = 15f
                     )
                     Text(
                         text = String.format("%.0f", animatedValue),
                         style = FuturisticTypography.titleMedium.copy(fontFamily = androidx.compose.ui.text.font.FontFamily.Monospace),
-                        color = TextPrimary
+                        color = if (isAnomalous) NeonRed else TextPrimary
                     )
                 }
             }
@@ -255,4 +372,3 @@ fun SecondaryMetric(
         }
     }
 }
-

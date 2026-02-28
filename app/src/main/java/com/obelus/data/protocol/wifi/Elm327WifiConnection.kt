@@ -43,6 +43,13 @@ class Elm327WifiConnection @Inject constructor() : WifiConnection {
 
     private val sendMutex = Mutex()
 
+    override suspend fun connect(deviceAddress: String): Boolean = withContext(Dispatchers.IO) {
+        val parts = deviceAddress.split(":")
+        val ip = if (parts.isNotEmpty()) parts[0] else DEFAULT_IP
+        val port = if (parts.size > 1) parts[1].toIntOrNull() ?: DEFAULT_PORT else DEFAULT_PORT
+        return@withContext connect(ip, port)
+    }
+
     override suspend fun connect(ip: String, port: Int): Boolean = withContext(Dispatchers.IO) {
         if (_connectionState.value == ConnectionState.CONNECTING || _connectionState.value == ConnectionState.CONNECTED) {
             return@withContext true
@@ -84,10 +91,12 @@ class Elm327WifiConnection @Inject constructor() : WifiConnection {
         return@withContext connected
     }
 
-    override suspend fun disconnect() = withContext(Dispatchers.IO) {
-        cleanup()
-        _connectionState.value = ConnectionState.DISCONNECTED
-        Log.i(TAG, "Disconnected")
+    override suspend fun disconnect() {
+        withContext(Dispatchers.IO) {
+            cleanup()
+            _connectionState.value = ConnectionState.DISCONNECTED
+            Log.i(TAG, "Disconnected")
+        }
     }
 
     private fun cleanup() {
@@ -99,14 +108,14 @@ class Elm327WifiConnection @Inject constructor() : WifiConnection {
         socket = null
     }
 
-    override suspend fun sendCommand(cmd: String): String = withContext(Dispatchers.IO) {
+    override suspend fun send(command: String): String = withContext(Dispatchers.IO) {
         if (_connectionState.value != ConnectionState.CONNECTED) {
             throw ConnectionError("Cannot send command: Not connected")
         }
 
         sendMutex.withLock {
             return@withContext try {
-                val commandToSend = "$cmd\r"
+                val commandToSend = if (command.endsWith("\r")) command else "$command\r"
                 val bytes = commandToSend.toByteArray()
                 
                 // Write buffer size limited to 64 bytes
@@ -121,12 +130,20 @@ class Elm327WifiConnection @Inject constructor() : WifiConnection {
                 _connectionState.value = ConnectionState.ERROR
                 cleanup()
                 throw TimeoutError("Timeout reading from socket")
-            } catch (e: IOException) {
+            } catch (e: Exception) {
                 _connectionState.value = ConnectionState.ERROR
                 cleanup()
                 throw ConnectionError("Error writing/reading from socket", e)
             }
         }
+    }
+
+    override suspend fun reconnect() {
+        val lastIp = socket?.inetAddress?.hostAddress ?: DEFAULT_IP
+        val lastPort = socket?.port ?: DEFAULT_PORT
+        disconnect()
+        delay(2000)
+        connect(lastIp, lastPort)
     }
 
     private fun readResponse(): String {

@@ -14,6 +14,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import com.obelus.ui.theme.NeonCyan
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -22,7 +24,6 @@ import androidx.compose.runtime.setValue
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.obelus.data.local.entity.RaceRecord
 import com.obelus.presentation.viewmodel.HistoryViewModel
-import com.obelus.obelusscan.ui.theme.NeonCyan
 
 private val BgDark        = Color(0xFF0D1117)
 private val BgPanel       = Color(0xFF161B22)

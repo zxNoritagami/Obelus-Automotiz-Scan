@@ -80,14 +80,12 @@ fun DtcDetailScreen(
                 AssistChip(
                     onClick = { },
                     label = { Text(dtc.systemLabel, color = Color.White) },
-                    colors = AssistChipDefaults.assistChipColors(containerColor = DeepSurface),
-                    border = AssistChipDefaults.assistChipBorder(borderColor = Color.Transparent)
+                    colors = AssistChipDefaults.assistChipColors(containerColor = DeepSurface)
                 )
                 AssistChip(
                     onClick = { },
                     label = { Text("ECU: ${dtc.manufacturer}", color = Color.White) },
-                    colors = AssistChipDefaults.assistChipColors(containerColor = DeepSurface),
-                    border = AssistChipDefaults.assistChipBorder(borderColor = Color.Transparent)
+                    colors = AssistChipDefaults.assistChipColors(containerColor = DeepSurface)
                 )
             }
 

@@ -1,37 +1,61 @@
 package com.obelus.ui.navigation.transitions
 
 import androidx.compose.animation.*
-import androidx.compose.animation.core.FastOutSlowInEasing
+import androidx.compose.animation.core.CubicBezierEasing
 import androidx.compose.animation.core.tween
-import androidx.compose.runtime.Composable
+import androidx.navigation.NavBackStackEntry
 
 /**
- * Slide Horizontal + Fade In/Out (Ideal para NavHost Main -> Dash -> Race)
+ * Mapa de jerarquía para determinar la dirección de la animación.
+ * El índice define la posición de izquierda a derecha en la barra de navegación.
  */
-fun fadeSlideEnterTransition(): EnterTransition {
+private val routeOrder = listOf(
+    "dashboard",
+    "race",
+    "history",
+    "log_viewer",
+    "settings"
+)
+
+/**
+ * Calcula la dirección de la animación basada en el orden de las rutas.
+ * Retorna 1 para ir a la derecha (adelante), -1 para ir a la izquierda (atrás).
+ */
+fun getNavigationDirection(initialRoute: String?, targetRoute: String?): Int {
+    if (initialRoute == null || targetRoute == null) return 1
+    
+    // Rutas especiales que no están en el menú principal (ej. splash, onboarding)
+    if (initialRoute == "splash" || initialRoute == "onboarding") return 1
+    
+    val initialIndex = routeOrder.indexOf(initialRoute)
+    val targetIndex = routeOrder.indexOf(targetRoute)
+    
+    // Si alguna ruta no está en el mapa, asumimos dirección hacia adelante
+    if (initialIndex == -1 || targetIndex == -1) return 1 
+    
+    return if (targetIndex > initialIndex) 1 else -1
+}
+
+// Easing personalizado para una sensación más "Premium" y fluida
+private val SmoothEasing = CubicBezierEasing(0.4f, 0.0f, 0.2f, 1.0f)
+private const val AnimDuration = 450 // Aumentamos ligeramente para que se aprecie la fluidez
+
+fun smartFadeSlideEnterTransition(direction: Int): EnterTransition {
     return slideInHorizontally(
-        initialOffsetX = { it }, // Desliza desde la derecha
-        animationSpec = tween(durationMillis = 300, easing = FastOutSlowInEasing)
-    ) + fadeIn(animationSpec = tween(durationMillis = 300))
+        initialOffsetX = { direction * it },
+        animationSpec = tween(durationMillis = AnimDuration, easing = SmoothEasing)
+    ) + fadeIn(animationSpec = tween(durationMillis = AnimDuration))
 }
 
-fun fadeSlideExitTransition(): ExitTransition {
+fun smartFadeSlideExitTransition(direction: Int): ExitTransition {
     return slideOutHorizontally(
-        targetOffsetX = { -it }, // Desliza hacia la izquierda
-        animationSpec = tween(durationMillis = 300, easing = FastOutSlowInEasing)
-    ) + fadeOut(animationSpec = tween(durationMillis = 300))
+        targetOffsetX = { -direction * it },
+        animationSpec = tween(durationMillis = AnimDuration, easing = SmoothEasing)
+    ) + fadeOut(animationSpec = tween(durationMillis = AnimDuration))
 }
 
-fun fadeSlidePopEnterTransition(): EnterTransition {
-    return slideInHorizontally(
-        initialOffsetX = { -it }, // Vuelve desde la izquierda
-        animationSpec = tween(durationMillis = 300, easing = FastOutSlowInEasing)
-    ) + fadeIn(animationSpec = tween(durationMillis = 300))
-}
-
-fun fadeSlidePopExitTransition(): ExitTransition {
-    return slideOutHorizontally(
-        targetOffsetX = { it }, // Sale hacia la derecha
-        animationSpec = tween(durationMillis = 300, easing = FastOutSlowInEasing)
-    ) + fadeOut(animationSpec = tween(durationMillis = 300))
-}
+// Mantener compatibilidad con funciones antiguas
+fun fadeSlideEnterTransition() = smartFadeSlideEnterTransition(1)
+fun fadeSlideExitTransition() = smartFadeSlideExitTransition(1)
+fun fadeSlidePopEnterTransition() = smartFadeSlideEnterTransition(-1)
+fun fadeSlidePopExitTransition() = smartFadeSlideExitTransition(-1)

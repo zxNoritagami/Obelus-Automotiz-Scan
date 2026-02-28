@@ -21,5 +21,6 @@ interface ElmConnection {
     suspend fun connect(deviceAddress: String): Boolean
     suspend fun disconnect()
     suspend fun send(command: String): String
+    suspend fun reconnect()
     fun isConnected(): Boolean
 }

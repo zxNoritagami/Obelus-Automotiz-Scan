@@ -10,8 +10,11 @@ import androidx.datastore.preferences.core.longPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
 import dagger.hilt.android.qualifiers.ApplicationContext
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -113,7 +116,10 @@ class SettingsDataStore @Inject constructor(
         TelemetryConfig(
             brokerUrl          = preferences[MQTT_BROKER_URL] ?: DEFAULT_BROKER_URL,
             clientId           = preferences[MQTT_CLIENT_ID]
-                ?: generateClientId().also { setClientId(it) },
+                ?: generateClientId().also { id -> 
+                    CoroutineScope(Dispatchers.IO).launch { setClientId(id) } 
+                },
+
             publishIntervalMs  = preferences[MQTT_PUBLISH_INTERVAL] ?: DEFAULT_PUBLISH_INTERVAL,
             isTelemetryEnabled = preferences[MQTT_ENABLED] ?: false
         )

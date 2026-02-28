@@ -20,11 +20,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import com.obelus.data.local.entity.ddt4all.Ddt4allEcu
+import com.obelus.domain.model.DdtEcu
 
 @Composable
 fun Ddt4allEcuListItem(
-    ecu: Ddt4allEcu,
+    ecu: DdtEcu,
     onClick: () -> Unit
 ) {
     Card(
@@ -65,7 +65,7 @@ fun Ddt4allEcuListItem(
                     color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.7f)
                 )
                 Text(
-                    text = "File: ${ecu.originFile}",
+                    text = "Group: ${ecu.group}",
                     style = MaterialTheme.typography.labelSmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.5f)
                 )

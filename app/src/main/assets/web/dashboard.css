@@ -2,12 +2,15 @@
     --bg: #0A0A0F;
     --panel-bg: rgba(26, 27, 37, 0.6);
     --panel-border: rgba(255, 255, 255, 0.05);
-    
+
     /* Cyber Theme Default */
-    --primary: #00E5FF; /* NeonCyan */
-    --secondary: #FF00FF; /* Magenta */
-    --accent: #FF3333; /* RaceAccent */
-    
+    --primary: #00E5FF;
+    /* NeonCyan */
+    --secondary: #FF00FF;
+    /* Magenta */
+    --accent: #FF3333;
+    /* RaceAccent */
+
     --text: #e1e1e6;
     --text-muted: #8d8d99;
     --success: #00ff88;
@@ -24,6 +27,83 @@ body {
     flex-direction: column;
     align-items: center;
     min-height: 100vh;
+    overflow-x: hidden;
+}
+
+/* Login Overlay */
+.login-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: #000;
+    z-index: 9999;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.login-box {
+    max-width: 400px;
+    width: 90%;
+    padding: 40px;
+}
+
+.login-box h2 {
+    color: var(--primary);
+    letter-spacing: 4px;
+    margin-bottom: 10px;
+}
+
+.login-box p {
+    font-size: 13px;
+    color: var(--text-muted);
+    margin-bottom: 30px;
+}
+
+.input-group input {
+    width: 100%;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid var(--panel-border);
+    padding: 15px;
+    border-radius: 8px;
+    color: var(--primary);
+    font-family: 'Roboto Mono', monospace;
+    font-size: 18px;
+    text-align: center;
+    margin-bottom: 20px;
+    box-sizing: border-box;
+    outline: none;
+    transition: all 0.3s ease;
+}
+
+.input-group input:focus {
+    border-color: var(--primary);
+    box-shadow: 0 0 15px rgba(0, 229, 255, 0.2);
+}
+
+#login-button {
+    width: 100%;
+    background: var(--primary);
+    color: #000;
+    border: none;
+    padding: 15px;
+    border-radius: 8px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+#login-button:hover {
+    box-shadow: 0 0 20px rgba(0, 229, 255, 0.4);
+    transform: scale(1.02);
+}
+
+.error-text {
+    color: var(--error) !important;
+    margin-top: 20px;
+    font-weight: bold;
 }
 
 .mono-text {
@@ -99,6 +179,7 @@ body {
     .dashboard-grid {
         grid-template-columns: 1fr 1fr;
     }
+
     .chart-card {
         grid-column: span 2;
     }
@@ -108,9 +189,11 @@ body {
     .dashboard-grid {
         grid-template-columns: 1fr 1fr 1fr;
     }
+
     .system-card {
         grid-column: span 1;
     }
+
     .chart-card {
         grid-column: span 3;
     }
@@ -165,7 +248,7 @@ body {
     font-weight: 700;
     display: block;
     color: #fff;
-    text-shadow: 0 0 10px rgba(255,255,255,0.2);
+    text-shadow: 0 0 10px rgba(255, 255, 255, 0.2);
 }
 
 .unit {
@@ -210,12 +293,17 @@ circle {
     justify-content: space-between;
     margin-top: 16px;
     padding-top: 16px;
-    border-top: 1px solid rgba(255,255,255,0.05);
+    border-top: 1px solid rgba(255, 255, 255, 0.05);
     font-size: 14px;
 }
 
-.status-text.connected { color: var(--success); }
-.status-text.disconnected { color: var(--error); }
+.status-text.connected {
+    color: var(--success);
+}
+
+.status-text.disconnected {
+    color: var(--error);
+}
 
 /* Tiny Bar Chart */
 .chart-container {
@@ -235,6 +323,7 @@ circle {
     opacity: 0.8;
     transition: height 0.3s ease;
 }
+
 .chart-bar:hover {
     opacity: 1;
     background: #fff;

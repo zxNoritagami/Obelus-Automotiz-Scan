@@ -11,6 +11,18 @@
 </head>
 
 <body class="theme-cyber">
+    <div id="login-overlay" class="login-overlay">
+        <div class="login-box glass">
+            <h2>ACCESO PROTEGIDO</h2>
+            <p>Este terminal requiere una llave OTP válida generada en la aplicación Obelus.</p>
+            <div class="input-group">
+                <input type="text" id="otp-input" placeholder="INGRESE CLAVE DE 12 CARACTERES" maxlength="12">
+            </div>
+            <button id="login-button">DESBLOQUEAR TERMINAL</button>
+            <p id="login-error" class="error-text" style="display:none;">Clave inválida o expirada</p>
+        </div>
+    </div>
+
     <div class="header">
         <div class="logo">
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"

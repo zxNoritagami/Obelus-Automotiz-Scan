@@ -17,6 +17,7 @@ import androidx.compose.ui.unit.sp
 import com.obelus.domain.race.RaceAnalysisResult
 import com.obelus.obelusscan.domain.model.RaceSession
 import com.obelus.ui.components.race.ResultCard
+import com.obelus.ui.components.race.TelemetryGraph
 import com.obelus.ui.theme.NeonCyan
 import com.obelus.ui.theme.RaceAccent
 import androidx.compose.animation.core.animateFloatAsState

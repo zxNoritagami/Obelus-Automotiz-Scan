@@ -16,11 +16,10 @@ import javax.inject.Singleton
 class CrashReporter @Inject constructor(
     @ApplicationContext private val context: Context
 ) {
-    private val crashDir = File(context.getExternalFilesDir(null), "crashes")
-
-    init {
-        if (!crashDir.exists()) crashDir.mkdirs()
-        cleanupOldLogs()
+    private val crashDir by lazy {
+        File(context.getExternalFilesDir(null), "crashes").apply {
+            if (!exists()) mkdirs()
+        }
     }
 
     fun logCrash(throwable: Throwable, component: String = "unknown") {

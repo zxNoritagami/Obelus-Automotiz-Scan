@@ -90,16 +90,16 @@ class ObdRepositoryImpl @Inject constructor(
     override suspend fun sendCommand(command: String): String =
         when (activeType) {
             ConnectionType.USB -> if (usbConnection.isConnected()) usbConnection.send(command) else "NO DATA"
-            ConnectionType.WIFI -> if (wifiConnection.isConnected()) wifiConnection.sendCommand(command) else "NO DATA"
+            ConnectionType.WIFI -> if (wifiConnection.isConnected()) wifiConnection.send(command) else "NO DATA"
             else -> if (bluetoothConnection.isConnected()) bluetoothConnection.send(command) else "NO DATA"
         }
 
     override suspend fun getRaceHistory(): List<RaceRecord> {
-        // Fallback simuation for UI
+        // Fallback simulation for UI
         return listOf(
-            RaceRecord(id = 1, timestamp = System.currentTimeMillis() - 86400000, type = "0-100 km/h", timeMs = 4250, topSpeed = 105.0),
-            RaceRecord(id = 2, timestamp = System.currentTimeMillis() - 172800000, type = "0-200 km/h", timeMs = 12400, topSpeed = 202.0),
-            RaceRecord(id = 3, timestamp = System.currentTimeMillis() - 259200000, type = "1/4 Milla", timeMs = 11800, topSpeed = 185.0)
+            RaceRecord(id = 1, raceType = "ACCELERATION_0_100", startTime = System.currentTimeMillis() - 86400000, finalTimeSeconds = 4.25f, targetSpeedStart = 0, targetSpeedEnd = 100, maxGForce = 0.8f, estimatedHp = 150f, reactionTimeMs = 120),
+            RaceRecord(id = 2, raceType = "ACCELERATION_0_200", startTime = System.currentTimeMillis() - 172800000, finalTimeSeconds = 12.4f, targetSpeedStart = 0, targetSpeedEnd = 200, maxGForce = 0.9f, estimatedHp = 220f, reactionTimeMs = 110),
+            RaceRecord(id = 3, raceType = "1/4 Milla", startTime = System.currentTimeMillis() - 259200000, finalTimeSeconds = 11.8f, targetSpeedStart = 0, targetSpeedEnd = 402, maxGForce = 1.1f, estimatedHp = 350f, reactionTimeMs = 105)
         )
     }
 }

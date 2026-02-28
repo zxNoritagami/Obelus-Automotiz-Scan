@@ -15,10 +15,12 @@ import java.io.InputStream
 import java.io.OutputStream
 import java.util.UUID
 import javax.inject.Inject
+import kotlin.math.pow
 
 /**
  * Handles Bluetooth connection with ELM327 OBD2 adapter.
  * Uses RFCOMM socket (SPP) for communication.
+ * Enhanced with 5s timeout, retries and structured logging.
  */
 class BluetoothElmConnection @Inject constructor(
     private val bluetoothAdapter: BluetoothAdapter?
@@ -28,9 +30,10 @@ class BluetoothElmConnection @Inject constructor(
         private const val TAG = "BluetoothElmConnection"
         private val SPP_UUID: UUID = UUID.fromString("00001101-0000-1000-8000-00805F9B34FB")
         private const val CONNECTION_TIMEOUT_MS = 10000L
-        private const val READ_TIMEOUT_MS = 2000L
+        private const val COMMAND_TIMEOUT_MS = 5000L // 5s timeout per request
         private const val BUFFER_SIZE = 1024
         private const val READ_DELAY_MS = 10L
+        private const val MAX_RETRIES = 2
     }
 
     private var socket: BluetoothSocket? = null
@@ -40,9 +43,7 @@ class BluetoothElmConnection @Inject constructor(
     private var _connectionState = MutableStateFlow(ConnectionState.DISCONNECTED)
     override val connectionState: StateFlow<ConnectionState> = _connectionState
 
-    // Optimizacion: Buffer re-utilizable (PROMPT 13)
-    private val readBuffer = ByteArray(1024)
-    // Limite de intentos
+    private val readBuffer = ByteArray(BUFFER_SIZE)
     private var reconnectAttempts = 0
     private val MAX_RECONNECT_ATTEMPTS = 3
 
@@ -55,20 +56,17 @@ class BluetoothElmConnection @Inject constructor(
         }
 
         _connectionState.value = ConnectionState.CONNECTING
-        reconnectAttempts = 0 // Reset fallos al conectar forzosamente
+        reconnectAttempts = 0
 
         try {
             val device = bluetoothAdapter.getRemoteDevice(deviceAddress)
-                ?: throw Exception("Dispositivo no encontrado")
-            // Create socket
+                ?: throw Exception("Device not found")
             socket = device.createRfcommSocketToServiceRecord(SPP_UUID)
             
-            // Connect with timeout
             withTimeout(CONNECTION_TIMEOUT_MS) {
                 socket?.connect()
             }
 
-            // Get streams
             inputStream = socket?.inputStream
             outputStream = socket?.outputStream
 
@@ -111,74 +109,78 @@ class BluetoothElmConnection @Inject constructor(
 
     override suspend fun reconnect() {
         if (reconnectAttempts >= MAX_RECONNECT_ATTEMPTS) {
-            Log.e("BluetoothElm", "Maximo de intentos alcanzados ($MAX_RECONNECT_ATTEMPTS). Abortando loop de reconexión.")
+            Log.e(TAG, "Max reconnect attempts reached ($MAX_RECONNECT_ATTEMPTS)")
             _connectionState.value = ConnectionState.ERROR
             return
         }
         reconnectAttempts++
-        Log.w("BluetoothElm", "Intentando reconectar... (Intento $reconnectAttempts)")
+        Log.w(TAG, "Retrying connection... (Attempt $reconnectAttempts)")
         
         val lastDevice = socket?.remoteDevice?.address
         disconnect()
         if (lastDevice != null) {
-            kotlinx.coroutines.delay(2000) // Backoff
+            kotlinx.coroutines.delay(2000)
             connect(lastDevice)
         }
     }
 
     override suspend fun send(command: String): String = withContext(Dispatchers.IO) {
         if (!isConnected()) {
-            throw IOException("Not connected")
+            Log.e(TAG, "Send failed: Not connected")
+            return@withContext "ECU SILENT"
         }
 
-        try {
-            // Ensure command ends with \r
-            val cmdToSend = if (command.endsWith("\r")) command else "$command\r" 
+        var lastException: Exception? = null
+        for (attempt in 0..MAX_RETRIES) {
+            try {
+                if (attempt > 0) {
+                    val backoff = (2.0.pow(attempt).toLong() * 500)
+                    Log.w(TAG, "Retry $attempt for command $command after ${backoff}ms")
+                    kotlinx.coroutines.delay(backoff)
+                }
 
-            // Write command
-            outputStream?.write(cmdToSend.toByteArray())
-            outputStream?.flush()
+                val cmdToSend = if (command.endsWith("\r")) command else "$command\r" 
+                outputStream?.write(cmdToSend.toByteArray())
+                outputStream?.flush()
 
-            // Read response
-            val response = readResponse()
-            return@withContext response
+                val response = readResponse()
+                Log.d(TAG, "[$command] -> $response")
+                return@withContext response
 
-        } catch (e: Exception) {
-            Log.e(TAG, "Error sending command: $command", e)
-            _connectionState.value = ConnectionState.ERROR
-            throw e
+            } catch (e: Exception) {
+                lastException = e
+                Log.w(TAG, "Attempt $attempt failed for command $command: ${e.message}")
+                if (e is IOException) {
+                    _connectionState.value = ConnectionState.ERROR
+                    break // Don't retry on physical IO failure here, wait for reconnect
+                }
+            }
         }
+
+        Log.e(TAG, "Command $command failed after $MAX_RETRIES retries. Last error: ${lastException?.message}")
+        return@withContext "ECU SILENT"
     }
 
     private suspend fun readResponse(): String {
-        return withTimeout(READ_TIMEOUT_MS) {
+        return withTimeout(COMMAND_TIMEOUT_MS) {
             val sb = StringBuilder()
-            
-            // Simple reading loop checking for prompt '>' character which usually indicates end of ELM response
             try {
                 while (true) {
                     val stream = inputStream ?: throw IOException("Input stream null")
-                    
                     if (stream.available() > 0) {
                         val bytesRead = stream.read(readBuffer)
                         if (bytesRead > 0) {
                             val chunk = String(readBuffer, 0, bytesRead)
                             sb.append(chunk)
-                            if (chunk.contains(">")) {
-                                break // End of response
-                            }
+                            if (chunk.contains(">")) break
                         }
                     } else {
-                         // Small delay to prevent CPU spinning while waiting for data
                          kotlinx.coroutines.delay(READ_DELAY_MS)
                     }
                 }
-            } catch (e: IOException) {
-                 Log.e(TAG, "Read error", e)
+            } catch (e: Exception) {
                  throw e
             }
-            
-            // Remove the prompt character '>' and trim
             sb.toString().replace(">", "").trim()
         }
     }

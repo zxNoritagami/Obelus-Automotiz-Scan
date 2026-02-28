@@ -3,8 +3,6 @@ package com.obelus.data.webserver
 import android.content.Context
 import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
-import android.net.wifi.WifiManager
-import android.text.format.Formatter
 import java.net.Inet4Address
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -27,6 +25,7 @@ import java.util.concurrent.CopyOnWriteArrayList
 import kotlinx.coroutines.Job
 import com.obelus.data.repository.ObdRepository
 import com.obelus.data.repository.TelemetryRepository
+import com.obelus.analysis.stream.DataStreamAnalyzer
 
 data class SseClient(
     val stream: PipedOutputStream
@@ -38,12 +37,12 @@ sealed class WebServerState {
 }
 
 @Singleton
-@Singleton
 class WebServerManager @Inject constructor(
     @ApplicationContext private val context: Context,
     private val obdRepository: ObdRepository,
     private val telemetryRepository: TelemetryRepository,
-    private val sessionManager: PasswordSessionManager
+    private val sessionManager: PasswordSessionManager,
+    private val streamAnalyzer: DataStreamAnalyzer
 ) : NanoHttpdServer.WebDataProvider {
 
     private var server: NanoHttpdServer? = null
@@ -110,7 +109,6 @@ class WebServerManager @Inject constructor(
             val network = cm.activeNetwork ?: return null
             val capabilities = cm.getNetworkCapabilities(network) ?: return null
             
-            // Permitir WiFi, Ethernet o USB Tethering
             val hasValidTransport = capabilities.hasTransport(NetworkCapabilities.TRANSPORT_WIFI) ||
                     capabilities.hasTransport(NetworkCapabilities.TRANSPORT_ETHERNET) ||
                     capabilities.hasTransport(NetworkCapabilities.TRANSPORT_USB)
@@ -132,7 +130,7 @@ class WebServerManager @Inject constructor(
         broadcastJob = scope.launch {
             while (isActive) {
                 val isStandby = sseClients.isEmpty()
-                delay(if (isStandby) 250 else 100)
+                delay(if (isStandby) 500 else 200)
                 
                 try {
                     val status = getAggregatedStatusJson()
@@ -178,18 +176,28 @@ class WebServerManager @Inject constructor(
 
     private fun getAggregatedStatusJson(): String {
         val isConnected = obdRepository.isConnected()
-        val data = if (isConnected) {
-            telemetryRepository.latestTelemetryData.value
-        } else null
+        val data = telemetryRepository.latestTelemetryData.value
 
         return JSONObject().apply {
             put("obdConnected", isConnected)
             // PIDS
-            put("rpm", data?.rpm ?: 0)
-            put("speed", data?.speed ?: 0)
-            put("temp", data?.engineTemp ?: 0)
+            put("rpm", data.rpm)
+            put("speed", data.speed)
+            put("temp", data.coolantTemp)
+            put("load", data.engineLoad)
+            put("maf", data.mafRate)
+            put("throttle", data.throttlePos)
+            
+            // Anomalies (Using the new DataStreamAnalyzer)
+            val anomalies = JSONObject().apply {
+                put("rpm", streamAnalyzer.analyzeAnomaly("0C")?.isAnomalous ?: false)
+                put("maf", streamAnalyzer.analyzeAnomaly("10")?.isAnomalous ?: false)
+                put("temp", streamAnalyzer.analyzeAnomaly("05")?.isAnomalous ?: false)
+            }
+            put("anomalies", anomalies)
+
             // Status
-            put("voltage", data?.voltage ?: 0.0)
+            put("voltage", 13.8) // Ideally add to ObdTelemetry
             put("timestamp", System.currentTimeMillis())
         }.toString()
     }

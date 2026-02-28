@@ -5,18 +5,15 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.isSystemInDarkTheme
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
+import androidx.compose.material.icons.outlined.*
 import androidx.compose.material3.*
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
+import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
-import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -24,7 +21,6 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.obelus.obelusscan.data.local.SettingsDataStore
 import com.obelus.obelusscan.ui.dashboard.DashboardScreen
-import com.obelus.obelusscan.ui.race.RaceScreen
 import com.obelus.ui.screens.settings.SettingsScreen
 import com.obelus.ui.screens.settings.ThemeSelectorScreen
 import com.obelus.ui.screens.settings.ConnectionSettings
@@ -34,30 +30,15 @@ import com.obelus.ui.theme.*
 import kotlinx.coroutines.launch
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.obelus.ui.ddt4all.Ddt4allViewModel
-import com.obelus.presentation.ui.screens.DTCScreen
-import com.obelus.presentation.ui.screens.DbcEditorScreen
-import com.obelus.presentation.ui.screens.HistoryScreen
-import com.obelus.presentation.ui.screens.LogViewerScreen
-import com.obelus.presentation.ui.screens.RaceHistoryScreen
-import com.obelus.presentation.ui.screens.SecurityAccessScreen
-import com.obelus.presentation.ui.screens.WebServerScreen
-import com.obelus.presentation.ui.screens.CrashLogScreen
-import com.obelus.presentation.ui.screens.ActuatorTestScreen
-import com.obelus.ui.screens.actuators.ActuatorTestsScreen
-import com.obelus.ui.screens.actuators.ActuatorTestDetailScreen
-import com.obelus.ui.screens.history.HistoryScreen
+import com.obelus.presentation.ui.screens.*
 import com.obelus.ui.screens.history.HistoryDetailScreen
 import com.obelus.data.crash.CrashReporter
 import com.obelus.ui.ddt4all.Ddt4allEcuListScreen
 import com.obelus.ui.ddt4all.Ddt4allEcuDetailScreen
-import com.obelus.ui.components.navigation.FloatingActionMenu
 import com.obelus.ui.components.navigation.ModernBottomNav
 import com.obelus.ui.components.navigation.NavItem
 import com.obelus.ui.navigation.transitions.SharedElementProvider
-import com.obelus.ui.navigation.transitions.fadeSlideEnterTransition
-import com.obelus.ui.navigation.transitions.fadeSlideExitTransition
-import com.obelus.ui.navigation.transitions.fadeSlidePopEnterTransition
-import com.obelus.ui.navigation.transitions.fadeSlidePopExitTransition
+import com.obelus.ui.navigation.transitions.*
 import android.content.Intent
 import android.Manifest
 import android.content.pm.PackageManager
@@ -65,6 +46,9 @@ import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
+import com.obelus.presentation.viewmodel.DiagnosticViewModel
+import com.obelus.presentation.viewmodel.SecurityAccessViewModel
+import com.obelus.presentation.viewmodel.WebServerViewModel
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
@@ -78,7 +62,6 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         
-        // Request POST_NOTIFICATIONS for Android 13+
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             if (ContextCompat.checkSelfPermission(this, Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {
                 ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.POST_NOTIFICATIONS), 101)
@@ -98,7 +81,6 @@ class MainActivity : ComponentActivity() {
 
     override fun onNewIntent(intent: Intent) {
         super.onNewIntent(intent)
-        // Ensure composables react to new intent if Activity was already running
         setIntent(intent) 
     }
 }
@@ -112,9 +94,9 @@ fun MainScreen(crashReporter: CrashReporter, settingsDataStore: SettingsDataStor
     val currentRoute = currentDestination?.route
 
     val isFirstLaunch by settingsDataStore.isFirstLaunch.collectAsState(initial = null)
-    val scope = androidx.compose.runtime.rememberCoroutineScope()
+    val scope = rememberCoroutineScope()
+    val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
 
-    // Manejar enrutamiento desde Notificación
     androidx.compose.runtime.LaunchedEffect(initialRoute) {
         if (initialRoute == "web_server") {
             navController.navigate("web_server") {
@@ -125,187 +107,229 @@ fun MainScreen(crashReporter: CrashReporter, settingsDataStore: SettingsDataStor
         }
     }
 
-    if (isFirstLaunch == null) return // Carga inicial DataStore
+    if (isFirstLaunch == null) return
 
-    Scaffold(
-        topBar = {
-            CenterAlignedTopAppBar(
-                title = { 
-                    Text(
-                        when (currentRoute) {
-                            "dashboard"      -> "Dashboard"
-                            "race"           -> "Race Mode"
-                            "race_history"   -> "Historial de Carreras"
-                            "dtc"            -> "Códigos DTC"
-                            "history"        -> "Historial"
-                            "log_viewer"     -> "Log Viewer"
-                            "web_server"     -> "Dashboard Web"
-                            "security_access" -> "Security Access 0x27"
-                            "dbc_editor"     -> "Editor DBC"
-                            "actuator_test"  -> "Tests de Actuadores"
-                            "settings"       -> "Configuración"
-                            "ddt4all_list"   -> "ECU Explorer"
-                            "ddt4all_detail" -> "ECU Detalles"
-                            else             -> "Obelus Scan"
-                        }
-                    )
-                },
-                actions = {
-                    Icon(
-                        imageVector = Icons.Default.Bluetooth,
-                        contentDescription = "Bluetooth Status",
-                        tint = Color.Gray,
-                        modifier = Modifier.padding(end = 16.dp, start = 8.dp)
-                    )
-                },
-                colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
-                    containerColor = MaterialTheme.colorScheme.primaryContainer,
-                    titleContentColor = MaterialTheme.colorScheme.onPrimaryContainer
-                )
-            )
-        },
-        floatingActionButton = {
-            FloatingActionMenu(
-                onDbcEditorClick = { navController.navigate("dbc_editor") },
-                onWebServerClick = { navController.navigate("web_server") },
-                onActuatorClick = { navController.navigate("actuators") }
-            )
-        },
-        bottomBar = {
-            if (currentRoute !in listOf("splash", "onboarding")) {
-                val navItems = listOf(
-                    NavItem("dashboard", "Dash", Icons.Default.Dashboard, Icons.Default.Dashboard),
-                    NavItem("race", "Race", Icons.Default.Flag, Icons.Default.Flag),
-                    NavItem("history", "Historial", Icons.Default.History, Icons.Default.History),
-                    NavItem("log_viewer", "Logs", Icons.Default.ListAlt, Icons.Default.ListAlt),
-                    NavItem("settings", "Settings", Icons.Default.Settings, Icons.Default.Settings)
+    ModalNavigationDrawer(
+        drawerState = drawerState,
+        gesturesEnabled = currentRoute !in listOf("splash", "onboarding"),
+        drawerContent = {
+            ModalDrawerSheet(
+                drawerContainerColor = DarkBackground
+            ) {
+                Spacer(Modifier.height(12.dp))
+                Text(
+                    "OBELUS EXPERT MENU",
+                    modifier = Modifier.padding(16.dp),
+                    style = FuturisticTypography.titleMedium,
+                    color = NeonCyan
                 )
                 
-                ModernBottomNav(
-                    items = navItems,
-                    currentRoute = currentRoute,
-                    onItemClick = { route ->
-                        navController.navigate(route) {
-                            popUpTo("dashboard") {
-                                saveState = true
-                            }
-                            launchSingleTop = true
-                            restoreState = true
-                        }
-                    }
+                NavigationDrawerItem(
+                    label = { Text("Historial de Sesiones", style = FuturisticTypography.labelLarge) },
+                    selected = currentRoute == "history",
+                    onClick = {
+                        scope.launch { drawerState.close() }
+                        navController.navigate("history")
+                    },
+                    icon = { Icon(Icons.Default.History, contentDescription = null) },
+                    colors = NavigationDrawerItemDefaults.colors(
+                        unselectedContainerColor = Color.Transparent,
+                        selectedContainerColor = NeonCyan.copy(alpha = 0.1f),
+                        unselectedTextColor = TextSecondary,
+                        selectedTextColor = NeonCyan,
+                        unselectedIconColor = TextSecondary,
+                        selectedIconColor = NeonCyan
+                    ),
+                    modifier = Modifier.padding(NavigationDrawerItemDefaults.ItemPadding)
+                )
+
+                NavigationDrawerItem(
+                    label = { Text("Terminal Web", style = FuturisticTypography.labelLarge) },
+                    selected = currentRoute == "web_server",
+                    onClick = {
+                        scope.launch { drawerState.close() }
+                        navController.navigate("web_server")
+                    },
+                    icon = { Icon(Icons.Default.Language, contentDescription = null) },
+                    colors = NavigationDrawerItemDefaults.colors(
+                        unselectedContainerColor = Color.Transparent,
+                        selectedContainerColor = NeonBlue.copy(alpha = 0.1f),
+                        unselectedTextColor = TextSecondary,
+                        selectedTextColor = NeonBlue,
+                        unselectedIconColor = TextSecondary,
+                        selectedIconColor = NeonBlue
+                    ),
+                    modifier = Modifier.padding(NavigationDrawerItemDefaults.ItemPadding)
+                )
+
+                NavigationDrawerItem(
+                    label = { Text("Análisis Bayesiano", style = FuturisticTypography.labelLarge) },
+                    selected = currentRoute == "diagnostic_dashboard",
+                    onClick = {
+                        scope.launch { drawerState.close() }
+                        navController.navigate("diagnostic_dashboard")
+                    },
+                    icon = { Icon(Icons.Default.Psychology, contentDescription = null) },
+                    colors = NavigationDrawerItemDefaults.colors(
+                        unselectedContainerColor = Color.Transparent,
+                        selectedContainerColor = NeonGreen.copy(alpha = 0.1f),
+                        unselectedTextColor = TextSecondary,
+                        selectedTextColor = NeonGreen,
+                        unselectedIconColor = TextSecondary,
+                        selectedIconColor = NeonGreen
+                    ),
+                    modifier = Modifier.padding(NavigationDrawerItemDefaults.ItemPadding)
                 )
             }
         }
-    ) { innerPadding ->
-        SharedElementProvider {
-            NavHost(
-                navController = navController,
-                startDestination = "splash",
-                modifier = Modifier.padding(innerPadding),
-                enterTransition = { fadeSlideEnterTransition() },
-                exitTransition = { fadeSlideExitTransition() },
-                popEnterTransition = { fadeSlidePopEnterTransition() },
-                popExitTransition = { fadeSlidePopExitTransition() }
-            ) {
-                val ddt4allViewModel: Ddt4allViewModel? = null // will be instantiated in the parent scope where valid context is active or initialized per screen
-                composable("splash") {
-                    SplashScreen(
-                        onTimeout = {
-                            val nextRoute = if (isFirstLaunch == true) "onboarding" else "dashboard"
-                            navController.navigate(nextRoute) {
-                                popUpTo("splash") { inclusive = true }
+    ) {
+        Scaffold(
+            topBar = {
+                if (currentRoute !in listOf("splash", "onboarding")) {
+                    CenterAlignedTopAppBar(
+                        title = { 
+                            Text(
+                                when (currentRoute) {
+                                    "dashboard"           -> "Live Dashboard"
+                                    "history"             -> "Logs de Sesión"
+                                    "sniffer"             -> "Bus Sniffer"
+                                    "settings"            -> "Configuración"
+                                    "ddt4all_list"        -> "ECU Explorer"
+                                    "diagnostic_dashboard" -> "Diagnóstico Pro"
+                                    "security_access"     -> "Security Access"
+                                    "web_server"          -> "Terminal Web"
+                                    else                  -> "Obelus"
+                                },
+                                style = FuturisticTypography.titleMedium
+                            )
+                        },
+                        navigationIcon = {
+                            IconButton(onClick = { scope.launch { drawerState.open() } }) {
+                                Icon(Icons.Default.Menu, contentDescription = "Menu", tint = NeonCyan)
+                            }
+                        },
+                        actions = {
+                            Icon(
+                                imageVector = Icons.Default.Bluetooth,
+                                contentDescription = "BT Status",
+                                tint = NeonCyan,
+                                modifier = Modifier.padding(end = 16.dp)
+                            )
+                        },
+                        colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
+                            containerColor = DarkBackground,
+                            titleContentColor = TextPrimary
+                        )
+                    )
+                }
+            },
+            bottomBar = {
+                if (currentRoute !in listOf("splash", "onboarding", "web_server", "diagnostic_dashboard", "security_access")) {
+                    val navItems = listOf(
+                        NavItem("dashboard", "Dash", Icons.Default.Dashboard, Icons.Outlined.Dashboard),
+                        NavItem("ddt4all_list", "Explorer", Icons.Default.DeveloperBoard, Icons.Outlined.DeveloperBoard),
+                        NavItem("sniffer", "Sniffer", Icons.Default.Sensors, Icons.Outlined.Sensors),
+                        NavItem("settings", "Settings", Icons.Default.Settings, Icons.Outlined.Settings)
+                    )
+                    
+                    ModernBottomNav(
+                        items = navItems,
+                        currentRoute = currentRoute,
+                        onItemClick = { route ->
+                            navController.navigate(route) {
+                                popUpTo(navController.graph.findStartDestination().id) {
+                                    saveState = true
+                                }
+                                launchSingleTop = true
+                                restoreState = true
                             }
                         }
                     )
                 }
-                composable("onboarding") {
-                    OnboardingScreen(
-                        onFinishOnboarding = {
-                            scope.launch { settingsDataStore.setFirstLaunchCompleted() }
-                            navController.navigate("dashboard") {
-                                popUpTo("onboarding") { inclusive = true }
+            }
+        ) { innerPadding ->
+            SharedElementProvider {
+                NavHost(
+                    navController = navController,
+                    startDestination = "splash",
+                    modifier = Modifier.padding(innerPadding)
+                ) {
+                    composable("splash") {
+                        SplashScreen(
+                            onTimeout = {
+                                val nextRoute = if (isFirstLaunch == true) "onboarding" else "dashboard"
+                                navController.navigate(nextRoute) { popUpTo("splash") { inclusive = true } }
                             }
-                        }
-                    )
-                }
+                        )
+                    }
+                    composable("onboarding") {
+                        OnboardingScreen(
+                            onFinishOnboarding = {
+                                scope.launch { settingsDataStore.setFirstLaunchCompleted() }
+                                navController.navigate("dashboard") { popUpTo("onboarding") { inclusive = true } }
+                            }
+                        )
+                    }
 
-                composable("dashboard") { DashboardScreen() }
-            composable("race") {
-                RaceScreen(onNavigateToHistory = { navController.navigate("race_history") })
-            }
-            composable("dtc") { DTCScreen(onBack = { }) }
-            composable("history") { 
-                HistoryScreen(
-                    onNavigateToDetail = { id -> navController.navigate("history_detail/$id") },
-                    onBack = { navController.popBackStack() } 
-                ) 
-            }
-            composable("history_detail/{id}") { backStackEntry ->
-                val id = backStackEntry.arguments?.getString("id")?.toLongOrNull() ?: 0L
-                HistoryDetailScreen(raceId = id, onBack = { navController.popBackStack() })
-            }
-            composable("actuators") {
-                ActuatorTestsScreen(
-                    onNavigateToTest = { id -> navController.navigate("actuator_test_detail/$id") },
-                    onBack = { navController.popBackStack() }
-                )
-            }
-            composable("actuator_test_detail/{id}") { backStackEntry ->
-                val catId = backStackEntry.arguments?.getString("id")?.toIntOrNull() ?: 0
-                ActuatorTestDetailScreen(categoryId = catId, onBack = { navController.popBackStack() })
-            }
-            composable("web_server") { WebServerScreen() }
-            composable("log_viewer") {
-                LogViewerScreen(onBack = { navController.popBackStack() })
-            }
-            composable("security_access") {
-                SecurityAccessScreen(onBack = { navController.popBackStack() })
-            }
-            composable("race_history") {
-                RaceHistoryScreen(onBack = { navController.popBackStack() })
-            }
-            composable(
-                "dbc_editor",
-                enterTransition = null,
-                exitTransition = null,
-                popEnterTransition = null,
-                popExitTransition = null
-            ) {
-                DbcEditorScreen(onBack = { navController.popBackStack() })
-            }
-            composable("settings") {
-                SettingsScreen(
-                    dataStore = settingsDataStore,
-                    onNavigateToTheme = { navController.navigate("theme_selector") },
-                    onNavigateToConnection = { navController.navigate("connection_settings") },
-                    onNavigateToCrashLogs = { navController.navigate("crash_logs") },
-                    onBack = { navController.popBackStack() }
-                )
-            }
-            composable("theme_selector") { ThemeSelectorScreen(settingsDataStore, onBack = { navController.popBackStack() }) }
-            composable("connection_settings") { ConnectionSettings(settingsDataStore, onBack = { navController.popBackStack() }) }
-            composable("actuator_test") { ActuatorTestScreen() }
-            composable("crash_logs") {
-                CrashLogScreen(
-                    crashReporter = crashReporter,
-                    onBack = { navController.popBackStack() }
-                )
-            }
-            composable("ddt4all_list") {
-                val ddt4ViewModel: Ddt4allViewModel = hiltViewModel(navController.currentBackStackEntry!!)
-                Ddt4allEcuListScreen(
-                    viewModel = ddt4ViewModel,
-                    onNavigateToDetail = { navController.navigate("ddt4all_detail") },
-                    onBack = { navController.popBackStack() }
-                )
-            }
-                composable("ddt4all_detail") {
-                    // Ensure same viewModel instance across ecu flow
-                    val ddt4ViewModel: Ddt4allViewModel = hiltViewModel(navController.previousBackStackEntry ?: navController.currentBackStackEntry!!)
-                    Ddt4allEcuDetailScreen(
-                        viewModel = ddt4ViewModel,
-                        onBack = { navController.popBackStack() }
-                    )
+                    composable("dashboard") { DashboardScreen() }
+                    
+                    composable("ddt4all_list") {
+                        val ddt4ViewModel: Ddt4allViewModel = hiltViewModel()
+                        Ddt4allEcuListScreen(
+                            viewModel = ddt4ViewModel,
+                            onNavigateToDetail = { navController.navigate("ddt4all_detail") },
+                            onNavigateToDiagnostics = { navController.navigate("diagnostic_dashboard") },
+                            onNavigateToSecurity = { navController.navigate("security_access") },
+                            onBack = { navController.popBackStack() }
+                        )
+                    }
+                    
+                    composable("ddt4all_detail") {
+                        val ddt4ViewModel: Ddt4allViewModel = hiltViewModel(navController.previousBackStackEntry ?: navController.currentBackStackEntry!!)
+                        Ddt4allEcuDetailScreen(
+                            viewModel = ddt4ViewModel,
+                            onBack = { navController.popBackStack() }
+                        )
+                    }
+                    
+                    composable("sniffer") { SnifferScreen() }
+                    
+                    composable("settings") {
+                        SettingsScreen(
+                            dataStore = settingsDataStore,
+                            onNavigateToTheme = { navController.navigate("theme_selector") },
+                            onNavigateToConnection = { navController.navigate("connection_settings") },
+                            onNavigateToCrashLogs = { navController.navigate("crash_logs") },
+                            onBack = { navController.popBackStack() }
+                        )
+                    }
+                    
+                    composable("history") { 
+                        HistoryScreen(
+                            onSessionClick = { id -> navController.navigate("history_detail/$id") },
+                            onBack = { navController.popBackStack() } 
+                        ) 
+                    }
+                    
+                    composable("history_detail/{id}") { backStackEntry ->
+                        val id = backStackEntry.arguments?.getString("id")?.toLongOrNull() ?: 0L
+                        HistoryDetailScreen(raceId = id, onBack = { navController.popBackStack() })
+                    }
+                    
+                    composable("diagnostic_dashboard") {
+                        val diagViewModel: DiagnosticViewModel = hiltViewModel()
+                        DiagnosticDashboardScreen(viewModel = diagViewModel)
+                    }
+                    
+                    composable("security_access") {
+                        val securityViewModel: SecurityAccessViewModel = hiltViewModel()
+                        SecurityAccessScreen(viewModel = securityViewModel, onBack = { navController.popBackStack() })
+                    }
+
+                    composable("web_server") {
+                        val webViewModel: WebServerViewModel = hiltViewModel()
+                        WebServerScreen(viewModel = webViewModel, onBack = { navController.popBackStack() })
+                    }
                 }
             }
         }
@@ -313,23 +337,15 @@ fun MainScreen(crashReporter: CrashReporter, settingsDataStore: SettingsDataStor
 }
 
 @Composable
-fun ObelusTheme(
-    themeMode: String = "system",
-    content: @Composable () -> Unit
-) {
+fun ObelusTheme(themeMode: String = "system", content: @Composable () -> Unit) {
     val isSystemDark = isSystemInDarkTheme()
-    
     val colorScheme = when (themeMode) {
-        "oled" -> OledColorScheme
-        "cyber" -> CyberColorScheme
-        "sport" -> SportColorScheme
-        "dark" -> SystemDarkColorScheme
-        "light" -> SystemLightColorScheme
-        else -> if (isSystemDark) SystemDarkColorScheme else SystemLightColorScheme
+        "oled" -> com.obelus.obelusscan.ui.theme.OledColorScheme
+        "cyber" -> com.obelus.obelusscan.ui.theme.CyberColorScheme
+        "sport" -> com.obelus.obelusscan.ui.theme.SportColorScheme
+        "dark" -> com.obelus.obelusscan.ui.theme.SystemDarkColorScheme
+        "light" -> com.obelus.obelusscan.ui.theme.SystemLightColorScheme
+        else -> if (isSystemDark) com.obelus.obelusscan.ui.theme.SystemDarkColorScheme else com.obelus.obelusscan.ui.theme.SystemLightColorScheme
     }
-
-    MaterialTheme(
-        colorScheme = colorScheme,
-        content = content
-    )
+    MaterialTheme(colorScheme = colorScheme, content = content)
 }

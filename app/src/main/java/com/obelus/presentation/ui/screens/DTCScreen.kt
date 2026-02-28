@@ -1,12 +1,15 @@
 package com.obelus.presentation.ui.screens
 
 import androidx.compose.animation.*
+import androidx.compose.animation.core.animateFloat
+import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.*
@@ -115,7 +118,7 @@ fun DTCScreen(
                             )
                         }
                         
-                        itemsIndexed(items, key = { _, it -> it.dtc.code }) { index, dtc ->
+                        itemsIndexed(items, key = { _, dtcItem: EnrichedDtc -> dtcItem.dtc.code }) { index: Int, dtc: EnrichedDtc ->
                             val severityEnum = when (dtc.severityLevel) {
                                 SeverityLevel.ERROR -> DtcSeverity.CRITICAL
                                 SeverityLevel.WARNING -> DtcSeverity.WARNING

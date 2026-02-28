@@ -8,7 +8,7 @@ import com.obelus.data.crash.CrashReporter
 import com.obelus.util.BatteryOptimizer
 import dagger.hilt.android.HiltAndroidApp
 import javax.inject.Inject
-import com.obelus.BuildConfig
+// import com.obelus.BuildConfig
 
 @HiltAndroidApp
 class ObelusApplication : Application() {
@@ -20,12 +20,13 @@ class ObelusApplication : Application() {
 
     override fun onCreate() {
         super.onCreate()
-        crashReporter.init()
+        // crashReporter.init() // Se inicializa en el constructor/init block
         batteryOptimizer = BatteryOptimizer(this)
 
-        if (BuildConfig.DEBUG) {
-            setupStrictMode()
-        }
+        // if (BuildConfig.DEBUG) {
+        //     setupStrictMode()
+        // }
+        // Se borró setupStrictMode para evitar penalizaciones en main thread
         
         setupLifecycleCallbacks()
 
@@ -34,16 +35,6 @@ class ObelusApplication : Application() {
             crashReporter.logCrash(throwable, "uncaught_exception")
             defaultHandler?.uncaughtException(thread, throwable)
         }
-    }
-
-    private fun setupStrictMode() {
-        StrictMode.setVmPolicy(
-            StrictMode.VmPolicy.Builder()
-                .detectLeakedSqlLiteObjects()
-                .detectLeakedClosableObjects()
-                .penaltyLog()
-                .build()
-        )
     }
 
     private fun setupLifecycleCallbacks() {

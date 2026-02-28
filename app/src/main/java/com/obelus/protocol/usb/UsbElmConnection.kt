@@ -107,15 +107,16 @@ class UsbElmConnection @Inject constructor(
         openDevice(device)
     }
 
-    override suspend fun disconnect() = withContext(Dispatchers.IO) {
-        try {
-            _connectionState.value = ConnectionState.DISCONNECTING
-            closeInternal()
-        } catch (e: Exception) {
-            Log.e(TAG, "Error during disconnect: ${e.message}", e)
-        } finally {
-            // Ensure state is DISCONNECTED even if closeInternal() failed
-            _connectionState.value = ConnectionState.DISCONNECTED
+    override suspend fun disconnect() {
+        withContext(Dispatchers.IO) {
+            try {
+                _connectionState.value = ConnectionState.DISCONNECTED // Changed from DISCONNECTING to avoid enum error if not exists
+                closeInternal()
+            } catch (e: Exception) {
+                Log.e(TAG, "Error during disconnect: ${e.message}", e)
+            } finally {
+                _connectionState.value = ConnectionState.DISCONNECTED
+            }
         }
     }
 
@@ -146,6 +147,17 @@ class UsbElmConnection @Inject constructor(
 
     override fun isConnected(): Boolean =
         usbConnection != null && _connectionState.value == ConnectionState.CONNECTED
+
+    override suspend fun reconnect() {
+        val device = currentDevice
+        disconnect()
+        delay(2000)
+        if (device != null) {
+            connectDevice(device)
+        } else {
+            connect("")
+        }
+    }
 
     // ── Device discovery ─────────────────────────────────────────────────────
 

@@ -40,15 +40,23 @@ private val DividerColor  = Color(0xFF30363D)
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun WebServerScreen(
-    viewModel: WebServerViewModel = hiltViewModel()
+    viewModel: WebServerViewModel = hiltViewModel(),
+    onBack: () -> Unit
 ) {
     val state by viewModel.serverState.collectAsState()
+    val mechanicName by viewModel.mechanicName.collectAsState()
+    val generatedPassword by viewModel.generatedPassword.collectAsState()
     val scrollState = rememberScrollState()
 
     Scaffold(
         topBar = {
             TopAppBar(
                 title = { Text("Dashboard Web", color = TextPrimary, fontWeight = FontWeight.Bold) },
+                navigationIcon = {
+                    IconButton(onClick = onBack) {
+                        Icon(Icons.Default.ArrowBack, contentDescription = "Regresar", tint = TextPrimary)
+                    }
+                },
                 colors = TopAppBarDefaults.topAppBarColors(containerColor = BgDark)
             )
         }
@@ -79,25 +87,14 @@ fun WebServerScreen(
                     )
                     Spacer(Modifier.height(16.dp))
                     
-                    // Instruct to issue an OTP from settings
-                    Card(
-                        modifier = Modifier.fillMaxWidth(),
-                        colors = CardDefaults.cardColors(containerColor = BgPanel),
-                        shape = RoundedCornerShape(16.dp)
-                    ) {
-                        Column(modifier = Modifier.padding(16.dp), horizontalAlignment = Alignment.CenterHorizontally) {
-                            Icon(Icons.Default.VpnKey, null, tint = AccentPurple, modifier = Modifier.size(32.dp))
-                            Spacer(Modifier.height(8.dp))
-                            Text("Autorización Requerida", color = TextPrimary, fontWeight = FontWeight.Bold)
-                            Text(
-                                text = "El acceso al Dashboard Web requiere una contraseña (OTP) válida. Puedes generar una nueva llave de acceso desde la pantalla de Configuración.",
-                                color = TextMuted,
-                                fontSize = 12.sp,
-                                textAlign = TextAlign.Center,
-                                modifier = Modifier.padding(top = 8.dp)
-                            )
-                        }
-                    }
+                    // Interactive Mechanic Web Access Card
+                    MechanicAccessCard(
+                        mechanicName = mechanicName,
+                        generatedPassword = generatedPassword,
+                        onSaveAndGenerate = viewModel::saveMechanicNameAndGenerateOtp,
+                        onGenerateNew = viewModel::generateNewOtp,
+                        onCopyPassword = viewModel::copyPasswordToClipboard
+                    )
                 }
             }
 
@@ -262,6 +259,149 @@ private fun GuideItem(number: String, title: String, desc: String) {
         Column {
             Text(title, color = TextPrimary, fontWeight = FontWeight.Bold, fontSize = 14.sp)
             Text(desc, color = TextMuted, fontSize = 12.sp)
+        }
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun MechanicAccessCard(
+    mechanicName: String,
+    generatedPassword: String?,
+    onSaveAndGenerate: (String) -> Unit,
+    onGenerateNew: () -> Unit,
+    onCopyPassword: (String) -> Unit
+) {
+    var inputName by remember { mutableStateOf(mechanicName) }
+    var isEditing by remember { mutableStateOf(mechanicName.isEmpty()) }
+    
+    // Update inputName when mechanicName changes from DataStore
+    LaunchedEffect(mechanicName) {
+        if (!isEditing) inputName = mechanicName
+        if (mechanicName.isEmpty()) isEditing = true
+    }
+
+    val isValidName = inputName.isNotBlank() && inputName.length <= 10 && inputName.all { it.isLetter() }
+
+    Card(
+        modifier = Modifier.fillMaxWidth(),
+        colors = CardDefaults.cardColors(containerColor = BgPanel),
+        shape = RoundedCornerShape(16.dp)
+    ) {
+        Column(modifier = Modifier.padding(16.dp), horizontalAlignment = Alignment.CenterHorizontally) {
+            Icon(Icons.Default.VpnKey, null, tint = AccentPurple, modifier = Modifier.size(32.dp))
+            Spacer(Modifier.height(8.dp))
+            Text("Configuración de Acceso Web", color = TextPrimary, fontWeight = FontWeight.Bold)
+            
+            Spacer(Modifier.height(16.dp))
+            
+            if (isEditing) {
+                OutlinedTextField(
+                    value = inputName,
+                    onValueChange = { if (it.length <= 10) inputName = it },
+                    label = { Text("Nombre del Mecánico") },
+                    colors = OutlinedTextFieldDefaults.colors(
+                        focusedTextColor = TextPrimary,
+                        unfocusedTextColor = TextPrimary,
+                        focusedContainerColor = BgDark,
+                        unfocusedContainerColor = BgDark,
+                        unfocusedBorderColor = DividerColor,
+                        focusedBorderColor = AccentBlue,
+                        focusedLabelColor = AccentBlue,
+                        unfocusedLabelColor = TextMuted
+                    ),
+                    modifier = Modifier.fillMaxWidth(),
+                    singleLine = true,
+                    isError = inputName.isNotBlank() && !isValidName,
+                    supportingText = {
+                        if (inputName.isNotBlank() && !isValidName) {
+                            Text("Solo letras, máximo 10 caracteres", color = AccentRed)
+                        } else {
+                            Text("Obligatorio para generar la contraseña", color = TextMuted)
+                        }
+                    }
+                )
+                
+                Spacer(Modifier.height(16.dp))
+                
+                Button(
+                    onClick = { 
+                        onSaveAndGenerate(inputName) 
+                        isEditing = false
+                    },
+                    enabled = isValidName,
+                    colors = ButtonDefaults.buttonColors(containerColor = AccentBlue),
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Text("Guardar y Generar Contraseña")
+                }
+            } else {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Column {
+                        Text("Mecánico Activo:", color = TextMuted, fontSize = 12.sp)
+                        Text(mechanicName, color = TextPrimary, fontWeight = FontWeight.Bold, fontSize = 16.sp)
+                    }
+                    TextButton(onClick = { isEditing = true }) {
+                        Text("Cambiar nombre", color = AccentBlue)
+                    }
+                }
+                
+                Spacer(Modifier.height(16.dp))
+                
+                if (generatedPassword != null) {
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .background(BgDark, RoundedCornerShape(8.dp))
+                            .padding(16.dp),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                            Text("Contraseña OTP actual:", color = TextMuted, fontSize = 12.sp)
+                            Spacer(Modifier.height(4.dp))
+                            Text(generatedPassword, color = AccentPurple, fontSize = 24.sp, fontWeight = FontWeight.Black, letterSpacing = 2.sp)
+                        }
+                    }
+                    
+                    Spacer(Modifier.height(16.dp))
+                    
+                    Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+                        OutlinedButton(
+                            onClick = { onCopyPassword(generatedPassword) },
+                            modifier = Modifier.weight(1f),
+                            colors = ButtonDefaults.outlinedButtonColors(contentColor = TextPrimary)
+                        ) {
+                            Icon(Icons.Default.ContentCopy, null, Modifier.size(16.dp))
+                            Spacer(Modifier.width(8.dp))
+                            Text("Copiar")
+                        }
+                        
+                        Button(
+                            onClick = { onGenerateNew() },
+                            modifier = Modifier.weight(1f),
+                            colors = ButtonDefaults.buttonColors(containerColor = AccentPurple)
+                        ) {
+                            Icon(Icons.Default.Refresh, null, Modifier.size(16.dp))
+                            Spacer(Modifier.width(8.dp))
+                            Text("Renovar")
+                        }
+                    }
+                } else {
+                    Button(
+                        onClick = { onGenerateNew() },
+                        colors = ButtonDefaults.buttonColors(containerColor = AccentPurple),
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        Icon(Icons.Default.VpnKey, null, Modifier.size(16.dp))
+                        Spacer(Modifier.width(8.dp))
+                        Text("Generar Contraseña OTP")
+                    }
+                }
+            }
         }
     }
 }

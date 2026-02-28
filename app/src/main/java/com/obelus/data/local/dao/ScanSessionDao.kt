@@ -6,7 +6,7 @@ import com.obelus.data.local.entity.ScanSession
 @Dao
 interface ScanSessionDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insert(session: ScanSession)
+    suspend fun insert(session: ScanSession): Long
     
     @Update
     suspend fun update(session: ScanSession)

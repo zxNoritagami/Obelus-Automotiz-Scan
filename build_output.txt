@@ -1,14 +1,74 @@
+> Task :app:preBuild UP-TO-DATE
+> Task :app:preDebugBuild UP-TO-DATE
+> Task :app:mergeDebugNativeDebugMetadata NO-SOURCE
+> Task :app:checkDebugAarMetadata UP-TO-DATE
+> Task :app:generateDebugResValues UP-TO-DATE
+> Task :app:mapDebugSourceSetPaths UP-TO-DATE
+> Task :app:generateDebugResources UP-TO-DATE
+> Task :app:mergeDebugResources UP-TO-DATE
+> Task :app:packageDebugResources UP-TO-DATE
+> Task :app:parseDebugLocalResources UP-TO-DATE
+> Task :app:createDebugCompatibleScreenManifests UP-TO-DATE
+> Task :app:extractDeepLinksDebug UP-TO-DATE
+> Task :app:processDebugMainManifest UP-TO-DATE
+> Task :app:processDebugManifest UP-TO-DATE
+> Task :app:processDebugManifestForPackage UP-TO-DATE
+> Task :app:processDebugResources UP-TO-DATE
+> Task :app:javaPreCompileDebug UP-TO-DATE
+> Task :app:mergeDebugShaders UP-TO-DATE
+> Task :app:compileDebugShaders NO-SOURCE
+> Task :app:generateDebugAssets UP-TO-DATE
+> Task :app:mergeDebugAssets UP-TO-DATE
+> Task :app:compressDebugAssets UP-TO-DATE
+> Task :app:checkDebugDuplicateClasses UP-TO-DATE
+> Task :app:desugarDebugFileDependencies UP-TO-DATE
+> Task :app:mergeDebugStartupProfile UP-TO-DATE
+> Task :app:mergeExtDexDebug UP-TO-DATE
+> Task :app:mergeLibDexDebug UP-TO-DATE
+> Task :app:mergeDebugJniLibFolders UP-TO-DATE
+> Task :app:mergeDebugNativeLibs NO-SOURCE
+> Task :app:stripDebugDebugSymbols NO-SOURCE
+> Task :app:validateSigningDebug UP-TO-DATE
+> Task :app:writeDebugAppMetadata UP-TO-DATE
+> Task :app:writeDebugSigningConfigVersions UP-TO-DATE
+> Task :app:kspDebugKotlin
 
-FAILURE: Build failed with an exception.
+> Task :app:compileDebugKotlin
+w: file:///C:/Users/Angelo/Desktop/scaner/scanner%20pro/repos/Obelus/app/src/main/java/com/obelus/data/security/PasswordSessionManager.kt:18:34 Parameter 'inputHash' is never used
+w: file:///C:/Users/Angelo/Desktop/scaner/scanner%20pro/repos/Obelus/app/src/main/java/com/obelus/presentation/ui/screens/WebServerScreen.kt:147:61 Parameter 'onShare' is never used
+w: file:///C:/Users/Angelo/Desktop/scaner/scanner%20pro/repos/Obelus/app/src/main/java/com/obelus/presentation/ui/screens/WebServerScreen.kt:147:82 Parameter 'onOpen' is never used
+w: file:///C:/Users/Angelo/Desktop/scaner/scanner%20pro/repos/Obelus/app/src/main/java/com/obelus/presentation/ui/screens/WebServerScreen.kt:190:33 Parameter 'isRunning' is never used
+w: file:///C:/Users/Angelo/Desktop/scaner/scanner%20pro/repos/Obelus/app/src/main/java/com/obelus/presentation/ui/screens/WebServerScreen.kt:205:40 'HelpOutline: ImageVector' is deprecated. Use the AutoMirrored version at Icons.AutoMirrored.Filled.HelpOutline
 
-* What went wrong:
-org.gradle.api.internal.catalog.GeneratedClassCompilationException: No Java compiler found, please ensure you are running Gradle with a JDK
-> No Java compiler found, please ensure you are running Gradle with a JDK
+> Task :app:compileDebugJavaWithJavac
+Java compiler version 21 has deprecated support for compiling with source/target version 8.
+Try one of the following options:
+    1. [Recommended] Set a lower Java compiler version (using Java toolchain)
+    2. Set a higher source/target version
+    3. If you don't want to use Java toolchain, try using a lower version of the JDK running the build
+       (e.g., by setting the `JAVA_HOME` environment variable or the `org.gradle.java.home` Gradle property)
+For more details on how to configure these settings, see https://developer.android.com/build/jdks.
+warning: [options] source value 8 is obsolete and will be removed in a future release
+warning: [options] target value 8 is obsolete and will be removed in a future release
+warning: [options] To suppress warnings about obsolete options, use -Xlint:-options.
+3 warnings
 
-* Try:
-> Run with --stacktrace option to get the stack trace.
-> Run with --info or --debug option to get more log output.
-> Run with --scan to get full insights.
-> Get more help at https://help.gradle.org.
+> Task :app:hiltAggregateDepsDebug UP-TO-DATE
 
-BUILD FAILED in 684ms
+> Task :app:hiltJavaCompileDebug
+warning: [options] source value 8 is obsolete and will be removed in a future release
+warning: [options] target value 8 is obsolete and will be removed in a future release
+warning: [options] To suppress warnings about obsolete options, use -Xlint:-options.
+3 warnings
+
+> Task :app:processDebugJavaRes UP-TO-DATE
+> Task :app:mergeDebugJavaResource UP-TO-DATE
+> Task :app:transformDebugClassesWithAsm
+> Task :app:dexBuilderDebug
+> Task :app:mergeProjectDexDebug
+> Task :app:packageDebug
+> Task :app:createDebugApkListingFileRedirect UP-TO-DATE
+> Task :app:assembleDebug
+
+BUILD SUCCESSFUL in 15s
+38 actionable tasks: 8 executed, 30 up-to-date

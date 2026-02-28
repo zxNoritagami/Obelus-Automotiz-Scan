@@ -1,3 +1,4 @@
+@file:OptIn(androidx.compose.material3.ExperimentalMaterial3Api::class)
 package com.obelus.presentation.ui.screens
 
 import android.net.Uri
@@ -21,8 +22,12 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
+import androidx.compose.material3.SingleChoiceSegmentedButtonRow
+import androidx.compose.material3.SegmentedButton
+import com.obelus.ui.theme.NeonCyan
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -73,7 +78,6 @@ private val DLC_WIDTH     = 40.dp
 private val DATA_WIDTH    = 200.dp
 private val BUS_WIDTH     = 36.dp
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun LogViewerScreen(
     viewModel: LogViewerViewModel = hiltViewModel(),
@@ -205,14 +209,24 @@ fun LogViewerScreen(
                         modifier = Modifier.fillMaxWidth().padding(16.dp),
                         horizontalArrangement = Arrangement.Center
                     ) {
-                        SegmentedControl(
-                            items = listOf("RAW HEX", "DECODED SIGNAL"),
-                            selectedIndex = if (uiState.viewMode == ViewMode.RAW) 0 else 1,
-                            onItemSelection = { index ->
-                                if (index == 0 && uiState.viewMode != ViewMode.RAW) viewModel.toggleViewMode()
-                                else if (index == 1 && uiState.viewMode != ViewMode.DECODED) viewModel.toggleViewMode()
+                        SingleChoiceSegmentedButtonRow(
+                            modifier = Modifier.fillMaxWidth().padding(16.dp)
+                        ) {
+                            SegmentedButton(
+                                selected = uiState.viewMode == ViewMode.RAW,
+                                onClick = { if (uiState.viewMode != ViewMode.RAW) viewModel.toggleViewMode() },
+                                shape = SegmentedButtonDefaults.itemShape(index = 0, count = 2)
+                            ) {
+                                Text("RAW HEX", fontSize = 10.sp, fontWeight = FontWeight.Bold)
                             }
-                        )
+                            SegmentedButton(
+                                selected = uiState.viewMode == ViewMode.DECODED,
+                                onClick = { if (uiState.viewMode != ViewMode.DECODED) viewModel.toggleViewMode() },
+                                shape = SegmentedButtonDefaults.itemShape(index = 1, count = 2)
+                            ) {
+                                Text("DECODED SIGNAL", fontSize = 10.sp, fontWeight = FontWeight.Bold)
+                            }
+                        }
                     }
                 }
 
@@ -251,8 +265,17 @@ fun LogViewerScreen(
                     }
                     else -> {
                         // RAW MODE: HexDumpViewer
-                        val rawFrames = uiState.visibleFrames.map { 
-                            com.obelus.ui.components.logs.CanFrameRaw(it.timestamp, String.format("%03X", it.canId), it.dlc, it.data)
+                        val rawFrames = uiState.visibleFrames.map { frame ->
+                            val dataBytes = frame.dataHex.replace(" ", "")
+                                .chunked(2)
+                                .map { hex -> hex.toIntOrNull(16)?.toByte() ?: 0 }
+                                .toByteArray()
+                            com.obelus.ui.components.logs.CanFrameRaw(
+                                frame.timestamp, 
+                                String.format("%03X", frame.canId), 
+                                dataBytes.size, 
+                                dataBytes
+                            )
                         }
                         com.obelus.ui.components.logs.HexDumpViewer(frames = rawFrames)
                     }

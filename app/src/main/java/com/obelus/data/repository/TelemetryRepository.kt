@@ -56,6 +56,9 @@ class TelemetryRepository @Inject constructor(
     private val _publishedMessages = MutableStateFlow(0L)
     val publishedMessages: StateFlow<Long> = _publishedMessages.asStateFlow()
 
+    private val _latestTelemetryData = MutableStateFlow(ObdTelemetry())
+    val latestTelemetryData: StateFlow<ObdTelemetry> = _latestTelemetryData.asStateFlow()
+
     // Snapshot mutable de la telemetría actual — actualizado por DashboardViewModel
     private var currentTelemetry = ObdTelemetry()
 
@@ -65,6 +68,7 @@ class TelemetryRepository @Inject constructor(
      */
     fun updateTelemetry(telemetry: ObdTelemetry) {
         currentTelemetry = telemetry
+        _latestTelemetryData.value = telemetry
     }
 
     /**
