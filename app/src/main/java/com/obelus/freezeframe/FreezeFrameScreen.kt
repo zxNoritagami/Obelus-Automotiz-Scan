@@ -15,6 +15,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
@@ -40,8 +41,10 @@ private val TsFmt = SimpleDateFormat("dd/MM/yyyy HH:mm:ss", Locale.getDefault())
 fun FreezeFrameScreen(
     dtcCode: String? = null,
     onBack: () -> Unit = {},
+    onNavigateToDtc: (String) -> Unit = {},
     viewModel: ScanViewModel = hiltViewModel()
 ) {
+    val context = LocalContext.current
     val freezeFrames by viewModel.freezeFrames.collectAsStateWithLifecycle()
     val uiState      by viewModel.uiState.collectAsStateWithLifecycle()
 
@@ -91,8 +94,29 @@ fun FreezeFrameScreen(
                     }
                 },
                 actions = {
-                    // Export button (placeholder — conectar a ReportGenerator)
-                    IconButton(onClick = { /* TODO: export to PDF */ }) {
+                    // Compartir contenido del freeze frame via Intent
+                    IconButton(onClick = {
+                        val text = buildString {
+                            appendLine("=== Freeze Frame Report ===")
+                            appendLine("DTC: ${dtcCode ?: "N/A"}")
+                            selectedFrame?.let { ff ->
+                                appendLine("Fecha: ${TsFmt.format(Date(ff.timestamp))}")
+                                appendLine(ff.conditionSummary())
+                                ff.distanceSinceDtcCleared?.let { d ->
+                                    appendLine("Distancia desde borrado: $d km")
+                                }
+                            }
+                            if (suggested.isNotEmpty()) {
+                                appendLine("DTCs relacionados: ${suggested.joinToString(", ")}")
+                            }
+                        }
+                        val intent = android.content.Intent(android.content.Intent.ACTION_SEND).apply {
+                            type = "text/plain"
+                            putExtra(android.content.Intent.EXTRA_TEXT, text)
+                            putExtra(android.content.Intent.EXTRA_SUBJECT, "Freeze Frame DTC ${dtcCode ?: ""}")
+                        }
+                        context.startActivity(android.content.Intent.createChooser(intent, "Compartir Freeze Frame"))
+                    }) {
                         Icon(Icons.Default.Share, "Exportar análisis")
                     }
                 }
@@ -133,7 +157,7 @@ fun FreezeFrameScreen(
 
                 // ── DTCs relacionados sugeridos ───────────────────────────────
                 if (suggested.isNotEmpty()) {
-                    item { SuggestedDtcsCard(suggested) }
+                    item { SuggestedDtcsCard(suggested, onNavigateToDtc) }
                 }
 
                 // ── Comparativa lado a lado ───────────────────────────────────
@@ -260,7 +284,7 @@ private fun FindingRow(finding: ConditionFinding) {
 
 // ── Suggested DTCs ────────────────────────────────────────────────────────────
 @Composable
-private fun SuggestedDtcsCard(suggested: List<String>) {
+private fun SuggestedDtcsCard(suggested: List<String>, onNavigateToDtc: (String) -> Unit = {}) {
     Card(shape = RoundedCornerShape(10.dp)) {
         Column(Modifier.padding(12.dp)) {
             Row(verticalAlignment = Alignment.CenterVertically) {
@@ -273,7 +297,10 @@ private fun SuggestedDtcsCard(suggested: List<String>) {
             Spacer(Modifier.height(6.dp))
             Row(horizontalArrangement = Arrangement.spacedBy(6.dp), modifier = Modifier.horizontalScroll(rememberScrollState())) {
                 suggested.forEach { dtc ->
-                    AssistChip(onClick = {}, label = { Text(dtc, fontSize = 12.sp) })
+                    AssistChip(
+                        onClick = { onNavigateToDtc(dtc) },
+                        label = { Text(dtc, fontSize = 12.sp) }
+                    )
                 }
             }
         }

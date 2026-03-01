@@ -1,5 +1,6 @@
 package com.obelus.obelusscan.ui.race
 
+import android.content.Intent
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -11,6 +12,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -37,6 +39,7 @@ fun RaceResultsScreen(
     onSaveReference: () -> Unit,
     onReset: () -> Unit
 ) {
+    val context = LocalContext.current
     if (session == null) return
 
     val maxG = analysisResult?.maxGForce ?: session.maxGforce
@@ -162,7 +165,33 @@ fun RaceResultsScreen(
                     }
                 }
                 Button(
-                    onClick = { /* TODO: Implement Share logic/Intent */ },
+                    onClick = {
+                        val splits = if (analysisResult?.splits?.isNotEmpty() == true)
+                            analysisResult.splits else session.times
+                        val shareText = buildString {
+                            appendLine("🏆 Scanner Pro — ${session.type.displayName()}")
+                            appendLine("⏱️ Tiempo: ${"%,.3f".format(session.finalTime)} s")
+                            appendLine("💪 G-Force máx: ${"%,.2f".format(analysisResult?.maxGForce ?: session.maxGforce)} g")
+                            if (analysisResult?.estimatedHp != null && analysisResult.estimatedHp > 0) {
+                                appendLine("⚡ HP estimado: ${"%,.0f".format(analysisResult.estimatedHp)} hp")
+                            }
+                            if (splits.isNotEmpty()) {
+                                appendLine("")
+                                appendLine("Splits:")
+                                var cumulative = 0L
+                                splits.forEach { split ->
+                                    cumulative += split.timeMs
+                                    appendLine("  ${split.speedFrom}-${split.speedTo} km/h → +${"%,.2f".format(split.timeMs / 1000f)}s (${"%,.2f".format(cumulative / 1000f)}s)")
+                                }
+                            }
+                        }
+                        val intent = Intent(Intent.ACTION_SEND).apply {
+                            type = "text/plain"
+                            putExtra(Intent.EXTRA_TEXT, shareText)
+                            putExtra(Intent.EXTRA_SUBJECT, "Resultado ${session.type.displayName()}")
+                        }
+                        context.startActivity(Intent.createChooser(intent, "Compartir resultado"))
+                    },
                     colors = ButtonDefaults.buttonColors(containerColor = NeonCyan),
                     modifier = Modifier.weight(1f).height(56.dp)
                 ) {

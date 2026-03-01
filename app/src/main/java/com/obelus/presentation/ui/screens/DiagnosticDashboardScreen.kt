@@ -218,11 +218,32 @@ fun ProbabilityBarChart(findings: List<DiagnosticFinding>) {
 
 @Composable
 fun FindingItem(finding: DiagnosticFinding) {
+    var showRootDialog by remember { mutableStateOf(false) }
+
+    if (showRootDialog) {
+        AlertDialog(
+            onDismissRequest = { showRootDialog = false },
+            title = { Text("Causa Raíz Probable", fontWeight = FontWeight.Bold) },
+            text = {
+                Text(
+                    "El análisis bayesiano indica que «${finding.dtcCode}» tiene un " +
+                    "${(finding.posteriorProbability * 100).toInt()}% de probabilidad de ser el origen.\n\n" +
+                    "Causa: ${finding.probableCause}\n\n" +
+                    "Resolverlo primero puede eliminar los demás DTCs activos.",
+                    style = MaterialTheme.typography.bodyMedium
+                )
+            },
+            confirmButton = {
+                TextButton(onClick = { showRootDialog = false }) { Text("Entendido") }
+            }
+        )
+    }
+
     Card(
         modifier = Modifier.fillMaxWidth(),
         colors = CardDefaults.cardColors(
-            containerColor = if (finding.severityLevel >= 5) 
-                MaterialTheme.colorScheme.errorContainer.copy(alpha = 0.2f) 
+            containerColor = if (finding.severityLevel >= 5)
+                MaterialTheme.colorScheme.errorContainer.copy(alpha = 0.2f)
             else MaterialTheme.colorScheme.surface
         )
     ) {
@@ -253,8 +274,8 @@ fun FindingItem(finding: DiagnosticFinding) {
                 if (finding.isRootCandidate) {
                     Spacer(modifier = Modifier.width(8.dp))
                     SuggestionChip(
-                        onClick = {},
-                        label = { Text("Posible Causa Raíz", fontSize = 10.sp) }
+                        onClick = { showRootDialog = true },
+                        label = { Text("⭐ Causa Raíz", fontSize = 10.sp) }
                     )
                 }
             }

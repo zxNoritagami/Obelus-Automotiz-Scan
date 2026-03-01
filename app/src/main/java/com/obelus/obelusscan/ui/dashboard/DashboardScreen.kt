@@ -33,7 +33,8 @@ import com.obelus.ui.theme.*
 
 @Composable
 fun DashboardScreen(
-    viewModel: DashboardViewModel = hiltViewModel()
+    viewModel: DashboardViewModel = hiltViewModel(),
+    onNavigateToScan: () -> Unit = {}
 ) {
     val rpm by viewModel.rpm.collectAsState()
     val speed by viewModel.speed.collectAsState()

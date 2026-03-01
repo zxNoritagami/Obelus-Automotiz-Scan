@@ -34,7 +34,6 @@ import androidx.compose.ui.unit.sp
 import androidx.fragment.app.FragmentActivity
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.obelus.bluetooth.BluetoothManager
 import com.obelus.bluetooth.ConnectionState
 import com.obelus.presentation.ui.components.*
 import com.obelus.presentation.viewmodel.ScanViewModel
@@ -69,8 +68,6 @@ private val BLUETOOTH_PERMISSIONS = if (Build.VERSION.SDK_INT >= Build.VERSION_C
 @Composable
 fun DeviceScanScreen(
     onNavigateToScan: () -> Unit = {},
-    bluetoothManager: BluetoothManager = hiltViewModel<ScanViewModel>()
-        .let { return@let TODO("Use BluetoothManager directly via injection") },
     viewModel: ScanViewModel = hiltViewModel()
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()

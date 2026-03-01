@@ -1,5 +1,7 @@
 package com.obelus.presentation.ui.screens
 
+import android.content.Intent
+import android.net.Uri
 import androidx.compose.animation.*
 import androidx.compose.animation.core.*
 import androidx.compose.foundation.BorderStroke
@@ -27,6 +29,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -48,15 +51,59 @@ fun SnifferScreen(
     val frames by viewModel.filteredFrames.collectAsState()
     val isFrozen by viewModel.isFrozen.collectAsState()
     val searchQuery by viewModel.searchQuery.collectAsState()
-    
+    val context = LocalContext.current
+
     var selectedFrameId by remember { mutableStateOf<String?>(null) }
-    
+    var showCompatWarning by remember { mutableStateOf(true) }  // Mostrar al abrir
+
     // Performance: derivedStateOf for the selected frame
     val selectedFrame = remember(selectedFrameId, frames) {
-        derivedStateOf { 
+        derivedStateOf {
             frames.find { it.id == selectedFrameId } ?: frames.firstOrNull()
         }
     }.value
+
+    // Diálogo de compatibilidad al abrir la pantalla
+    if (showCompatWarning) {
+        AlertDialog(
+            onDismissRequest = { showCompatWarning = false },
+            icon = {
+                Icon(
+                    Icons.Default.Warning,
+                    contentDescription = null,
+                    tint = MaterialTheme.colorScheme.error
+                )
+            },
+            title = { Text("Compatibilidad de adaptador", fontWeight = FontWeight.Bold) },
+            text = {
+                Text(
+                    "El Bus Sniffer requiere un adaptador con soporte de modo promiscuo " +
+                    "(comando AT MA). Los adaptadores ELM327 genéricos — incluyendo la " +
+                    "mayoría de clones chinos — no soportan esta función.\n\n" +
+                    "Adaptadores compatibles: OBDLink MX+, OBDLink EX, STN2120.",
+                    style = MaterialTheme.typography.bodyMedium
+                )
+            },
+            confirmButton = {
+                TextButton(onClick = {
+                    showCompatWarning = false
+                    val intent = Intent(Intent.ACTION_VIEW,
+                        Uri.parse("https://www.obdlink.com/products/obdlink-mx/"))
+                    context.startActivity(intent)
+                }) {
+                    Text("Ver adaptadores", color = NeonCyan)
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { showCompatWarning = false }) {
+                    Text("Continuar de todas formas")
+                }
+            },
+            containerColor = Color(0xFF111111),
+            titleContentColor = Color.White,
+            textContentColor = Color.LightGray
+        )
+    }
 
     Scaffold(
         topBar = {
@@ -221,6 +268,7 @@ fun CanIdItem(frame: CanFrame, isSelected: Boolean, onClick: () -> Unit) {
 
 @Composable
 fun FrameDetailView(frame: CanFrame) {
+    val context = LocalContext.current
     Column(modifier = Modifier.fillMaxSize().padding(16.dp)) {
         Row(
             modifier = Modifier.fillMaxWidth(),
@@ -233,7 +281,15 @@ fun FrameDetailView(frame: CanFrame) {
                 color = NeonCyan,
                 fontSize = 28.sp
             )
-            IconButton(onClick = { /* TODO: Copy to clipboard */ }) {
+            IconButton(onClick = {
+                val clipboardManager = context.getSystemService(android.content.ClipboardManager::class.java)
+                val bytes = frame.data.joinToString(" ") { "%02X".format(it) }
+                val text = "CAN 0x${frame.id}: $bytes"
+                clipboardManager?.setPrimaryClip(
+                    android.content.ClipData.newPlainText("CAN Frame", text)
+                )
+                android.widget.Toast.makeText(context, "Frame copiado", android.widget.Toast.LENGTH_SHORT).show()
+            }) {
                 Icon(Icons.Default.ContentCopy, contentDescription = "Copy", tint = Color.Gray, modifier = Modifier.size(20.dp))
             }
         }

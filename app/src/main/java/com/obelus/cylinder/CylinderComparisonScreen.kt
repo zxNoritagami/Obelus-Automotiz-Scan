@@ -46,6 +46,7 @@ fun CylinderComparisonScreen(
     var showDiagnosis      by remember { mutableStateOf(false) }
     var showCompressionGuide by remember { mutableStateOf(false) }
     var diagnosis          by remember { mutableStateOf<Diagnosis?>(null) }
+    val notSupportedReason by viewModel.cylinderNotSupported.collectAsStateWithLifecycle()
 
     // Derive precondition readiness from live data
     val rpm         = uiState.readings.firstOrNull { it.pid == "0C" }?.value
@@ -143,8 +144,13 @@ fun CylinderComparisonScreen(
                 }
             }
 
+            // Modo 06 no soportado
+            notSupportedReason?.let { reason ->
+                item { NotSupportedCard(reason) }
+            }
+
             // Empty state
-            if (balance == null) {
+            if (balance == null && notSupportedReason == null) {
                 item { EmptyCylinderState(readyToTest) }
             }
         }
@@ -451,6 +457,43 @@ private fun CompressionGuideDialog(onDismiss: () -> Unit) {
             TextButton(onClick = onDismiss) { Text("Entendido") }
         }
     )
+}
+
+// ── Not Supported card ────────────────────────────────────────────────────────
+@Composable
+private fun NotSupportedCard(reason: String) {
+    Card(
+        shape = RoundedCornerShape(10.dp),
+        colors = CardDefaults.cardColors(containerColor = Color(0x1AFFA726)),
+        border = BorderStroke(1.dp, Color(0xFFFFA726).copy(alpha = 0.6f))
+    ) {
+        Row(
+            modifier = Modifier.padding(14.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(12.dp)
+        ) {
+            Icon(
+                Icons.Default.Warning,
+                contentDescription = null,
+                tint = Color(0xFFFFA726),
+                modifier = Modifier.size(24.dp)
+            )
+            Column {
+                Text(
+                    "Modo 06 no soportado",
+                    fontWeight = FontWeight.Bold,
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = Color(0xFFFFA726)
+                )
+                Text(
+                    reason,
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.8f),
+                    lineHeight = 14.sp
+                )
+            }
+        }
+    }
 }
 
 // ── Empty state ───────────────────────────────────────────────────────────────

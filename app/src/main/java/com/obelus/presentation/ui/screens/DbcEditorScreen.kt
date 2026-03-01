@@ -69,8 +69,14 @@ fun DbcEditorScreen(
                     modifier = Modifier.fillMaxWidth().padding(16.dp),
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically
-                ) {
+                ) {\r
                     Text("DBC NETWORK MATRIX", color = com.obelus.ui.theme.NeonCyan, fontSize = 20.sp, fontWeight = FontWeight.Black, fontFamily = androidx.compose.ui.text.font.FontFamily.Monospace)
+                    Text(
+                        "Modo edición offline · transmisión al vehículo no disponible",
+                        color = Color.Gray,
+                        fontSize = 10.sp,
+                        fontFamily = androidx.compose.ui.text.font.FontFamily.Monospace
+                    )
                     
                     // Simple Statistics
                     Row(horizontalArrangement = Arrangement.spacedBy(16.dp)) {
@@ -244,8 +250,9 @@ private fun DbcDefinitionCard(
                         modifier = Modifier.weight(1f)
                     )
                     Spacer(Modifier.width(4.dp))
-                    SuggestionChip(
-                        onClick = {},
+                    FilterChip(
+                        selected = isSelected,
+                        onClick = onClick,
                         label = {
                             Text(
                                 if (definition.isBuiltIn) "Built-in" else "Custom",

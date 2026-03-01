@@ -24,6 +24,7 @@ import com.obelus.obelusscan.ui.dashboard.DashboardScreen
 import com.obelus.ui.screens.settings.SettingsScreen
 import com.obelus.ui.screens.settings.ThemeSelectorScreen
 import com.obelus.ui.screens.settings.ConnectionSettings
+import com.obelus.ui.screens.settings.CrashLogsScreen
 import com.obelus.ui.screens.onboarding.SplashScreen
 import com.obelus.ui.screens.onboarding.OnboardingScreen
 import com.obelus.ui.theme.*
@@ -203,15 +204,19 @@ fun MainScreen(crashReporter: CrashReporter, settingsDataStore: SettingsDataStor
                         title = { 
                             Text(
                                 when (currentRoute) {
-                                    "dashboard"           -> "Live Dashboard"
-                                    "history"             -> "Logs de Sesión"
-                                    "sniffer"             -> "Bus Sniffer"
-                                    "settings"            -> "Configuración"
-                                    "ddt4all_list"        -> "ECU Explorer"
+                                    "dashboard"            -> "Live Dashboard"
+                                    "history"              -> "Logs de Sesión"
+                                    "sniffer"              -> "Bus Sniffer"
+                                    "settings"             -> "Configuración"
+                                    "ddt4all_list"         -> "ECU Explorer"
                                     "diagnostic_dashboard" -> "Diagnóstico Pro"
-                                    "security_access"     -> "Security Access"
-                                    "web_server"          -> "Terminal Web"
-                                    else                  -> "Obelus"
+                                    "security_access"      -> "Security Access"
+                                    "web_server"           -> "Terminal Web"
+                                    "obelus_scan"          -> "Diagnóstico OBD2"
+                                    "theme_selector"       -> "Tema de Interfaz"
+                                    "connection_settings"  -> "Conectividad OBD"
+                                    "crash_logs"           -> "Reporte de Errores"
+                                    else                   -> "Obelus"
                                 },
                                 style = FuturisticTypography.titleMedium
                             )
@@ -241,6 +246,7 @@ fun MainScreen(crashReporter: CrashReporter, settingsDataStore: SettingsDataStor
                     val navItems = listOf(
                         NavItem("dashboard", "Dash", Icons.Default.Dashboard, Icons.Outlined.Dashboard),
                         NavItem("ddt4all_list", "Explorer", Icons.Default.DeveloperBoard, Icons.Outlined.DeveloperBoard),
+                        NavItem("obelus_scan", "Escanear", Icons.Default.DirectionsCar, Icons.Default.DirectionsCar),
                         NavItem("sniffer", "Sniffer", Icons.Default.Sensors, Icons.Outlined.Sensors),
                         NavItem("settings", "Settings", Icons.Default.Settings, Icons.Outlined.Settings)
                     )
@@ -284,7 +290,11 @@ fun MainScreen(crashReporter: CrashReporter, settingsDataStore: SettingsDataStor
                         )
                     }
 
-                    composable("dashboard") { DashboardScreen() }
+                    composable("dashboard") {
+                        DashboardScreen(
+                            onNavigateToScan = { navController.navigate("obelus_scan") }
+                        )
+                    }
                     
                     composable("ddt4all_list") {
                         val ddt4ViewModel: Ddt4allViewModel = hiltViewModel()
@@ -344,12 +354,35 @@ fun MainScreen(crashReporter: CrashReporter, settingsDataStore: SettingsDataStor
                         WebServerScreen(viewModel = webViewModel, onBack = { navController.popBackStack() })
                     }
 
+                    // ── Configuración sub-pantallas ────────────────────────────────
+                    composable("theme_selector") {
+                        ThemeSelectorScreen(
+                            dataStore = settingsDataStore,
+                            onBack = { navController.popBackStack() }
+                        )
+                    }
+
+                    composable("connection_settings") {
+                        ConnectionSettings(
+                            dataStore = settingsDataStore,
+                            onBack = { navController.popBackStack() }
+                        )
+                    }
+
+                    composable("crash_logs") {
+                        CrashLogsScreen(
+                            crashReporter = crashReporter,
+                            onBack = { navController.popBackStack() }
+                        )
+                    }
+
                     // ── Módulo BT/OBD2 scan (Prompts 3–6) ─────────────────────────────
                     composable("obelus_scan") {
                         ObelusApp(
                             onExit = { navController.popBackStack() }
                         )
                     }
+
                 }
             }
         }

@@ -29,6 +29,26 @@ fun ActuatorTestScreen(
     viewModel: ActuatorTestViewModel = hiltViewModel()
 ) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
+    val snackbarHostState = remember { SnackbarHostState() }
+
+    // Snackbar para errores de protocolo UDS / no soportado
+    LaunchedEffect(state.errorMessage) {
+        val msg = state.errorMessage ?: return@LaunchedEffect
+        val snackbarMsg = when {
+            msg.contains("7F", ignoreCase = true) &&
+                (msg.contains("11") || msg.contains("31")) ->
+                "⚠️ Este vehículo no soporta tests bidireccionales (UDS IoControl no disponible)"
+            msg.contains("no soporta", ignoreCase = true) ||
+                msg.contains("not supported", ignoreCase = true) ||
+                msg.contains("NotSupported", ignoreCase = true) ->
+                "⚠️ Este vehículo no soporta tests bidireccionales (UDS IoControl)"
+            else -> msg
+        }
+        snackbarHostState.showSnackbar(
+            message = snackbarMsg,
+            duration = SnackbarDuration.Long
+        )
+    }
 
     // Safety dialog
     val safetyWarning = state.pendingSafetyConfirmation
@@ -40,7 +60,10 @@ fun ActuatorTestScreen(
         )
     }
 
-    Column(modifier = Modifier.fillMaxSize()) {
+    Scaffold(
+        snackbarHost = { SnackbarHost(snackbarHostState) },
+    ) { scaffoldPadding ->
+        Column(modifier = Modifier.fillMaxSize().padding(scaffoldPadding)) {
 
         // ── Status Banner (running / result) ──────────────────────────────────
         AnimatedVisibility(

@@ -147,6 +147,8 @@ class ScanViewModel @Inject constructor(
     val cylinderBalance: StateFlow<CylinderBalance?> = _cylinderBalance.asStateFlow()
     private val _misfireData        = MutableStateFlow<Map<Int, Int>>(emptyMap())
     val misfireData: StateFlow<Map<Int, Int>> = _misfireData.asStateFlow()
+    private val _cylinderNotSupported = MutableStateFlow<String?>(null)
+    val cylinderNotSupported: StateFlow<String?> = _cylinderNotSupported.asStateFlow()
     private var idleStableSecs: Int = 0      // contador de segundos en ralentí estable
     private var cylinderTestJob: Job? = null
 
@@ -1108,6 +1110,7 @@ class ScanViewModel @Inject constructor(
                         println("[ScanViewModel] Diagnóstico: ${result.diagnosis.summary}")
                     }
                     is CylinderTestResult.NotSupported  -> {
+                        _cylinderNotSupported.value = result.reason
                         println("[ScanViewModel] Balance no soportado: ${result.reason}")
                     }
                     is CylinderTestResult.Error         -> {

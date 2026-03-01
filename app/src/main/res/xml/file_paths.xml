@@ -1,5 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <paths xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- Internal app storage (filesDir) — fallback cuando getExternalFilesDir() == null -->
+    <files-path name="internal_files" path="." />
+    <!-- Internal cache (cacheDir) -->
     <cache-path name="cache" path="." />
+    <!-- External app-specific storage: getExternalFilesDir() — PDF/XLSX/CSV en Android 10+ -->
     <external-files-path name="external_files" path="." />
+    <!-- External app cache: getExternalCacheDir() -->
+    <external-cache-path name="external_cache" path="." />
 </paths>
